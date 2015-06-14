@@ -30,9 +30,15 @@ module.exports = function(db) {
   app
     .post('/timelapse/new', function(req, res) {
       console.log(req.body);
+      res.json({
+        data: true
+      });
     })
     .post('/scanner/new', function(req, res) {
       console.log(req.body);
+      res.json({
+        data: true
+      });
     });
 
   // Finally return app
