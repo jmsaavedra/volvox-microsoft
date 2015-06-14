@@ -26,6 +26,21 @@ module.exports = function(db) {
     next();
   });
 
+  // Routes
+  app
+    .post('/timelapse/new', function(req, res) {
+      console.log(req.body);
+      res.json({
+        data: true
+      });
+    })
+    .post('/scanner/new', function(req, res) {
+      console.log(req.body);
+      res.json({
+        data: true
+      });
+    });
+
   // Finally return app
   return app;
 };
