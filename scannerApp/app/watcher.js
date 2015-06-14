@@ -53,35 +53,9 @@ module.exports.init = function(){
 									if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
 									console.log('SUCCESS upload Scan: '+JSON.stringify(data));
 
-									 var post_data = querystring.stringify({
-									      'date' : data.date,
-									      'file': data.file
-									  });
-									   var post_options = {
-									      host: 'elbulliweb.cloudapp.net',
-									      port: '8080',
-									      path: '/scanner/new',
-									      method: 'POST',
-									      headers: {
-									          'Content-Type': 'application/x-www-form-urlencoded',
-									          'Content-Length': post_data.length
-									      }
-									  };
-
-								    // Set up the request
-									  var post_req = http.request(post_options, function(res) {
-									      res.setEncoding('utf8');
-									      res.on('data', function (chunk) {
-									          console.log('Response: ' + chunk);
-									      });
-									  });
-
-									  // post the data
-									  post_req.write(post_data);
-									  post_req.end();
-
+									// send this data to the routing server to save to DB:
+									postData(data);
 								});
-
 	            } else if (arguments[0] === 'delete'){
 	           		/***
 	            	/* FILE HAS BEEN DELETED
@@ -111,6 +85,35 @@ module.exports.init = function(){
 	});
 };
 
+var postData = function(data){
+
+ var post_data = querystring.stringify({
+      'date' : data.date,
+      'file': data.file
+  });
+   var post_options = {
+      host: 'elbulliweb.cloudapp.net',
+      port: '8080',
+      path: '/scanner/new',
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Length': post_data.length
+      }
+  };
+
+  // Set up the request
+  var post_req = http.request(post_options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+          console.log('Response: ' + chunk);
+      });
+  });
+
+  // post the data
+  post_req.write(post_data);
+  post_req.end();
+}
 
 //PATH ON WINDOWS:
 
