@@ -43,7 +43,6 @@ module.exports.init = function(){
 	            	
 	            	/***
 	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER
-	            	/*
 	            	*/
 	            	console.log('>> new file created: '.blue);
 	            	console.log('\t'+arguments[1]);
@@ -56,10 +55,11 @@ module.exports.init = function(){
 									// send this data to the routing server to save to DB:
 									postData(data);
 								});
-	            } else if (arguments[0] === 'delete'){
+	            } 
+
+	            else if (arguments[0] === 'delete'){
 	           		/***
 	            	/* FILE HAS BEEN DELETED
-	            	/*
 	            	*/
 	            	console.log('>> file deleted'.red);
 	            }
@@ -74,12 +74,8 @@ module.exports.init = function(){
 	        }
 	 
 	        // Close watchers after 60 seconds 
-	        // setTimeout(function(){
-	        //     var i;
-	        //     console.log('Stop watching our paths');
-	        //     for ( i=0;  i<watchers.length; i++ ) {
-	        //         watchers[i].close();
-	        //     }
+	        // setTimeout(function(){ var i;
+	        //     for ( i=0;  i<watchers.length; i++ ) { watchers[i].close(); }
 	        // },60*1000);
 	    }
 	});
@@ -114,6 +110,10 @@ var postData = function(data){
   post_req.write(post_data);
   post_req.end();
 }
+
+
+
+
 
 //PATH ON WINDOWS:
 

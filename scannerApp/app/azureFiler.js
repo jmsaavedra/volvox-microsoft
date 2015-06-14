@@ -25,12 +25,11 @@ module.exports.uploadImage = function(filePath, fileName, cb){
 		  publicAccessLevel: 'blob'
 		}, function(error, result, response) {
 	  if (!error) {
-	  	console.log('container created result: '.green + result);
+	  	console.log('container created result: '.green + result);// if result = true, container was created. if result = false, container already existed.
 	  	console.log('container created resp: '.green + JSON.stringify(response,null,'\t'));
-	    // if result = true, container was created.
-	    // if result = false, container already existed.
-	    // cb(null, JSON.stringify(response));
+	    
 	    uploadFile(today, filePath, fileName, cb);
+
 	  } else {
 	  	console.log('error creating container: '.red + error);
 	  	console.log('error creating container result: '.red + result);
@@ -47,15 +46,19 @@ function uploadFile (container, path, name, callback){
 	    // file uploaded
 	    console.log('blockBlob created result: '.yellow + JSON.stringify(result,null,'\t'));
 	  	console.log('blockBlob created resp: '.yellow + JSON.stringify(response,null,'\t'));
+
 	  	// https://elbulliscanner.blob.core.windows.net/2015-06-14/5511a1a8f20a6250693c8ff1.jpg
 	  	var fileUrl = 'https://elbulliscanner.blob.core.windows.net/'+result.container+'/'+result.blob;
 	  	console.log('BLOCKBLOB URL: '.green.bold + fileUrl);
 	  	var data = {date: container, file: fileUrl};
+	  	
 	  	callback(null, data);
+
 	  } else {
 	  	console.log('error creating blockBlob: '.red + error);
 	  	console.log('error creating blockBlob result: '.red + result);
 	  	console.log('error creating blockBlob resp: '.red + JSON.stringify(response,null,'\t'));
+
 	  	callback(error)
 	  }
 	});
