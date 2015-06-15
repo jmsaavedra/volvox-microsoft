@@ -53,7 +53,7 @@ module.exports = function(db, vimeo) {
       // /vimeo/id?id=1234215
       // console.log(req.query);
       var id = req.query.id;
-      vimeo.getVideoDetail(id, function(data) {
+      vimeo.getVideoDetailFromId(id, function(data) {
         res.json(data);
       });
     })
