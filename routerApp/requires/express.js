@@ -56,6 +56,9 @@ module.exports = function(db, vimeo) {
       vimeo.getVideoDetail(id, function(data) {
         res.json(data);
       });
+    })
+    .get('/', function(req, res) {
+      res.send('You just entered a restricted area. Keep out.');
     });
 
   // Finally return app
