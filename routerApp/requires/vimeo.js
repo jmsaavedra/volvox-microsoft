@@ -19,7 +19,7 @@ module.exports = {
         console.log('error');
         console.log(error);
       } else {
-        console.log('body');
+        // console.log('body');
         if (cb) cb(body);
       }
     });
@@ -40,7 +40,7 @@ module.exports = {
         console.log(error);
       } else {
         console.log('body');
-        console.log(body);
+        // console.log(body);
         if (cb) cb(body);
       }
     });
