@@ -6,7 +6,7 @@
  *
  */
 
-var config = require('./config/config');
+var config = require('./requires/config');
 var mongoose = require('mongoose');
 var chalk = require('chalk');
 
@@ -21,6 +21,9 @@ var db = mongoose.connect(config.db.mongooseUri, config.db.options, function(err
   }
 });
 
+// Init VIMEO API
+var vimeo = require('./requires/vimeo');
+
 /****
  * Init Express
  * ==============================================
@@ -28,7 +31,7 @@ var db = mongoose.connect(config.db.mongooseUri, config.db.options, function(err
  */
 
 // Init the express application
-var app = require('./config/express')(db);
+var app = require('./requires/express')(db, vimeo);
 
 /****
  * START THE HTTP SERVER
