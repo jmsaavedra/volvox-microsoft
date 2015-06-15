@@ -10,7 +10,7 @@ var chalk = require('chalk');
 
 // Export Module
 
-module.exports = function(db) {
+module.exports = function(db, vimeo) {
   var app = express();
   app.use(cors());
 
@@ -38,6 +38,23 @@ module.exports = function(db) {
       console.log(req.body);
       res.json({
         data: true
+      });
+    })
+  // For VIMEO
+  .get('/vimeo/monthly', function(req, res) {
+    // /vimeo/monthly?month=january
+    var month = req.query.month;
+    vimeo.getMonthlyVideos(month, function(data) {
+      // Callback
+      res.json(data);
+    });
+  })
+    .get('/vimeo/id', function(req, res) {
+      // /vimeo/id?id=1234215
+      // console.log(req.query);
+      var id = req.query.id;
+      vimeo.getVideoDetail(id, function(data) {
+        res.json(data);
       });
     });
 
