@@ -33,7 +33,7 @@ var vimeo = require('./requires/vimeo');
  */
 
 // Init the express application
-var app = require('./requires/express')(Model, vimeo);
+var app = require('./requires/express')(db, Model, vimeo);
 
 /****
  * START THE HTTP SERVER
