@@ -7,10 +7,12 @@ var bodyParser = require('body-parser');
 var http = require('http');
 var cors = require('cors');
 var chalk = require('chalk');
+var moment = require('moment');
+
 
 // Export Module
 
-module.exports = function(db, vimeo) {
+module.exports = function(Model, vimeo) {
   var app = express();
   app.use(cors());
 
@@ -30,14 +32,48 @@ module.exports = function(db, vimeo) {
   app
     .post('/timelapse/new', function(req, res) {
       console.log(req.body);
-      res.json({
-        data: true
+      // Save to Mongo
+      var new_video = new Model.Video({
+        vimeo_final: '12345'
+      });
+      new_video.save(function(err) {
+        if (err) throw err;
+        console.log('new video saved successfully!');
+        res.json({
+          data: true
+        });
       });
     })
     .post('/scanner/new', function(req, res) {
       console.log(req.body);
-      res.json({
-        data: true
+      // Save to Mongo
+      var new_scan = new Model.Scan({
+        images: ['a.jpg']
+      });
+      // new_scan.save(function(err) {
+      //   if (err) throw err;
+      //   console.log('new scan saved successfully!');
+      //   res.json({
+      //     data: true
+      //   });
+      // });
+      /*
+        Upsert the new scanned image
+      */
+      new_scan.update({
+        date: req.body.date
+      }, {
+        upsert: true
+      }, {
+        $addToSet: {
+          images: req.body.file
+        }
+      }, function(err) {
+        if (err) throw err;
+        console.log('new scan saved successfully!');
+        res.json({
+          data: true
+        });
       });
     })
   // For VIMEO
@@ -60,6 +96,7 @@ module.exports = function(db, vimeo) {
     .get('/', function(req, res) {
       res.send('You just entered a restricted area. Keep out.');
     });
+
 
   // Finally return app
   return app;
