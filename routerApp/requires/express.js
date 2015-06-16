@@ -59,10 +59,17 @@ module.exports = function(db, Model, vimeo) {
       }, {
         upsert: true
       }, function(err) {
-        if (err) console.log(err);
-        res.json({
-          data: true
-        });
+        if (err) {
+          console.log(chalk.red(err));
+          res.json({
+            data: false
+          });
+        } else {
+          res.json({
+            data: true
+          });
+        }
+
       });
 
     })
