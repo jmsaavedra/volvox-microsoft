@@ -68,7 +68,8 @@ module.exports = function(db, Model, vimeo) {
       }, {
         $addToSet: {
           images: req.body.file
-        }
+        },
+        updated_at: new Date().getTime()
       }, {
         upsert: true
       }, function(err) {
@@ -88,7 +89,17 @@ module.exports = function(db, Model, vimeo) {
       });
 
     })
-  // For VIMEO
+  // For getting the video and scans back to user
+  .get('/timelapse/month/:month', function(req, res) {
+    var month = req.params.month; // 0-11
+  })
+  .get('/timelapse/date/:date', function(req, res) {
+    var date = req.params.date; // YYYY-MM-DD
+  })
+  .get('/scanner', function(req, res) {
+
+  })
+  // For getting VIMEO info
   .get('/vimeo/monthly', function(req, res) {
     // /vimeo/monthly?month=january
     var month = req.query.month;
