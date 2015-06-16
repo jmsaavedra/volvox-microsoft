@@ -35,7 +35,7 @@ var videoSchema = new Schema({
   }
 });
 
-var photoSchema = new Schema({
+var scanSchema = new Schema({
   date: {
     type: String,
     default: moment().format('YYYY-MM-DD')
@@ -62,7 +62,7 @@ var photoSchema = new Schema({
 // make this available to our users in our Node applications
 module.exports = {
   Video: mongoose.model('Video', videoSchema),
-  Scan: mongoose.model('Photo', photoSchema)
+  Scan: mongoose.model('Scan', scanSchema)
 };
 
 console.log(chalk.green.bold('============== Model Schema loaded'));

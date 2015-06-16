@@ -34,14 +34,27 @@ module.exports = function(db, Model, vimeo) {
       console.log(req.body);
       // Save to Mongo
       var new_video = new Model.Video({
-        vimeo_final: '12345'
+        vimeo_final: '12345',
+        vimeo_individuals: {
+          cam1: '',
+          cam2: '',
+          cam3: '',
+          cam4: ''
+        },
+        date: req.body.date
       });
       new_video.save(function(err) {
-        if (err) throw err;
-        console.log('new video saved successfully!');
-        res.json({
-          data: true
-        });
+        if (err) {
+          console.log(chalk.red(err));
+          res.json({
+            data: false
+          });
+        } else {
+          console.log('new video saved successfully!');
+          res.json({
+            data: true
+          });
+        }
       });
     })
     .post('/scanner/new', function(req, res) {
@@ -64,10 +77,12 @@ module.exports = function(db, Model, vimeo) {
           res.json({
             data: false
           });
+          // Sending Fail Email
         } else {
           res.json({
             data: true
           });
+          // Sending Success Email
         }
 
       });
