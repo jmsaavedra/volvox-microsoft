@@ -7,10 +7,6 @@ var express = require('express'),
   port = parseInt(process.env.PORT, 10) || 8000,
   publicDir = process.argv[2] || __dirname + '/public';
 
-app.get('/', function(req, res) {
-  res.redirect('index.html');
-});
-
 app.use(methodOverride());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -23,4 +19,4 @@ app.use(errorHandler({
 }));
 
 console.log('Simple static server showing %s listening at http://%s:%s', publicDir, hostname, port);
-app.listen(port, hostname);
+app.listen(port);
