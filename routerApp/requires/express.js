@@ -12,7 +12,7 @@ var moment = require('moment');
 
 // Export Module
 
-module.exports = function(Model, vimeo) {
+module.exports = function(db, Model, vimeo) {
   var app = express();
   app.use(cors());
 
@@ -47,34 +47,24 @@ module.exports = function(Model, vimeo) {
     .post('/scanner/new', function(req, res) {
       console.log(req.body);
       // Save to Mongo
-      var new_scan = new Model.Scan({
-        images: ['a.jpg']
-      });
-      // new_scan.save(function(err) {
-      //   if (err) throw err;
-      //   console.log('new scan saved successfully!');
-      //   res.json({
-      //     data: true
-      //   });
-      // });
       /*
         Upsert the new scanned image
       */
-      new_scan.update({
+      Model.Scan.findOneAndUpdate({
         date: req.body.date
-      }, {
-        upsert: true
       }, {
         $addToSet: {
           images: req.body.file
         }
+      }, {
+        upsert: true
       }, function(err) {
-        if (err) throw err;
-        console.log('new scan saved successfully!');
+        if (err) console.log(err);
         res.json({
           data: true
         });
       });
+
     })
   // For VIMEO
   .get('/vimeo/monthly', function(req, res) {
