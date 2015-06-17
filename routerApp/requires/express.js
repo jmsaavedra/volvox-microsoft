@@ -34,12 +34,12 @@ module.exports = function(db, Model, vimeo) {
       console.log(req.body);
       // Save to Mongo
       var new_video = new Model.Video({
-        vimeo_final: '12345',
+        vimeo_final: req.body.vimeo_final,
         vimeo_individuals: {
-          cam1: '',
-          cam2: '',
-          cam3: '',
-          cam4: ''
+          cam1: req.body.individuals.cam1,
+          cam2: req.body.individuals.cam2,
+          cam3: req.body.individuals.cam3,
+          cam4: req.body.individuals.cam4
         },
         date: req.body.date
       });
