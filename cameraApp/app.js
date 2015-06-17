@@ -1,90 +1,158 @@
-/****
-*
-* VOLVOX x MICROSOFT
-* ==============================================
-*
-*  WebApp for image processing. This is not public facing.
-*
-*/
+process.env.UV_THREADPOOL_SIZE = 72;
 
-var express     = require('express');
-var colors      = require('colors');
-var http        = require('http');
-var port        = 8080; //select a port for this server to run on
+var fs    = require('fs'),
+  http    = require('http'),
+  colors  = require('colors'),
+  _       = require('lodash'),
+  async   = require('async'),
+  express = require('express'),
+  app     = express(),
+  server  = require('http').Server(app),
+  io      = require('socket.io')(server),
+  exec    = require('child_process').exec,
+  scheduler = require('./app/components/scheduler');
+  Cameras = require('./app/components/cameras'),
+  cameras = null,
+  port    = 8081,
+  processingTake = false,
+  setupComplete  = false; //camera setup
 
-var gphoto2 = require('gphoto2');
-var GPhoto = new gphoto2.GPhoto2();
-var fs = require('fs');
-var camera;
 
-GPhoto.list(function (list) {
-  if (list.length === 0) return;
-  camera = list[0];
-  console.log('Found', camera.model);
+/* Image folders */
+global.RAW_IMG_FOLDER = __dirname+'/images';
+if (!fs.existsSync(global.RAW_IMG_FOLDER)) fs.mkdirSync(global.RAW_IMG_FOLDER);
+
+
+/* Gulp Watcher */
+var watchr = require('watchr');
+var fileCounter = 0;
+watchr.watch({
+  path: global.RAW_IMG_FOLDER,
+  listener:  function(changeType,filePath,fileCurrentStat,filePreviousStat){
+    // console.log('changeType: '.cyan+changeType);
+    if(changeType === 'create'){
+      console.log('File Added: '.green+filePath);
+      imageProcessHandler(filePath, function(e){
+        console.log("fileCounter: "+fileCounter);
+        fileCounter++;
+        //console.log("cameras.cameras_.length: "+cameras.cameras_.length);
+        if (fileCounter == cameras.cameras_.length){
+          processingTake = false;
+          fileCounter = 0;
+        }
+      });
+    } else {
+      console.log('changeType: '+changeType+' filePath: '+filePath);
+    }
+  }
 });
 
-/****
-* CONFIGURE Express
-* ==============================================
-*
-*/
-//instantiate object of express as app
-var app = express();
 
-//use the public folder to serve files and directories STATICALLY (meaning from file)
-app.use(express.static(__dirname+ '/public'));
+/* Handler for after a file is added to watched folder */
+var imageProcessHandler = function(img, cb){
+  console.log('UPLOADING IMAGE: '.cyan+img);
+
+  cb(null);
+};
 
 
-/****
-* ROUTES
-* ==============================================
-* - these are the HTTP /routes that we can hit
-*
-*/
+/* Express config */
+app.use(express.static('./public'));
+app.use('/images',express.static(global.RAW_IMG_FOLDER));
 
-app.get('/1', function(req, res) { 
+/* HTTP routes */
+app.get('/snap', function(req, res) { 
   console.log('hit /test'.gray);
-	res.send('this is a test!');
-
-	camera.takePicture({download: true}, function (er, data) {
-   	if(er) console.log('er: '.red + er);
-    fs.writeFileSync(__dirname + '/picture.jpg', data);
-  });
-
-	 // camera.takePicture({
-	 //    targetPath: '/tmp/foo.XXXXXX'
-	 //  }, function (er, tmpname) {
-	 //  	if(er) console.log('er: '.red + er);
-	 //  	console.log('tmpname: '.cyan + tmpname);
-	 //    fs.renameSync(tmpname, __dirname + '/picture.jpg');
-	 //  });
-  // camera.takePicture({
-  //   targetPath: '/tmp/foo.XXXXXX'
-  // }, function (er, tmpname) {
-  // 	 	if(er) console.log('er: '.red + er);
-  //   fs.renameSync(tmpname, __dirname + '/picture.jpg');
+  if(snap()){
+    return res.send('SUCCESS on take photo');
+  } else return res.send('Wait for last snap to finish');
+  // snap(function(e){
+  //   if(e) return res.send(e);
+  //   res.send('SUCCESS on take photo');
   // });
-// GPhoto.list(function (list) {
-//   if (list.length === 0) return;
-//   var camera1 = list[0];
-//   console.log('Found', camera.model);
-
-
-// });
-
 });
 
 
-/****
-* START THE HTTP SERVER
-* ==============================================
-*
-*/
-http.createServer(app).listen(port, function(){
-  console.log();
-  console.log('  CAMERA APP   Server Running!  '.white.inverse);
-  console.log('  HTTP Express Server Running!  '.gray.inverse);
-  var listeningString = ' Magic happening on port: '+ port +"  ";
-  console.log(listeningString.cyan.inverse);
+function snap(){
+  
+  if(!processingTake){
+    processingTake = true;
+    console.log('Snap Photo! ');
+    cameras.takePhotos(function(e){});
+    processingTake = false;
+    return true;// cb();
+  } else return false;//cb('Wait for last to finish');
+}
+    
 
+/* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
+var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
+  cameras = Cameras(function(e){
+    // if(e){ return console.log("camera setup failed: ".red + e); //TODO: socket.emit('error', e); }
+    console.log("camera setup complete".green);
+    setupComplete = true;
+
+    /*** START THE HTTP SERVER ***/
+    http.createServer(app).listen(port, function(){
+      console.log();
+      console.log('  CAMERA APP   Server Running!  '.white.inverse);
+      console.log('  HTTP Express Server Running!  '.gray.inverse);
+      var listeningString = ' Magic happening on port: '+ port +"  ";
+      console.log(listeningString.cyan.inverse);
+      
+      var photoInterval = setInterval(snap, 180000);
+    }); 
+  });
 });
+/*** in case of socket enabled front-end ***/
+// var setupSockets = function(){
+//   //console.log(cameras);
+//   io.on('connection', function(socket){
+//     console.log('socket connection created.'.yellow);
+//     if(!setupComplete) socket.broadcast.emit('loading', null);
+//     // fs.readdir(global.RAW_IMG_FOLDER,function(err,files){
+//     fs.readdir(global.SCALED_IMG_FOLDER,function(_err,files){
+//       //checkout /images for all image files, (exclude DS_Store);
+//       //console.log("error: ".red+_err);
+//       Images.findOrCreate(_.without(files, ".DS_Store"),function(err,_images){
+//         if(err) return socket.emit('error',err);
+//         return socket.emit('init',_images);
+//       });
+//     });
+
+//     /* Socket API */
+//     socket.on('approve',function(data){
+//       console.log('Approve: '+JSON.stringify(data));
+//       Images.findById(data._id,function(err,image){
+//         image.approve(function(err,_img){
+//           //TODO Add socket emit to update all connections.
+//           socket.broadcast.emit('approved',image);
+//           console.log('Approved.');
+//         });
+//       });
+//     });
+
+//     socket.on('heart',function(data){
+//       console.log('Heart: '+JSON.stringify(data));
+//       Images.findById(data._id,function(err,image){
+//         image.heart(function(err,_img){
+//           //TODO Add socket emit to update all connections.
+//           socket.broadcast.emit('hearted',image);
+//           console.log('Hearted.');
+//         });
+//       });
+//     });
+
+//     socket.on('snap',function(data){
+//       if(!processingTake){
+//         processingTake = true;
+//         console.log('Snap Photo! '.green+JSON.stringify(data));
+//         cameras.takePhotos(function(e){});
+//         //*****NEW****
+//         io.sockets.emit('finished', null);
+//         processingTake = false;
+//         //*******
+//       } else console.log('Snap Photo: '+'Wait for previous take to finish processing'.red);
+//     });
+//   });
+// };

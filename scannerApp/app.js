@@ -3,23 +3,34 @@
 * VOLVOX x MICROSOFT
 * ==============================================
 *
-*  WebApp for image processing. This is not public facing.
+* Scanner application
+*  - watches a specific folder for new files
+*  - uploads file to 
 *
 */
 
+//TODO: move all of these credentials to secure file
+global.RAW_IMG_FOLDER = __dirname+'/images';
+global.STORAGE_ACCOUNT = 'elbulliscanner';
+global.STORAGE_KEY = 'bmZLz1PPrcwj48gl7fLxEk4r+I1qqQEZpPA7ng2QV9sgY/VqPcvkWiFeMUZn142TXu92qH3tPSJwfvQair8PqA==';
+global.FOLDER_TO_WATCH = '/Users/jmsaavedra/Desktop/____watcher-test';
+global.BULLI_SERVER = {
+  host: 'elbulliweb.cloudapp.net',
+  path: '/scanner/new',
+  port: '8080'
+};
 
+      // host: 'elbulliweb.cloudapp.net',
+      // port: '8080',
+      // path: '/scanner/new',
 
 var express     = require('express');
 var colors      = require('colors');
 var http        = require('http');
-var port        = 8080; //select a port for this server to run on
-
+var port        = '8080'; //select a port for this server to run on
 
 //custom modules
 var watcher 	= require('./app/watcher').init();
-// var azureFiler  = require('./app/azureFiler');
-
-
 
 
 /****
@@ -43,6 +54,7 @@ app.use(express.static(__dirname+ '/public'));
 
 app.get('/test', function(req, res) { 
   console.log('hit /test'.gray);	
+  res.send('you hit /test!');
 	// azureFiler.uploadImage('/Users/jmsaavedra/Desktop/____watcher-test/5511a1a8f20a6250693c8ff1.jpg', function(e, data){
 	// 	if(e) res.send('ERROR creating container: '+e);
 	// 	else res.send('created container: '+data);
