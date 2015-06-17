@@ -9,7 +9,7 @@
 *
 */
 
-//TODO: move all of these credentials to secure file
+//TODO: move all of these credentials to secure (NOT COMMITTED TO GITHUB) file
 global.RAW_IMG_FOLDER = __dirname+'/images';
 global.STORAGE_ACCOUNT = 'elbulliscanner';
 global.STORAGE_KEY = 'bmZLz1PPrcwj48gl7fLxEk4r+I1qqQEZpPA7ng2QV9sgY/VqPcvkWiFeMUZn142TXu92qH3tPSJwfvQair8PqA==';
@@ -19,10 +19,6 @@ global.BULLI_SERVER = {
   path: '/scanner/new',
   port: '8080'
 };
-
-      // host: 'elbulliweb.cloudapp.net',
-      // port: '8080',
-      // path: '/scanner/new',
 
 var express     = require('express');
 var colors      = require('colors');
