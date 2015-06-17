@@ -6,8 +6,10 @@
  *
  */
 
-var config = require('./config/config');
+var config = require('./requires/config');
 var mongoose = require('mongoose');
+// Load Mongoose Schema Models
+var Model = require('./requires/mongo/models');
 var chalk = require('chalk');
 
 // Bootstrap db connection
@@ -21,6 +23,9 @@ var db = mongoose.connect(config.db.mongooseUri, config.db.options, function(err
   }
 });
 
+// Init VIMEO API
+var vimeo = require('./requires/vimeo');
+
 /****
  * Init Express
  * ==============================================
@@ -28,7 +33,7 @@ var db = mongoose.connect(config.db.mongooseUri, config.db.options, function(err
  */
 
 // Init the express application
-var app = require('./config/express')(db);
+var app = require('./requires/express')(db, Model, vimeo);
 
 /****
  * START THE HTTP SERVER
