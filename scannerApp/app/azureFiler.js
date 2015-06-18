@@ -7,33 +7,35 @@
 *
 */
 
-var azure = require('azure-storage');
-var moment 			= require('moment');
+/* Includes and Azure Service */
+var moment 		= require('moment');
+var azure 		= require('azure-storage');
+var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
 
-var STORAGE_ACCOUNT = 'elbulliscanner';
-var STORAGE_KEY = 'bmZLz1PPrcwj48gl7fLxEk4r+I1qqQEZpPA7ng2QV9sgY/VqPcvkWiFeMUZn142TXu92qH3tPSJwfvQair8PqA==';
 
-var blobService = azure.createBlobService(STORAGE_ACCOUNT, STORAGE_KEY);
-
-//console.log(moment().format('YYYY-MM-DD'));
-
+/***
+/* Upload a File routine
+*/
 module.exports.uploadImage = function(filePath, fileName, cb){
 
 	var today = moment().format('YYYY-MM-DD');
-
+	/* First, Create Container for Today */
 	blobService.createContainerIfNotExists(today, {
 		  publicAccessLevel: 'blob'
 		}, function(error, result, response) {
 	  if (!error) {
-	  	console.log('container created result: '.green + result);// if result = true, container was created. if result = false, container already existed.
-	  	console.log('container created resp: '.green + JSON.stringify(response,null,'\t'));
+	  	
+	  	result ? console.log('new container created: '.green+today) : console.log('container already exists: '.gray+today);
+	  	//console.log('container created result: '.green + result);
+	  	//console.log('container created FULL response: '.green + JSON.stringify(response,null,'\t'));
 	    
+	    /* created/checked container, now upload this file to it */
 	    uploadFile(today, filePath, fileName, cb);
 
 	  } else {
-	  	console.log('error creating container: '.red + error);
-	  	console.log('error creating container result: '.red + result);
-	  	console.log('error creating container resp: '.red + JSON.stringify(response,null,'\t'));
+	  	console.log('>> creating container error: '.red + error);
+	  	console.log('>> result: '.red + result);
+	  	console.log('>> response: '.red + JSON.stringify(response,null,'\t'));
 	  	cb(error);
 	  }
 	});
@@ -43,15 +45,15 @@ function uploadFile (container, path, name, callback){
 
 	blobService.createBlockBlobFromLocalFile(container, name, path, function(error, result, response) {
 	  if (!error) {
-	    // file uploaded
-	    console.log('blockBlob created result: '.yellow + JSON.stringify(result,null,'\t'));
-	  	console.log('blockBlob created resp: '.yellow + JSON.stringify(response,null,'\t'));
+	    //*** file uploaded ***
+	    //console.log('blockblob created result: '+JSON.stringify(result,null,'\t'));
+	    //console.log('Azure Blob create response: '.yellow + JSON.stringify(response));
+	    console.log('SUCCESS Azure Blob upload: '.green + result.container + '/' + result.blob);
 
-	  	// https://elbulliscanner.blob.core.windows.net/2015-06-14/5511a1a8f20a6250693c8ff1.jpg
 	  	var fileUrl = 'https://elbulliscanner.blob.core.windows.net/'+result.container+'/'+result.blob;
-	  	console.log('BLOCKBLOB URL: '.green.bold + fileUrl);
+	  	console.log('BLOB URL: '.cyan.bold + fileUrl);
 	  	var data = {date: container, file: fileUrl};
-	  	
+
 	  	callback(null, data);
 
 	  } else {
@@ -59,7 +61,7 @@ function uploadFile (container, path, name, callback){
 	  	console.log('error creating blockBlob result: '.red + result);
 	  	console.log('error creating blockBlob resp: '.red + JSON.stringify(response,null,'\t'));
 
-	  	callback(error)
+	  	callback(error);
 	  }
 	});
 }

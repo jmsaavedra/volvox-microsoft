@@ -3,25 +3,28 @@
 * VOLVOX x MICROSOFT
 * ==============================================
 *
-*  WATCHER APP
+*  WATCHER.JS
+*	- creates file watcher on global.FOLDER_TO_WATCH
+*	- when file is CREATED:
+*		- UPLOAD to Azure with AzureFiler
+*		- HTTP POST {fileURL, date} to global.BULLI_SERVER
+*
 *
 */
 
-
-var watchr = require('watchr');
-var azureFiler = require('./azureFiler');
-var path = require('path');
-var http = require('http');
-var querystring = require('querystring');
-
-// var fs = require('fs');
+var watchr 		= require('watchr'),
+	azureFiler 	= require('./azureFiler'),
+	path 		= require('path'),
+	http 		= require('http'),
+	querystring = require('querystring');
 
 
+/***
+/* INIT Folder Watcher 
+*/
 module.exports.init = function(){
-
-	console.log('WATCHER INIT'.gray);
 	watchr.watch({
-	    paths: ['/Users/jmsaavedra/Desktop/____watcher-test'],
+	    paths: [global.FOLDER_TO_WATCH],
 	    listeners: {
 	        log: function(logLevel){
 	            //console.log('a log message occured:', arguments);
@@ -31,37 +34,38 @@ module.exports.init = function(){
 	        },
 	        watching: function(err,watcherInstance,isWatching){
 	            if (err) {
-	                console.log("watching the path " + watcherInstance.path + " failed with error", err);
+	                console.log("watching the path " + watcherInstance.path + " failed with error: ".red.bold, err);
 	            } else {
-	                console.log("watching the path " + watcherInstance.path + " completed");
+	                console.log("INIT watching the path: ".green.bold + watcherInstance.path + " SUCCESS".green.bold);
 	            }
 	        },
 	        change: function(changeType,filePath,fileCurrentStat,filePreviousStat){
-	        	console.log('------ FOLDER CHANGED ------'.green.bold);
-	            console.log('a change event occured:',arguments);
+	        	console.log('\n-------------- FOLDER CHANGED ----------------'.gray.bold);
+	            // console.log('verbose change event info: '+arguments);
 	            if (arguments[0] === 'create'){
 	            	
 	            	/***
 	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER
 	            	*/
-	            	console.log('>> new file created: '.blue);
+	            	console.log('>> new local file created: '.cyan);
 	            	console.log('\t'+arguments[1]);
 	            	var fname = path.basename(arguments[1]);
 
-								azureFiler.uploadImage(arguments[1], fname, function(e, data){
-									if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
-									console.log('SUCCESS upload Scan: '+JSON.stringify(data));
+					azureFiler.uploadImage(arguments[1], fname, function(e, data){
+						if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
+						if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
+						
+						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
-									// send this data to the routing server to save to DB:
-									postData(data);
-								});
-	            } 
+						//*** send this data to the routing server to save to DB: ***//
+						postData(data);
+					});
+	            }
 
 	            else if (arguments[0] === 'delete'){
-	           		/***
-	            	/* FILE HAS BEEN DELETED
-	            	*/
-	            	console.log('>> file deleted'.red);
+
+	            	/* FILE HAS BEEN DELETED */	            	
+	            	console.log('>> file deleted: '.red+filePath);
 	            }
 	        }
 	    },
@@ -81,35 +85,50 @@ module.exports.init = function(){
 	});
 };
 
+
+/***
+/* POST data object to ElBulli Server
+*/
 var postData = function(data){
 
- var post_data = querystring.stringify({
-      'date' : data.date,
-      'file': data.file
-  });
-   var post_options = {
-      host: 'elbulliweb.cloudapp.net',
-      port: '8080',
-      path: '/scanner/new',
-      method: 'POST',
-      headers: {
+	var post_data = querystring.stringify({
+    	'date' : data.date,
+		'file': data.file
+	});
+
+   	var post_options = {
+      	host: global.BULLI_SERVER.host,
+	    port: global.BULLI_SERVER.port,
+      	path: global.BULLI_SERVER.path,
+      
+      	method: 'POST',
+      	headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Content-Length': post_data.length
-      }
-  };
+      	}
+  	};
 
-  // Set up the request
-  var post_req = http.request(post_options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-          console.log('Response: ' + chunk);
-      });
-  });
+	/* Set up the request */
+	var post_req = http.request(post_options, function(res) {
+	  	res.setEncoding('utf8');
+	  	res.on('data', function (chunk) {
+	  		console.log('Server Response: '.yellow + chunk);
+	  		if(JSON.parse(chunk).data !== true)
+	  			return console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
+	  		
+	  		console.log('SUCCESS HTTP POST to El Bulli Server.'.green);	
+	  		console.log('-----------------------------------------------\n'.gray);	
+	  	});
+	});
 
-  // post the data
-  post_req.write(post_data);
-  post_req.end();
-}
+	post_req.on('error', function(e) {
+	  return console.log('>>! ERROR with POST request: '.red + e.message);
+	});
+
+	// execute post
+	post_req.write(post_data);
+	post_req.end();
+};
 
 
 
