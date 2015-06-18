@@ -1,17 +1,17 @@
 'use strict';
 
-describe('Controller: PhotosCtrl', function () {
+describe('Controller: VideoCtrl', function () {
 
   // load the controller's module
   beforeEach(module('elbulliApp'));
 
-  var PhotosCtrl,
+  var VideoCtrl,
     scope;
 
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    PhotosCtrl = $controller('PhotosCtrl', {
+    VideoCtrl = $controller('VideoCtrl', {
       $scope: scope
     });
   }));

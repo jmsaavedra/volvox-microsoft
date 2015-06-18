@@ -1,12 +1,7 @@
 {
   "name": "elbulli",
   "version": "0.0.0",
-  "dependencies": {
-    "body-parser": "^1.13.0",
-    "errorhandler": "^1.4.0",
-    "express": "^4.12.4",
-    "method-override": "^2.3.3"
-  },
+  "dependencies": {},
   "repository": {},
   "devDependencies": {
     "grunt": "^0.4.5",

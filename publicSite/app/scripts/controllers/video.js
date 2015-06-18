@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name elbulliApp.controller:VideosCtrl
+ * @name elbulliApp.controller:VideoCtrl
  * @description
- * # VideosCtrl
+ * # VideoCtrl
  * Controller of the elbulliApp
  */
 angular.module('elbulliApp')
-  .controller('VideosCtrl', function ($scope) {
+  .controller('VideoCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',

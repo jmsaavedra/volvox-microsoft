@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name elbulliApp.controller:PhotosCtrl
+ * @name elbulliApp.controller:PhotoCtrl
  * @description
- * # PhotosCtrl
+ * # PhotoCtrl
  * Controller of the elbulliApp
  */
 angular.module('elbulliApp')
-  .controller('PhotosCtrl', function ($scope) {
+  .controller('PhotoCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',
       'AngularJS',
