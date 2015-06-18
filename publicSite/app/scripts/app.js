@@ -17,6 +17,7 @@ angular
     'anim-in-out',
     'angularMoment',
     'pascalprecht.translate',
+    'app.data',
     'app.router',
     'app.configs',
     'app.services',
@@ -25,7 +26,7 @@ angular
   .run(function($rootScope, $translate) {
     ////////////////
     // Run global functions
-
+    $rootScope.allowSlide = true;
     // Toggle Language
     $rootScope.changeLanguage = function(lang) {
       // console.log(lang);

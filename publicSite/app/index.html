@@ -53,7 +53,7 @@
     </div>
 
     <!-- ui-view -->
-    <div ui-view class="anim-in-out anim-slide-left" data-anim-speed="500" data-anim-sync="true"></div>
+    <div ui-view ng-class="{'anim-slide-left': allowSlide, 'anim-in-out': allowSlide}" data-anim-speed="500" data-anim-sync="true"></div>
 
     <footer class="footer sticky-footer">
       <div class="container">
@@ -94,6 +94,7 @@
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
+        <script src="scripts/data.js"></script>
         <script src="scripts/router.js"></script>
         <script src="scripts/configs.js"></script>
         <script src="scripts/services.js"></script>
