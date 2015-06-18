@@ -5,6 +5,30 @@ var moment = require('moment');
 var Schema = mongoose.Schema;
 
 // create a schema
+var photoSchema = new Schema({
+  date: {
+    type: String,
+    default: moment().format('YYYY-MM-DD')
+  },
+  images: [String],
+  complete: {
+    type: Boolean,
+    default: true
+  },
+  show: {
+    type: Boolean,
+    default: true
+  },
+  created_at: {
+    type: Date,
+    default: Date.now()
+  },
+  updated_at: {
+    type: Date,
+    default: Date.now()
+  }
+});
+
 var videoSchema = new Schema({
   vimeo_final: String,
   vimeo_individuals: {
@@ -61,6 +85,7 @@ var scanSchema = new Schema({
 
 // make this available to our users in our Node applications
 module.exports = {
+  Photo: mongoose.model('Photo', photoSchema),
   Video: mongoose.model('Video', videoSchema),
   Scan: mongoose.model('Scan', scanSchema)
 };

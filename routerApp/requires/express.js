@@ -30,6 +30,37 @@ module.exports = function(db, Model, vimeo) {
 
   // Routes
   app
+    .post('/photo/new', function(req, res) {
+      console.log(req.body);
+      // Save to Mongo
+      /*
+        Upsert the new scanned image
+      */
+      Model.Photo.findOneAndUpdate({
+        date: req.body.date
+      }, {
+        $addToSet: {
+          images: req.body.file
+        },
+        updated_at: new Date().getTime()
+      }, {
+        upsert: true
+      }, function(err) {
+        if (err) {
+          console.log(chalk.red(err));
+          res.json({
+            data: false
+          });
+          // Sending Fail Email
+        } else {
+          res.json({
+            data: true
+          });
+          // Sending Success Email
+        }
+
+      })
+    })
     .post('/timelapse/new', function(req, res) {
       console.log(req.body);
       // Save to Mongo
@@ -93,12 +124,12 @@ module.exports = function(db, Model, vimeo) {
   .get('/timelapse/month/:month', function(req, res) {
     var month = req.params.month; // 0-11
   })
-  .get('/timelapse/date/:date', function(req, res) {
-    var date = req.params.date; // YYYY-MM-DD
-  })
-  .get('/scanner', function(req, res) {
+    .get('/timelapse/date/:date', function(req, res) {
+      var date = req.params.date; // YYYY-MM-DD
+    })
+    .get('/scanner', function(req, res) {
 
-  })
+    })
   // For getting VIMEO info
   .get('/vimeo/monthly', function(req, res) {
     // /vimeo/monthly?month=january

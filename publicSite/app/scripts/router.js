@@ -30,12 +30,12 @@ angular
         controller: 'AboutCtrl'
       })
       .state('video', {
-        url: '/video',
+        url: '/video/:month/:day',
         templateUrl: 'views/video.html',
         controller: 'VideoCtrl'
       })
       .state('photo', {
-        url: '/photo',
+        url: '/photo/:month/:day',
         templateUrl: 'views/photo.html',
         controller: 'PhotoCtrl'
       });

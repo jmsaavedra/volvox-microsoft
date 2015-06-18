@@ -12,6 +12,7 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="bower_components/angular-ui-router-anim-in-out/css/anim-in-out.css">
     <!-- endbuild -->
   </head>
   <body ng-app="elbulliApp">
@@ -22,37 +23,46 @@
     <!-- Add your site or application content here -->
     
     <!-- Navbar -->
-    <nav>
-      Nav
-      <button ng-click="changeLanguage('en')">EN</button>
-      <button ng-click="changeLanguage('es')">ES</button>
-    </nav>
 
-    <div class="container">
-      <div class="navbar">
+    <div class="container" style="padding: 44px 15px 12px 15px;">
+      <div class="row">
         <!-- Left -->
-        <div class="pull-left">
-          <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="20">
+        <div class="col-xs-12 col-sm-3">
+          <a ui-sref="main">
+            <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="18">
+          </a>
         </div>
         <!-- Right -->
-        <div class="pull-right">
+        <div class="col-xs-12 col-sm-9 text-right">
           <ul class="nav-right list-inline">
-            <li>ABOUT</li>
-            <li>VIDEO GALLERY</li>
-            <li>SCAN GALLERY</li>
-          </ul>
-          <ul class="list-inline">
+            <li>
+              <a ui-sref-active="menu-active" ui-sref="about" translate="NAV.ABOUT"></a>
+            </li>
+            <li>
+              <a ui-sref-active="menu-active" ui-sref="video" translate="NAV.VID"></a>
+            </li>
+            <li>
+              <a ui-sref-active="menu-active" ui-sref="photo"  translate="NAV.SCAN"></a>
+            </li>
+            <li>|</li>
             <button ng-click="changeLanguage('en')">EN</button>
-      <button ng-click="changeLanguage('es')">ES</button>
+            <button ng-click="changeLanguage('es')">ES</button>
           </ul>
         </div>
       </div>
     </div>
 
     <!-- ui-view -->
-    <div ui-view></div>
+    <div ui-view class="anim-in-out anim-slide-left" data-anim-speed="500" data-anim-sync="true"></div>
 
-    <div class="footer"></div>
+    <footer class="footer sticky-footer">
+      <div class="container">
+        <div class="col-xs-12 text-right">
+          <span translate="POWERED"></span>
+          <img src="images/brand/ms_logo.png" alt="Microsoft" height="30" style="vertical-align: middle;">
+        </div>
+      </div>
+    </footer>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
      <script>
@@ -84,14 +94,14 @@
 
         <!-- build:js({.tmp,app}) scripts/scripts.js -->
         <script src="scripts/app.js"></script>
+        <script src="scripts/router.js"></script>
+        <script src="scripts/configs.js"></script>
+        <script src="scripts/services.js"></script>
+        <script src="scripts/filters.js"></script>
         <script src="scripts/controllers/main.js"></script>
         <script src="scripts/controllers/video.js"></script>
         <script src="scripts/controllers/photo.js"></script>
         <script src="scripts/controllers/about.js"></script>
         <!-- endbuild -->
-        <script src="scripts/router.js"></script>
-        <script src="scripts/configs.js"></script>
-        <script src="scripts/services.js"></script>
-        <script src="scripts/filters.js"></script>
 </body>
 </html>

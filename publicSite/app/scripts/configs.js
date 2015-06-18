@@ -11,16 +11,28 @@
 angular
   .module('app.configs', [])
   .config(function($translateProvider) {
-  	$translateProvider.useSanitizeValueStrategy('sanitize');
+    $translateProvider.useSanitizeValueStrategy('sanitize');
     // English
     $translateProvider.translations('en', {
-      MAIN_TITLE: 'ENGLISH',
-      MAIN_DESC: ''
+      MAIN_TITLE: 'Bienvenido al timelapse elBulliLab',
+      MAIN_DESC: 'La documentación de las multiples formas de trazar el proceso creativo en el elBullilab exige innovación. Para archivar el avance de este proyecto monumental, la fotografía del timelapse se integra con la programación de ultima generación para contar la historia de esta evolución en el tiempo cada día - 365 días con cuatro puntos de vistas, colocados de forma única. No te pierdas ni un momento de esta historia épica. ¡Ven y únete a nosotros en el mapeo del proceso creativo!',
+      POWERED: 'POWERED BY ',
+      NAV: {
+        ABOUT: 'ABOUT',
+        VID: 'VIDEO GALLERY',
+        SCAN: 'SCAN GALLERY'
+      }
     });
     // Spanish
     $translateProvider.translations('es', {
-      MAIN_TITLE: 'SPANISH',
-      MAIN_DESC: ''
+      MAIN_TITLE: 'Bienvenido al timelapse elBulliLab',
+      MAIN_DESC: 'La documentación de las multiples formas de trazar el proceso creativo en el elBullilab exige innovación. Para archivar el avance de este proyecto monumental, la fotografía del timelapse se integra con la programación de ultima generación para contar la historia de esta evolución en el tiempo cada día - 365 días con cuatro puntos de vistas, colocados de forma única. No te pierdas ni un momento de esta historia épica. ¡Ven y únete a nosotros en el mapeo del proceso creativo!',
+      POWERED: 'IMPULSADO POR ',
+      NAV: {
+        ABOUT: 'ACERCA DE',
+        VID: 'VIDEO GALERÍA',
+        SCAN: 'SCAN GALERÍA'
+      }
     });
     ///////////
     $translateProvider.preferredLanguage('en');

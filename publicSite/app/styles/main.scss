@@ -2,3 +2,45 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
 // bower:scss
 @import "bootstrap-sass-official/assets/stylesheets/_bootstrap.scss";
 // endbower
+
+// Global Overrides
+*, *:hover, *:visited, *:active {
+	text-decoration: none;
+}
+
+[ui-view] { 
+	width: 100%;
+	position: absolute; 
+}
+
+// Body
+html {
+	background: rgba(254,254,254,1);
+	background: -moz-radial-gradient(center, ellipse cover, rgba(254,254,254,1) 0%, rgba(226,226,226,1) 100%);
+	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(254,254,254,1)), color-stop(100%, rgba(226,226,226,1)));
+	background: -webkit-radial-gradient(center, ellipse cover, rgba(254,254,254,1) 0%, rgba(226,226,226,1) 100%);
+	background: -o-radial-gradient(center, ellipse cover, rgba(254,254,254,1) 0%, rgba(226,226,226,1) 100%);
+	background: -ms-radial-gradient(center, ellipse cover, rgba(254,254,254,1) 0%, rgba(226,226,226,1) 100%);
+	background: radial-gradient(ellipse at center, rgba(254,254,254,1) 0%, rgba(226,226,226,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefefe', endColorstr='#e2e2e2', GradientType=1 );
+}
+
+body {
+	background: none;
+}
+
+// Navbar
+.menu-active {
+	font-weight: 900;
+}
+
+// Footer
+.sticky-footer {
+	position: fixed;
+	bottom: 0;
+	height: 50px;
+	width: 100%;
+	z-index: 9;
+	background: rgba(255, 255, 255, 0.95);
+	padding-top: 12px;
+}
