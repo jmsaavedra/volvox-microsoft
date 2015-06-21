@@ -21,6 +21,10 @@ angular
         ABOUT: 'ABOUT',
         VID: 'VIDEO GALLERY',
         SCAN: 'SCAN GALLERY'
+      },
+      DIGEST: {
+        MONTH: 'Monthly Digest',
+        DAY: 'Daily Digest'
       }
     });
     // Spanish
@@ -32,6 +36,10 @@ angular
         ABOUT: 'ACERCA DE',
         VID: 'VIDEO GALERÍA',
         SCAN: 'SCAN GALERÍA'
+      },
+      DIGEST: {
+        MONTH: 'Recopilación mensual',
+        DAY: 'Resumen diario'
       }
     });
     ///////////

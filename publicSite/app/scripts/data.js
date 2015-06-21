@@ -15,7 +15,7 @@ angular
     $rootScope.months = [{
       month: 'august',
       image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('august 1 2015').unix() >= 0) ? true : false
+      isActive: (moment().unix() - moment('june 1 2015').unix() >= 0) ? true : false
     }, {
       month: 'september',
       image: 'http://placehold.it/300x300',

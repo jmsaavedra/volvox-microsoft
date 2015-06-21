@@ -29,10 +29,20 @@ angular
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl'
       })
-      .state('video', {
-        url: '/video/:month',
-        templateUrl: 'views/video.html',
-        controller: 'VideoCtrl'
+      .state('video_year', {
+        url: '/video_year',
+        templateUrl: 'views/video_year.html',
+        controller: 'VideoYearCtrl'
+      })
+      .state('video_month', {
+        url: '/video_month/:month',
+        templateUrl: 'views/video_month.html',
+        controller: 'VideoMonthCtrl'
+      })
+      .state('video_day', {
+        url: '/video_day/:month/:day',
+        templateUrl: 'views/video_day.html',
+        controller: 'VideoDayCtrl'
       })
       .state('photo', {
         url: '/photo/:month',

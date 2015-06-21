@@ -2,11 +2,8 @@
 	<div class="row">
 		<div class="col-sm-1 hidden-xs"></div>
 		<div class="col-xs-12 col-sm-10">
-			<div class="row" ng-if="currentMonth === ''">
-				<h4>Monthly Digest</h4>
-			</div>
-			<div class="row" ng-if="currentMonth !== ''">
-				<h4>Daily Digest: {{currentMonth | capitalize}}</h4>
+			<div class="row">
+				<h4 translate="DIGEST.MONTH">Monthly Digest</h4>
 			</div>
 			<div class="row gallery-grid">
 				<div class="col-md-2 col-xs-4">
@@ -15,8 +12,8 @@
 						<h2>2015</h2>
 					</article>
 				</div>
-				<div ng-repeat="month in months | limitFromTo:0:5" class="col-md-2 col-xs-4">
-					<a ng-click="disallowSlide()" ui-sref="video({year: '2015', month: month.month})" class="grid-content-container">
+				<div ng-repeat="month in months | limitFromTo:0:5" ng-class="{dim: month.isActive}" class="col-md-2 col-xs-4">
+					<a ng-click="disallowSlide()" ui-sref="video_month({month: month.month})" class="grid-content-container">
 						<img ng-src="{{month.image}}" width="100%" alt="month.month">
 					</a>
 				</div>
@@ -26,8 +23,8 @@
 						<h2>2016</h2>
 					</article>
 				</div>
-				<div ng-repeat="month in months | limitFromTo:5:12" class="col-md-2 col-xs-4">
-					<a ng-click="disallowSlide()" ui-sref="video({year: '2016', month: month.month})" class="grid-content-container">
+				<div ng-repeat="month in months | limitFromTo:5:12" ng-class="{dim: month.isActive}" class="col-md-2 col-xs-4">
+					<a ng-click="disallowSlide()" ui-sref="video_month({month: month.month})" class="grid-content-container">
 						<img ng-src="{{month.image}}" width="100%" alt="month.month">
 					</a>
 				</div>

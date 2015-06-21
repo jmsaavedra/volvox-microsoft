@@ -59,7 +59,7 @@ module.exports = function(db, Model, vimeo) {
           // Sending Success Email
         }
 
-      })
+      });
     })
     .post('/timelapse/new', function(req, res) {
       console.log(req.body);
@@ -72,7 +72,8 @@ module.exports = function(db, Model, vimeo) {
           cam3: req.body.individuals.cam3,
           cam4: req.body.individuals.cam4
         },
-        date: req.body.date
+        date: req.body.date,
+        updated_at: new Date().getTime()
       });
       new_video.save(function(err) {
         if (err) {
@@ -122,13 +123,64 @@ module.exports = function(db, Model, vimeo) {
     })
   // For getting the video and scans back to user
   .get('/timelapse/month/:month', function(req, res) {
-    var month = req.params.month; // 0-11
+    var month = req.params.month; // 01-12
+    console.log(month);
+    // Regexp
+    var r1 = /\d{4}\-/;
+    var r2 = /\-\d{2}/;
+    var r_final = new RegExp(r1.source + month + r2.source);
+    Model.Video.find({
+      date: {
+        $regex: r_final
+      }
+    }, function(err, result) {
+      console.warn(err);
+      // console.log(result);
+      res.json({
+        data: result
+      });
+    });
   })
     .get('/timelapse/date/:date', function(req, res) {
       var date = req.params.date; // YYYY-MM-DD
+      Model.Video.findOne({
+        date: date
+      }, function(err, result) {
+        console.warn(err);
+        res.json({
+          data: result
+        });
+      });
     })
-    .get('/scanner', function(req, res) {
-
+    .get('/scanner/month/:month', function(req, res) {
+      var month = req.params.month; // 01-12
+      console.log(month);
+      // Regexp
+      var r1 = /\d{4}\-/;
+      var r2 = /\-\d{2}/;
+      var r_final = new RegExp(r1.source + month + r2.source);
+      Model.Scan.find({
+        date: {
+          $regex: r_final
+        }
+      }, function(err, result) {
+        console.warn(err);
+        // console.log(result);
+        res.json({
+          data: result
+        });
+      });
+    })
+    .get('/scanner/date/:date', function(req, res) {
+      var date = req.params.date; // YYYY-MM-DD
+      Model.Scan.findOne({
+        date: date
+      }, function(err, result) {
+        console.warn(err);
+        res.json({
+          data: result
+        });
+      });
     })
   // For getting VIMEO info
   .get('/vimeo/monthly', function(req, res) {

@@ -9,29 +9,27 @@
  */
 var moment = moment || {};
 angular.module('elbulliApp')
-  .controller('VideoCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
+  .controller('VideoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
     $scope.disallowSlide = function() {
       $rootScope.allowSlide = false;
       $timeout(function() {
         $rootScope.allowSlide = true;
       }, 0);
     };
-    $scope.currentMonth = $stateParams.month;
-    console.log($scope.currentMonth);
-    /*********
-     * WHEN SHOWING YEAR VIEW
-     * $scope.currentMonth = ''
-     *********/
-    if ($scope.currentMonth == '') {
-
-    } else if (moment($scope.currentMonth, 'MMMM', true).isValid() == true) {
-      // Valid month input
-      console.log('valid');
-      // Executing show daily digest
-    } else {
-      // Invalid input
-      $state.go('video', {
-        month: ''
+  })
+  .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server) {
+    $scope.thisMonth = $stateParams.month;
+    // Get Videos for this month
+    Server.getMonthlyAsset(
+      $scope.thisMonth,
+      true,
+      function(result) {
+        $scope.videos = result;
+        console.log($scope.videos);
+      }, function(error) {
+        alert(error);
       });
-    }
+  })
+  .controller('VideoDayCtrl', function($scope, $rootScope) {
+
   });
