@@ -52,7 +52,8 @@ function Cameras(_cb){
 Cameras.prototype.takePhotos = takePhotos = function(_cb){
 
   var self=this;
-  var now = moment().format('YYYY-MM-DD_HH-mm-ss');
+  // var now = moment().format('YYYY-MM-DD_HH-mm-ss');
+  var now = moment().format('HH-mm-ss');
 
   async.each(this.cameras_, function(cam, cb){
     console.log("take picture on cam: "+JSON.stringify(cam));

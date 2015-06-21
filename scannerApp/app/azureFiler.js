@@ -52,7 +52,7 @@ function uploadFile (container, path, name, callback){
 
 	  	var fileUrl = 'https://elbulliscanner.blob.core.windows.net/'+result.container+'/'+result.blob;
 	  	console.log('BLOB URL: '.cyan.bold + fileUrl);
-	  	var data = {date: container, file: fileUrl};
+	  	var data = {date: container, file: fileUrl, type: 'scan'};
 
 	  	callback(null, data);
 

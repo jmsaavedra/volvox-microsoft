@@ -93,7 +93,8 @@ var postData = function(data){
 
 	var post_data = querystring.stringify({
     	'date' : data.date,
-		'file': data.file
+		'file' : data.file,
+		'type' : data.type
 	});
 
    	var post_options = {
