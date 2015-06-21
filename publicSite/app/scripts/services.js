@@ -35,5 +35,20 @@ angular
       });
   };
 
+  service.getAssetsFromDate = function(dateString, isVideo, ok, fail) {
+    var url = (isVideo) ? 'http://elbulliweb.cloudapp.net:8080/timelapse/date/' : 'http://elbulliweb.cloudapp.net:8080/scanner/date/';
+    $http.get(url + dateString)
+      .success(function(result) {
+        if (ok) {
+          ok(result);
+        }
+      })
+      .error(function(err) {
+        if (fail) {
+          fail(err);
+        }
+      });
+  };
+
   return service;
 });

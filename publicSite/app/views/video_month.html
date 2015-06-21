@@ -7,8 +7,8 @@
 			</div>
 			<div class="row gallery-grid">
 				<div ng-repeat="video in videos" class="col-md-2 col-xs-4">
-					<a ng-click="disallowSlide()" ui-sref="video_day({month: current.month, day: current.day})" class="grid-content-container">
-						<img ng-src="{{month.image}}" width="100%" alt="month.month">
+					<a ng-click="disallowSlide()" ui-sref="video_day({date: video.date})" class="grid-content-container">
+						<img ng-src="{{video.img}}" width="100%" alt="Video Thumbnail">
 					</a>
 				</div>
 			</div>

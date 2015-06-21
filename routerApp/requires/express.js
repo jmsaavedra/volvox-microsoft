@@ -167,9 +167,14 @@ module.exports = function(db, Model, vimeo) {
         date: date
       }, function(err, result) {
         console.warn(err);
-        res.json({
-          data: result
+        // Get Quadrant Video Description
+        vimeo.getVideoDetailFromId(result.vimeo_final, function(desc_result) {
+          result.description = 'Some Description';
+          res.json({
+            data: result
+          });
         });
+
       });
     })
     .get('/scanner/month/:month', function(req, res) {

@@ -39,9 +39,9 @@ angular
         templateUrl: 'views/video_month.html',
         controller: 'VideoMonthCtrl'
       })
-      .state('video_day', {
-        url: '/video_day/:month/:day',
-        templateUrl: 'views/video_day.html',
+      .state('video_date', {
+        url: '/video_date/:month/:date',
+        templateUrl: 'views/video_date.html',
         controller: 'VideoDayCtrl'
       })
       .state('photo', {

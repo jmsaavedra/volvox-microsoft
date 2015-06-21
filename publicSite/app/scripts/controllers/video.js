@@ -31,6 +31,15 @@ angular.module('elbulliApp')
     //     alert(error);
     //   });
   })
-  .controller('VideoDayCtrl', function($scope, $rootScope) {
+  .controller('VideoDateCtrl', function($scope, $rootScope, $stateParams, Server) {
+    $scope.date = $stateParams.date;
+    // Get video from vimeo
+    Server.getAssetsFromDate($scope.date, true, function(result) {
+      // Success
+      $scope.data = result;
 
+    }, function(error) {
+      // Fail
+      alert('There is no data for this date.');
+    });
   });
