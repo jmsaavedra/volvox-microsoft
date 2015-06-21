@@ -1,18 +1,29 @@
 process.env.UV_THREADPOOL_SIZE = 72;
 
+/****
+*
+* VOLVOX x MICROSOFT
+* ==============================================
+*
+* Camera Controller and Photo Uploader Application
+*
+* - TODO: make photos save to correct folder inside of /images (by date)
+*
+*/
 
 /* GLOBALS */
-global.RAW_IMG_FOLDER   = __dirname+'/images';
+global.RAW_IMG_FOLDER   = __dirname+'/images-dl';
+global.SAVE_IMG_FOLDER   = __dirname+'/images-saved';
 global.AZURE_BLOB_ADDR  = 'https://elbulliphoto.blob.core.windows.net';
 global.STORAGE_ACCOUNT  = 'elbulliphoto';
 global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';
 global.BULLI_SERVER = {
   host: 'elbulliweb.cloudapp.net',
-  path: '/scanner/new',
+  path: '/photo/new',
   port: '8080'
 };
 
-var fs        = require('fs'),
+var fs        = require('graceful-fs'),
   http        = require('http'),
   path        = require('path'),
   colors      = require('colors'),
@@ -34,10 +45,13 @@ var fs        = require('fs'),
 
 /* check that images folder exists */
 if (!fs.existsSync(global.RAW_IMG_FOLDER)) fs.mkdirSync(global.RAW_IMG_FOLDER);
+if (!fs.existsSync(global.SAVE_IMG_FOLDER)) fs.mkdirSync(global.SAVE_IMG_FOLDER);
 
 /* Gulp Watcher */
 var watchr = require('watchr');
+var takeNumber = 0;
 var fileCounter = 0;
+
 watchr.watch({
   path: global.RAW_IMG_FOLDER,
   listener:  function(changeType,filePath,fileCurrentStat,filePreviousStat){
@@ -46,16 +60,16 @@ watchr.watch({
       console.log('File Added: '.green+filePath);
       var fileName = path.basename(filePath);
       imageProcessHandler(filePath, fileName, function(e){
-        console.log("fileCounter: "+fileCounter);
+        // console.log("fileCounter: "+fileCounter);
         fileCounter++;
         //console.log("cameras.cameras_.length: "+cameras.cameras_.length);
         if (fileCounter == cameras.cameras_.length){
           processingTake = false;
           fileCounter = 0;
-        }
+        } //else console.log('DID NOT TAKE ALL PHOTOS: fileCounter: '.red + fileCounter);
       });
     } else {
-      console.log('changeType: '+changeType+' filePath: '+filePath);
+      console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
     }
   }
 });
@@ -65,8 +79,8 @@ watchr.watch({
 var imageProcessHandler = function(imgPath, imgName, cb){
   console.log('UPLOADING IMAGE: '.cyan+imgPath);
   azureFiler.uploadImage(imgPath, imgName, function(e, data){
-    if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
-    if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
+    if(e) return console.log('ERROR uploading to Azure: '.red.bold+e);
+    if(!data) return console.log('NO DATA RETURNED when uploading to Azure: '.red.bold+e);
     
     console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
@@ -98,7 +112,8 @@ function snap(){
   
   if(!processingTake){
     processingTake = true;
-    console.log('Snap Photo! ');
+    takeNumber++;
+    console.log('\n------------------\n'.gray+'Snap Photo! '.green + '  ||  '.gray.bold+'Take #'.cyan+takeNumber);
     cameras.takePhotos(function(e){});
     processingTake = false;
     return true;// cb();
@@ -159,13 +174,13 @@ var postData = function(data){
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    if(e){
-      console.log("camera setup failed, restarting app.");
-      setTimeout(function(){
-        process.exit(1);  
-      }, 3000);
-    }
-    else {
+    //if(e){
+      //console.log("camera setup failed, restarting app.");
+      // setTimeout(function(){
+      //   process.exit(1);  
+      // }, 3000);
+    //}
+    //else {
       console.log("camera setup complete".green);
       setupComplete = true;
 
@@ -179,7 +194,7 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
         
         var photoInterval = setInterval(snap, 30000);
       }); 
-    }
+    //}
   });
 });
 /*** in case of socket enabled front-end ***/

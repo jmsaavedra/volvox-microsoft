@@ -10,6 +10,8 @@
 /* Includes and Azure Service */
 var moment    = require('moment');
 var azure     = require('azure-storage');
+var fs        = require('graceful-fs');
+var path      = require('path');
 var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
 
 
@@ -41,20 +43,23 @@ module.exports.uploadImage = function(filePath, fileName, cb){
   });
 };
 
-function uploadFile (container, path, name, callback){
+function uploadFile (container, fpath, name, callback){
 
-  blobService.createBlockBlobFromLocalFile(container, name, path, function(error, result, response) {
+  blobService.createBlockBlobFromLocalFile(container, name, fpath, function(error, result, response) {
     if (!error) {
       //*** file uploaded ***
       //console.log('blockblob created result: '+JSON.stringify(result,null,'\t'));
       //console.log('Azure Blob create response: '.yellow + JSON.stringify(response));
       console.log('SUCCESS Azure Blob upload: '.green + result.container + '/' + result.blob);
 
-      var fileUrl = global.AZURE_BLOB_ADDR+'/'+result.container+'/'+result.blob;
-      console.log('BLOB URL: '.cyan.bold + fileUrl);
-      var data = {date: container, file: fileUrl, type: 'photo'};
+      moveFile(container, fpath, name, function(e){
+        if(e) console.log('error on moveFile: '.red + e);
 
-      callback(null, data);
+        var fileUrl = global.AZURE_BLOB_ADDR+'/'+result.container+'/'+result.blob;
+        console.log('BLOB URL: '.cyan.bold + fileUrl);
+        var data = {date: container, file: fileUrl, type: 'photo'};
+        callback(null, data);
+      });
 
     } else {
       console.log('error creating blockBlob: '.red + error);
@@ -64,6 +69,26 @@ function uploadFile (container, path, name, callback){
       callback(error);
     }
   });
+}
+
+function moveFile(container, fpath, name, cb){
+  fs.exists(path.join(global.SAVE_IMG_FOLDER, container), function(exists){
+    if(exists){
+      // console.log('folder exists')
+      cutPasteFile(fpath, path.join(global.SAVE_IMG_FOLDER, container, name), cb);
+    } else {
+      console.log('folder NOT exist, creating now')
+       fs.mkdirSync(path.join(global.SAVE_IMG_FOLDER, container));
+       cutPasteFile(fpath, path.join(global.SAVE_IMG_FOLDER, container, name), cb);
+    }
+  });
+}
+
+function cutPasteFile(oldPath, newPath, _cb){
+  fs.rename(oldPath, newPath, function(e, stats){
+    if(e) console.log('error fs.rename: '.red + e);
+    _cb(e);
+  })
 }
 
 
