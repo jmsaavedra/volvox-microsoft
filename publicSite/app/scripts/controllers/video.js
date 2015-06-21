@@ -20,16 +20,16 @@ angular.module('elbulliApp')
   .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server) {
     $scope.thisMonth = $stateParams.month;
     // Get Videos for this month
-    Server.getMonthlyAsset(
-      $scope.thisMonth,
-      true,
-      function(result) {
-        $scope.videos = result;
-        // console.log($scope.videos);
-        
-      }, function(error) {
-        alert(error);
-      });
+    // Server.getMonthlyAsset(
+    //   $scope.thisMonth,
+    //   true,
+    //   function(result) {
+    //     $scope.videos = result;
+    //     // console.log($scope.videos);
+
+    //   }, function(error) {
+    //     alert(error);
+    //   });
   })
   .controller('VideoDayCtrl', function($scope, $rootScope) {
 

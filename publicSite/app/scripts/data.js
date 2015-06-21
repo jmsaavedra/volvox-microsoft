@@ -12,6 +12,7 @@ var moment = moment || {};
 angular
   .module('app.data', [])
   .run(function($rootScope) {
+
     $rootScope.months = [{
       month: 'august',
       image: 'http://placehold.it/300x300',
