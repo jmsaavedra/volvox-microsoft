@@ -64,18 +64,38 @@ module.exports = function(db, Model, vimeo) {
     .post('/timelapse/new', function(req, res) {
       console.log(req.body);
       // Save to Mongo
-      var new_video = new Model.Video({
-        vimeo_final: req.body.vimeo_final,
-        vimeo_individuals: {
-          cam1: req.body.individuals.cam1,
-          cam2: req.body.individuals.cam2,
-          cam3: req.body.individuals.cam3,
-          cam4: req.body.individuals.cam4
-        },
-        date: req.body.date,
-        updated_at: new Date().getTime()
-      });
-      new_video.save(function(err) {
+      // var new_video = new Model.Video({
+      //   vimeo_final: req.body.vimeo_final,
+      //   vimeo_individuals: {
+      //     cam1: req.body.individuals.cam1,
+      //     cam2: req.body.individuals.cam2,
+      //     cam3: req.body.individuals.cam3,
+      //     cam4: req.body.individuals.cam4
+      //   },
+      //   date: req.body.date,
+      //   updated_at: new Date().getTime()
+      // });
+      // new_video.save(function(err) {
+      //   if (err) {
+      //     console.log(chalk.red(err));
+      //     res.json({
+      //       data: false
+      //     });
+      //   } else {
+      //     console.log('new video saved successfully!');
+      //     res.json({
+      //       data: true
+      //     });
+      //   }
+      // });
+      /*
+        Upsert the new video object
+      */
+      Model.Video.findOneAndUpdate({
+        date: req.body.date
+      }, req.body, {
+        upsert: true
+      }, function(err) {
         if (err) {
           console.log(chalk.red(err));
           res.json({

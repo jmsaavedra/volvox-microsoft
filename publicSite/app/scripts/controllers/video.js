@@ -25,7 +25,8 @@ angular.module('elbulliApp')
       true,
       function(result) {
         $scope.videos = result;
-        console.log($scope.videos);
+        // console.log($scope.videos);
+        
       }, function(error) {
         alert(error);
       });
