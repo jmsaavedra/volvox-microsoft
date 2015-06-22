@@ -13,10 +13,11 @@
 */
 
 var watchr 		= require('watchr'),
-	azureFiler 	= require('./azureFiler'),
+	vimeo 		= require('./vimeo'),
 	path 		= require('path'),
 	http 		= require('http'),
-	querystring = require('querystring');
+	// querystring = require('querystring');
+	request = require('request');
 
 
 /***
@@ -51,10 +52,9 @@ module.exports.init = function(){
 	            	console.log('\t'+arguments[1]);
 	            	var fname = path.basename(arguments[1]);
 
-					azureFiler.uploadImage(arguments[1], fname, function(e, data){
-						if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
-						if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
-						
+					vimeo.uploadVideo(arguments[1], function(e, data){
+						if(e) return console.log('ERROR uploading to Vimeo: '.red.bold+e);
+						// if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
 						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
 						//*** send this data to the routing server to save to DB: ***//
@@ -90,46 +90,71 @@ module.exports.init = function(){
 /* POST data object to ElBulli Server
 */
 var postData = function(data){
-
-	var post_data = querystring.stringify({
-    	'date' : data.date,
-		'file' : data.file,
-		'type' : data.type
+	var postURL = global.BULLI_SERVER.host+':'+global.BULLI_SERVER.port+global.BULLI_SERVER.path;
+	console.log('posting to url: '+postURL);
+	request.post({
+		url: postURL,
+		body: data,
+		json: true
+	},
+	function(err,httpResponse,body){
+		if(err) console.log('postData err: '+err);
+		console.log('httpResponse: '+httpResponse);
+		console.log('body: '+body);
 	});
+}
+// var postData = function(data, video){
+// 	// var vid = querystring.stringify(video);
+// 	// var data = querystring.stringify(data);
+// 	// var post_data = jsonConcat(vid, data);
 
-   	var post_options = {
-      	host: global.BULLI_SERVER.host,
-	    port: global.BULLI_SERVER.port,
-      	path: global.BULLI_SERVER.path,
+// 	// var post_data = querystring.stringify({
+//  //    	'date' : data.date,
+// 	// 	'file' : data.file,
+// 	// 	'type' : data.type
+// 	// });
+
+//    	var post_options = {
+//       	host: global.BULLI_SERVER.host,
+// 	    port: global.BULLI_SERVER.port,
+//       	path: global.BULLI_SERVER.path,
       
-      	method: 'POST',
-      	headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': post_data.length
-      	}
-  	};
+//       	method: 'POST',
+//       	headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded',
+//           'Content-Length': post_data.length
+//       	}
+//   	};
 
-	/* Set up the request */
-	var post_req = http.request(post_options, function(res) {
-	  	res.setEncoding('utf8');
-	  	res.on('data', function (chunk) {
-	  		console.log('Server Response: '.yellow + chunk);
-	  		if(JSON.parse(chunk).data !== true)
-	  			return console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
+// 	/* Set up the request */
+// 	var post_req = http.request(post_options, function(res) {
+// 	  	res.setEncoding('utf8');
+// 	  	res.on('data', function (chunk) {
+// 	  		console.log('Server Response: '.yellow + chunk);
+// 	  		if(JSON.parse(chunk).data !== true)
+// 	  			return console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
 	  		
-	  		console.log('SUCCESS HTTP POST to El Bulli Server.'.green);	
-	  		console.log('-----------------------------------------------\n'.gray);	
-	  	});
-	});
+// 	  		console.log('SUCCESS HTTP POST to El Bulli Server.'.green);	
+// 	  		console.log('-----------------------------------------------\n'.gray);	
+// 	  	});
+// 	});
 
-	post_req.on('error', function(e) {
-	  return console.log('>>! ERROR with POST request: '.red + e.message);
-	});
+// 	post_req.on('error', function(e) {
+// 	  return console.log('>>! ERROR with POST request: '.red + e.message);
+// 	});
 
-	// execute post
-	post_req.write(post_data);
-	post_req.end();
-};
+// 	// execute post
+// 	post_req.write(post_data);
+// 	post_req.end();
+// };
+
+
+function jsonConcat(o1, o2) {
+ for (var key in o2) {
+  o1[key] = o2[key];
+ }
+ return o1;
+}
 
 
 

@@ -2,7 +2,7 @@
 var colors  = require('colors'),
   _         = require('lodash'),
   async     = require('async'),
-  fs        = require('fs'),
+  fs        = require('graceful-fs'),
   moment    = require('moment');
 
 // function Scheduler(){
@@ -14,13 +14,13 @@ module.exports.init = function(cameras, cb){
   console.log('hit scheduler.init!!');
   var photoInterval = setInterval(snap(cameras), 10000);
   cb();
-}
+};
 
 var snap = function(cams){
   cams.takePhotos(function(e){
     if(e) console.log('ERROR ON SNAP: '.red + e);
   });
-}
+};
 
 
 // /***
