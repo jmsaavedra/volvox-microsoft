@@ -8722,6 +8722,7 @@ html {
 /* line 29, ../../app/styles/main.scss */
 body {
   background: none;
+  overflow: hidden;
 }
 
 /* line 34, ../../app/styles/main.scss */
@@ -8754,4 +8755,9 @@ body {
   z-index: 9;
   background: rgba(255, 255, 255, 0.95);
   padding-top: 12px;
+}
+
+.dim {
+  opacity: 0.3;
+  pointer-events: none;
 }

@@ -30,12 +30,55 @@ var photoSchema = new Schema({
 });
 
 var videoSchema = new Schema({
-  vimeo_final: String,
-  vimeo_individuals: {
-    cam1: String,
-    cam2: String,
-    cam3: String,
-    cam4: String
+  vimeo_final: {
+    vimeo_video_id: {
+      type: String,
+      default: null
+    },
+    img: {
+      type: String,
+      default: null
+    }
+  },
+  cam0: {
+    vimeo_video_id: {
+      type: String,
+      default: null
+    },
+    img: {
+      type: String,
+      default: null
+    }
+  },
+  cam1: {
+    vimeo_video_id: {
+      type: String,
+      default: null
+    },
+    img: {
+      type: String,
+      default: null
+    }
+  },
+  cam2: {
+    vimeo_video_id: {
+      type: String,
+      default: null
+    },
+    img: {
+      type: String,
+      default: null
+    }
+  },
+  cam3: {
+    vimeo_video_id: {
+      type: String,
+      default: null
+    },
+    img: {
+      type: String,
+      default: null
+    }
   },
   date: {
     type: String,
