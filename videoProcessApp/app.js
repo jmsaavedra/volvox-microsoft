@@ -26,6 +26,8 @@ var port        = '8080'; //select a port for this server to run on
 //custom modules
 var watcher 	= require('./app/watcher').init();
 var vimeo     = require('./app/vimeo');
+var processManager = require('./app/manager');
+var videoProcess = require('./app/videoProcess');
 
 
 /****
@@ -68,5 +70,12 @@ http.createServer(app).listen(port, function(){
   console.log('  HTTP Express Server Running!  '.white.inverse);
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(listeningString.cyan.inverse);
-
+  // processManager.getCamImgs(function(e, imgs){
+  //   // console.log('images 0: '+JSON.stringify(imgs[0],null,'\t'));
+  //   processManager.processVideo(3, imgs[3], function(_e, vid){
+  //   });
+  // });
+  videoProcess.makeFinalVideo({}, function(e, finalVid){
+    console.log('finalVid: '+finalVid);
+  });
 });

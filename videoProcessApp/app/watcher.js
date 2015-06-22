@@ -102,7 +102,7 @@ var postData = function(data){
 		console.log('httpResponse: '+httpResponse);
 		console.log('body: '+body);
 	});
-}
+};
 // var postData = function(data, video){
 // 	// var vid = querystring.stringify(video);
 // 	// var data = querystring.stringify(data);
