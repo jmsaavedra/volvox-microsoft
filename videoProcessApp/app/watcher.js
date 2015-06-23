@@ -31,23 +31,19 @@ module.exports.init = function(){
 	            //console.log('a log message occured:', arguments);
 	        },
 	        error: function(err){
-	            console.log('an error occured:', err);
+	            console.log('File watch error occured: '.red.bold, err);
 	        },
 	        watching: function(err,watcherInstance,isWatching){
-	            if (err) {
-	                console.log("watching the path " + watcherInstance.path + " failed with error: ".red.bold, err);
-	            } else {
-	                console.log("INIT watching the path: ".green.bold + watcherInstance.path + " SUCCESS".green.bold);
-	            }
+	        	
+	            if (err) console.log("ERROR watching the path ".red.bold + watcherInstance.path + " failed, err: ".red.bold, err);
+	            //else console.log("INIT watching the path: ".green.bold + watcherInstance.path + " SUCCESS".green.bold);
 	        },
 	        change: function(changeType,filePath,fileCurrentStat,filePreviousStat){
 	        	console.log('\n-------------- FOLDER CHANGED ----------------'.gray.bold);
 	            // console.log('verbose change event info: '+arguments);
 	            if (arguments[0] === 'create'){
 	            	
-	            	/***
-	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER
-	            	*/
+	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER */
 	            	console.log('>> new local file created: '.cyan);
 	            	console.log('\t'+arguments[1]);
 	            	var fname = path.basename(arguments[1]);
@@ -57,24 +53,25 @@ module.exports.init = function(){
 						// if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
 						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
-						//*** send this data to the routing server to save to DB: ***//
+						// send this data to the routing server to save to DB:
 						postData(data);
 					});
-	            }
 
-	            else if (arguments[0] === 'delete'){
+	            } else if (arguments[0] === 'delete'){
 
 	            	/* FILE HAS BEEN DELETED */	            	
-	            	console.log('>> file deleted: '.red+filePath);
+	            	console.log('>> file removed: '.yellow+filePath);
 	            }
 	        }
 	    },
 	    next: function(err,watchers){
+
 	        if (err) {
 	            return console.log("watching everything failed with error", err);
-	        } else {
-	            // console.log('watching everything completed', watchers);
-	            console.log('------- watching inited --------'.gray.inverse);
+	        } else if (watchers.length<1){
+            	console.log("Watching the path ".red.bold + global.FOLDER_TO_WATCH + " FAILED.".red.bold, " Check folder exists?");
+            } else {
+	            console.log('   File Watcher inited    :::   '.green.inverse, global.FOLDER_TO_WATCH );
 	        }
 	 
 	        // Close watchers after 60 seconds 

@@ -13,7 +13,7 @@ process.env.UV_THREADPOOL_SIZE = 72;
 
 /* GLOBALS */
 global.RAW_IMG_FOLDER   = __dirname+'/images-dl';
-global.SAVE_IMG_FOLDER   = __dirname+'/images-saved';
+global.SAVE_IMG_FOLDER   = '/Users/jmsaavedra/Desktop/images-saved/';
 global.AZURE_BLOB_ADDR  = 'https://elbulliphoto.blob.core.windows.net';
 global.STORAGE_ACCOUNT  = 'elbulliphoto';
 global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';

@@ -9,14 +9,22 @@
 
 //TODO: move all of these credentials to secure (NOT COMMITTED TO GITHUB) file
 
-global.STORAGE_ACCOUNT = 'elbulliscanner';
-global.STORAGE_KEY = 'bmZLz1PPrcwj48gl7fLxEk4r+I1qqQEZpPA7ng2QV9sgY/VqPcvkWiFeMUZn142TXu92qH3tPSJwfvQair8PqA==';
-global.FOLDER_TO_WATCH = '/Users/jmsaavedra/Desktop/____watcher-test';
-global.BULLI_SERVER = {
-  host: 'http://elbulliweb.cloudapp.net',
-  path: '/timelapse/new',
-  port: '8080'
-};
+//AZURE CREDENTIALS
+global.STORAGE_ACCOUNT  = 'elbulliphoto';
+global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';
+
+//VIMEO CREDENTIALS
+global.VIMEO_CLIENT_ID = '703165f789ba78ad4e2566dcd65113df4e0e4b70';
+global.VIMEO_CLIENT_SECRET = 'S7CherScJPSuuC4Z3fFBCbvBM5/BUuJ3UQvsgIa3DmNXbCY9Qw4qb9dOSMJsfXJCmEtOthny+m8eNGzbzUEhRpNue8VDCmGfKs8fAJEhPvcLkkjUeJPjBYu9/PnzVkN4';
+global.VIMEO_ACCESS_TOKEN = '0e916bf3af2e06f8eb82b5f87ee2e445';
+
+//FOLDER GLOBALS
+global.RAW_IMGS_PATH    = '/Users/jmsaavedra/Desktop/images-saved/'; //raw camera images
+global.PROCESS_FOLDER   = '/Users/jmsaavedra/Desktop/process';       //folder where we'll store stuff as it's created
+global.FOLDER_TO_WATCH  = '/Users/jmsaavedra/Desktop/finalvids';     //will upload any video that goes in here to vimeo
+global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net',  //our server to update the DB with data, video links, etc
+                            path: '/timelapse/new',
+                            port: '8080' };
 
 var express     = require('express');
 var colors      = require('colors');
@@ -24,10 +32,10 @@ var http        = require('http');
 var port        = '8080'; //select a port for this server to run on
 
 //custom modules
-var watcher 	= require('./app/watcher').init();
-var vimeo     = require('./app/vimeo');
+var watcher 	     = require('./app/watcher').init();
+var vimeo          = require('./app/vimeo');
 var processManager = require('./app/manager');
-var videoProcess = require('./app/videoProcess');
+var vidRenderer    = require('./app/videoRenderer');
 
 
 /****
@@ -58,6 +66,20 @@ app.get('/test', function(req, res) {
 	// });
 });
 
+app.get('/start', function(req, res){
+
+  var date = '2015-06-23';
+
+  processManager.beginCameraVideos(date, function(e, cameraVideos){
+      if(e) console.log('error: '.red+e);
+      console.log('finished procesing individual videos: '.green);
+      console.log(JSON.stringify(cameraVideos, null, '\t'));
+      vidRenderer.makeFinalVideo(cameraVideos, function(e, finalVidPath){
+        console.log('Finished Final Render:'.green.inverse, finalVidPath);
+      });
+    });
+    res.send('started daily process.');
+});
 
 
 /****
@@ -67,15 +89,9 @@ app.get('/test', function(req, res) {
 */
 http.createServer(app).listen(port, function(){
   console.log();
-  console.log('  HTTP Express Server Running!  '.white.inverse);
+  console.log('  Video Process Server Booting  '.white.bold.inverse);
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(listeningString.cyan.inverse);
-  // processManager.getCamImgs(function(e, imgs){
-  //   // console.log('images 0: '+JSON.stringify(imgs[0],null,'\t'));
-  //   processManager.processVideo(3, imgs[3], function(_e, vid){
-  //   });
-  // });
-  videoProcess.makeFinalVideo({}, function(e, finalVid){
-    console.log('finalVid: '+finalVid);
-  });
+
+
 });

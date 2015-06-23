@@ -8,10 +8,8 @@ var path = require('path');
 var moment    = require('moment');
 var Vimeo = require('vimeo').Vimeo;
 // https://github.com/vimeo/vimeo.js
-var CLIENT_ID = '703165f789ba78ad4e2566dcd65113df4e0e4b70';
-var CLIENT_SECRET = 'S7CherScJPSuuC4Z3fFBCbvBM5/BUuJ3UQvsgIa3DmNXbCY9Qw4qb9dOSMJsfXJCmEtOthny+m8eNGzbzUEhRpNue8VDCmGfKs8fAJEhPvcLkkjUeJPjBYu9/PnzVkN4';
-var ACCESS_TOKEN = '0e916bf3af2e06f8eb82b5f87ee2e445';
-var lib = new Vimeo(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN);
+
+var lib = new Vimeo(global.VIMEO_CLIENT_ID, global.VIMEO_CLIENT_SECRET, global.VIMEO_ACCESS_TOKEN);
 
 // Export
 var vimeoApi = {

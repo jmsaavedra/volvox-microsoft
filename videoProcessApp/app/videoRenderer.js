@@ -12,7 +12,6 @@ var gm 		= require('gm'),
 	path 	= require('path'),
 	http 	= require('http'),
 	fs 		= require('graceful-fs'),
-	mkdirp  = require('mkdirp');
 	_ 		= require('underscore'),
 	async 	= require('async');
 		
@@ -22,52 +21,55 @@ var gm 		= require('gm'),
 
 var Process = {
 
-	makeVideo: function(camId, imgs, callb){
-		var thisCamFolder = path.join(path.dirname(imgs[0]), camId.toString());
-		var thisCamImgFolder = path.join(thisCamFolder, 'imgs');
-		mkdirp.sync(thisCamImgFolder);
+	makeSingleCameraVideo: function(date, camId, imgs, callb){
+
+		var todaysProcessFolder = path.join(global.PROCESS_FOLDER, date);
+		var thisCamFolder = path.join(todaysProcessFolder, camId.toString());
+		// var thisCamImgFolder = path.join(thisCamFolder, 'imgs');
+		var videoOutputFilePath = path.join(todaysProcessFolder, 'camera_'+camId.toString()+'.mp4');
 		
 		var imgsToUse = [];
-
-		console.log('making video with: '.cyan+JSON.stringify(imgs,null,'\t'));
-		var count = 0; 
-		async.eachSeries(imgs, function(img, cb){
-			copyFile(img, path.join(thisCamImgFolder, 'frame'+count.toString()+'.jpg'), function(e, path){
-				count++;
-				cb();
-			});
-
-		}, function(e){
-			var videoOutputFile = path.join(thisCamFolder, 'output_cam_'+camId.toString()+'.mp4');
+		console.log('making video camID: '.cyan+camId);
+		console.log('making video with '.cyan+imgs.length+' images');
+		console.log('video file path: '.cyan+videoOutputFilePath);
+		
+		fs.exists(videoOutputFilePath, function(exists){
+			if(exists) //TODO: || hard-redo setting
+				return callb(null, videoOutputFilePath);
+			var progressCt = -1;
 			ffmpeg()
-				.addInput(path.join(thisCamImgFolder, 'frame%01d.jpg').toString())
+				.addInput(path.join(thisCamFolder, 'frame-%01d.jpg').toString())
 				// .addInput('/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/0/imgs/frame%01d.jpg')
-				.output(videoOutputFile)
+				.output(videoOutputFilePath)
 				.outputOptions([
 					'-framerate 12'
 				])
 				.on('error', function(err) {
 					console.log('An error occurred: ' + err.message);
+					callb(err.message);
 				})
 				.on('progress', function(progress) {
-    				console.log('Processing: ' + Math.round(progress.percent) + '% done');
-  				})
+					var currProgress = Math.round(progress.percent*1.1);
+					if(currProgress != progressCt){
+						console.log('Processing '.gray,' camera_'+camId+'.mp4 ',': '.gray + currProgress + '% done');
+						progressCt = currProgress;
+					}
+				})
 				.on('end', function() {
 				    console.log('Merging finished !');
-				    callb(null, videoOutputFile);
-				}).run();
-		});		
+				    callb(null, videoOutputFilePath);
+				})
+			.run();
+		});
 	},
 
-	makeFinalVideo: function(_vids, callback){
-		var outpath = "/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/_final.mp4";
-		var vids = [
-			"/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/0/output_cam_0.mp4",
-			"/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/1/output_cam_1.mp4",
-			"/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/2/output_cam_2.mp4",
-			"/Users/jmsaavedra/Documents/volvox-microsoft/cameraApp/images-saved/2015-06-21/3/output_cam_3.mp4"
-		];
+	makeFinalVideo: function(vids, callback){
 
+		/* RENDER THE FINAL COMBINED VIDEO */
+		var outpath = path.join(path.dirname(vids[0]), "combinedFinal.mp4"); //same dir as cam vids
+		console.log('Rendering final combined video: '.cyan+outpath);
+
+		var progressCt = -1;
 		var proc = ffmpeg(vids[0])
 		    .input(vids[1])
 		    .input(vids[2])
@@ -89,29 +91,23 @@ var Process = {
 		    //])
 		    .output(outpath)
 		    .on('end', function() {
-		      console.log('files have been merged succesfully');
 		      callback(null,outpath);
 		    })
 			.on('progress', function(progress) {
-				console.log('Processing: ' + Math.round(progress.percent) + '% done');
+				var currProgress = Math.round(progress.percent*1.1);
+				if(currProgress != progressCt){
+					console.log('Processing'.gray,'combinedFinal.mp4',':'.gray, currProgress+'% done');
+					progressCt = currProgress;
+				}
 			})
 		    .on('error', function(err) {
 		      console.log('an error happened: ' + err.message);
-		    }).run();
-		    // .mergeToFile(outPath);
+		    })
+		.run();
 	}
 };
 
-function copyFile(oldPath, newPath, _cb){
-	fs.exists(newPath, function(exists){
-		if(!exists){
-			fs.link(oldPath, newPath, function(e, stats){
-				if(e) console.log('error fs.link: '.red + e);
-				_cb(e);
-			});
-		} else _cb(null);
-	});
-}
+
 
 function cutPasteFile(oldPath, newPath, _cb){
   fs.rename(oldPath, newPath, function(e, stats){
