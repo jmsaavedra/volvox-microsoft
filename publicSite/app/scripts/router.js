@@ -30,17 +30,17 @@ angular
         controller: 'AboutCtrl'
       })
       .state('video_year', {
-        url: '/video_year',
+        url: '/video',
         templateUrl: 'views/video_year.html',
         controller: 'VideoYearCtrl'
       })
       .state('video_month', {
-        url: '/video_month/:month',
+        url: '/video/{year:2015|2016}/{month:[0-9]}',
         templateUrl: 'views/video_month.html',
         controller: 'VideoMonthCtrl'
       })
-      .state('video_date', {
-        url: '/video_date/:month/:date',
+      .state('video_day', {
+        url: '/video/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
         templateUrl: 'views/video_date.html',
         controller: 'VideoDayCtrl'
       })
