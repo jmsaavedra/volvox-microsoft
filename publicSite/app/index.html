@@ -23,39 +23,36 @@
 
     <!-- Add your site or application content here -->
     
-    <!-- Navbar -->
-    <div id="nav-main">
-      <div class="container" style="padding: 44px 15px 12px 15px;">
-        <div class="row">
-          <!-- Left -->
-          <div class="col-xs-12 col-sm-3">
-            <a ui-sref="main">
-              <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="18">
-            </a>
-          </div>
-          <!-- Right -->
-          <div class="col-xs-12 col-sm-9 text-right">
-            <ul class="nav-right list-inline">
-              <li>
-                <a ui-sref-active="menu-active" ui-sref="about" translate="NAV.ABOUT"></a>
-              </li>
-              <li>
-                <a ui-sref-active="menu-active" ui-sref="video_year" translate="NAV.VID"></a>
-              </li>
-              <li>
-                <a ui-sref-active="menu-active" ui-sref="photo"  translate="NAV.SCAN"></a>
-              </li>
-              <li>|</li>
-              <button ng-click="changeLanguage('en')">EN</button>
-              <button ng-click="changeLanguage('es')">ES</button>
-            </ul>
-          </div>
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a ui-sref="main" class="navbar-brand">
+            <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="18">
+          </a>
         </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a ui-sref-active="menu-active" ui-sref="about" translate="NAV.ABOUT"></a></li>
+            <li><a ui-sref-active="menu-active" ui-sref="video_year" translate="NAV.VID"></a></li>
+            <li><a ui-sref-active="menu-active" ui-sref="photo"  translate="NAV.SCAN"></a></li>
+          </ul>
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a class="btn-link" ng-click="changeLanguage('en')">EN</a></li>
+            <li><a class="btn-link" ng-click="changeLanguage('es')">ES</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
       </div>
-    </div>
+    </nav>
 
     <!-- ui-view -->
-    <div ui-view ng-class="{'anim-slide-left': allowSlide, 'anim-in-out': allowSlide}" data-anim-speed="500" data-anim-sync="true"></div>
+    <div ui-view></div>
 
     <footer class="footer sticky-footer">
       <div class="container">
@@ -91,6 +88,7 @@
     <script src="bower_components/angular-translate/angular-translate.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-ui-router-anim-in-out/anim-in-out.js"></script>
+    <script src="bower_components/angular-scroll/angular-scroll.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

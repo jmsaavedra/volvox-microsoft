@@ -17,6 +17,7 @@ angular
     'anim-in-out',
     'angularMoment',
     'pascalprecht.translate',
+    'duScroll',
     'app.data',
     'app.router',
     'app.configs',
