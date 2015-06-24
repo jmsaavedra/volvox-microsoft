@@ -8,10 +8,6 @@
  * Controller of the elbulliApp
  */
 angular.module('elbulliApp')
-  .controller('MainCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+  .controller('MainCtrl', function($scope) {
+    var introTextHeight = angular.element('#home-intro').height();
   });

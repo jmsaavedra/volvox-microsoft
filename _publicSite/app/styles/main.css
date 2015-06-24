@@ -277,7 +277,7 @@ th {
   /* line 18, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_print.scss */
   a,
   a:visited {
-    text-decoration: underline;
+    /*text-decoration: underline*/;
   }
 
   /* line 23, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_print.scss */
@@ -1713,7 +1713,7 @@ html {
 
 /* line 27, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_scaffolding.scss */
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-size: 14px;
   line-height: 1.428571429;
   color: #333333;
@@ -1737,8 +1737,8 @@ a {
 }
 /* line 52, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_scaffolding.scss */
 a:hover, a:focus {
-  color: #23527c;
-  text-decoration: underline;
+  color: rgb(0, 114, 188);
+  /*text-decoration: underline*/;
 }
 /* line 58, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_scaffolding.scss */
 a:focus {
@@ -4731,7 +4731,7 @@ a.btn.disabled, fieldset[disabled] a.btn {
 /* line 115, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_buttons.scss */
 .btn-link:hover, .btn-link:focus {
   color: #23527c;
-  text-decoration: underline;
+  /*text-decoration: underline*/;
   background-color: transparent;
 }
 /* line 123, ../../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap/_buttons.scss */
@@ -7801,7 +7801,7 @@ button.close {
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -7939,7 +7939,7 @@ button.close {
   display: none;
   max-width: 276px;
   padding: 1px;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Roboto", Helvetica, Arial, sans-serif;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -8708,6 +8708,8 @@ button.close {
 /* line 11, ../../app/styles/main.scss */
 [ui-view] {
   width: 100%;
+  height: 100%;
+  overflow-y: scroll;
   position: absolute;
 }
 
