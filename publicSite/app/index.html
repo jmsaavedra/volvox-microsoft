@@ -1,43 +1,110 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html class="no-js">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <title></title>
-
-    <!-- build:css styles/vendor.css -->
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, minimal-ui">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <!-- endbower -->
     <!-- endbuild -->
-    <link href="styles/style.css" rel="stylesheet">
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="bower_components/angular-ui-router-anim-in-out/css/anim-in-out.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,300,700' rel='stylesheet' type='text/css'>
+    <!-- endbuild -->
+  </head>
+  <body ng-app="elbulliApp">
+    <!--[if lt IE 7]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="styles/ionic.app.css" rel="stylesheet">
-    -->
+    <!-- Add your site or application content here -->
+    
+    <!-- Navbar -->
+    <div id="nav-main">
+      <div class="container" style="padding: 44px 15px 12px 15px;">
+        <div class="row">
+          <!-- Left -->
+          <div class="col-xs-12 col-sm-3">
+            <a ui-sref="main">
+              <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="18">
+            </a>
+          </div>
+          <!-- Right -->
+          <div class="col-xs-12 col-sm-9 text-right">
+            <ul class="nav-right list-inline">
+              <li>
+                <a ui-sref-active="menu-active" ui-sref="about" translate="NAV.ABOUT"></a>
+              </li>
+              <li>
+                <a ui-sref-active="menu-active" ui-sref="video_year" translate="NAV.VID"></a>
+              </li>
+              <li>
+                <a ui-sref-active="menu-active" ui-sref="photo"  translate="NAV.SCAN"></a>
+              </li>
+              <li>|</li>
+              <button ng-click="changeLanguage('en')">EN</button>
+              <button ng-click="changeLanguage('es')">ES</button>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- ionic/angularjs js -->
-    <!-- build:js scripts/vendor.js -->
+    <!-- ui-view -->
+    <div ui-view ng-class="{'anim-slide-left': allowSlide, 'anim-in-out': allowSlide}" data-anim-speed="500" data-anim-sync="true"></div>
+
+    <footer class="footer sticky-footer">
+      <div class="container">
+        <div class="col-xs-12 text-right">
+          <span translate="POWERED"></span>
+          <img src="images/brand/ms_logo.png" alt="Microsoft" height="30" style="vertical-align: middle;">
+        </div>
+      </div>
+    </footer>
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
+     <script>
+       !function(A,n,g,u,l,a,r){A.GoogleAnalyticsObject=l,A[l]=A[l]||function(){
+       (A[l].q=A[l].q||[]).push(arguments)},A[l].l=+new Date,a=n.createElement(g),
+       r=n.getElementsByTagName(g)[0],a.src=u,r.parentNode.insertBefore(a,r)
+       }(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+       ga('create', 'UA-64159210-1');
+       ga('send', 'pageview');
+    </script>
+
+    <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="bower_components/angular-touch/angular-touch.js"></script>
+    <script src="bower_components/ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/moment/moment.js"></script>
+    <script src="bower_components/angular-moment/angular-moment.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="bower_components/angular-ui-router-anim-in-out/anim-in-out.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
-    <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
-
-    <!-- your app's js -->
-    <!-- build:js scripts/scripts.js -->
-    <script src="scripts/app.js"></script>
-    <script src="scripts/configuration.js"></script>
-    <!-- endbuild -->
-  </head>
-  <body ng-app="starter">
-
-    <ion-pane>
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Ionic Blank Starter</h1>
-      </ion-header-bar>
-      <ion-content>
-      </ion-content>
-    </ion-pane>
-  </body>
+        <!-- build:js({.tmp,app}) scripts/scripts.js -->
+        <script src="scripts/app.js"></script>
+        <script src="scripts/data.js"></script>
+        <script src="scripts/router.js"></script>
+        <script src="scripts/configs.js"></script>
+        <script src="scripts/services.js"></script>
+        <script src="scripts/filters.js"></script>
+        <script src="scripts/controllers/main.js"></script>
+        <script src="scripts/controllers/video.js"></script>
+        <script src="scripts/controllers/photo.js"></script>
+        <script src="scripts/controllers/about.js"></script>
+        <!-- endbuild -->
+</body>
 </html>

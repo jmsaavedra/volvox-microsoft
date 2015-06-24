@@ -1,0 +1,35 @@
+<div class="container full-height">
+	<div class="row v-centered">
+		<div class="col-sm-1 hidden-xs"></div>
+		<div class="col-xs-12 col-sm-10">
+			<div class="row">
+				<h4 translate="DIGEST.MONTH">Monthly Digest</h4>
+			</div>
+			<div class="row gallery-grid">
+				<div class="col-md-2 col-xs-4">
+					<article class="grid-content-container">
+						<img src="http://placehold.it/150x150" width="100%">
+						<h2>2015</h2>
+					</article>
+				</div>
+				<div ng-repeat="month in months | limitFromTo:0:5" ng-class="{dim: month.isActive}" class="col-md-2 col-xs-4">
+					<a ng-click="disallowSlide()" ui-sref="video_month({month: month.month})" class="grid-content-container">
+						<img ng-src="{{month.image}}" width="100%" alt="month.month">
+					</a>
+				</div>
+				<div class="col-md-2 col-xs-4">
+					<article class="grid-content-container">
+						<img src="http://placehold.it/150x150" width="100%">
+						<h2>2016</h2>
+					</article>
+				</div>
+				<div ng-repeat="month in months | limitFromTo:5:12" ng-class="{dim: month.isActive}" class="col-md-2 col-xs-4">
+					<a ng-click="disallowSlide()" ui-sref="video_month({month: month.month})" class="grid-content-container">
+						<img ng-src="{{month.image}}" width="100%" alt="month.month">
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-1 hidden-xs"></div>
+	</div>
+</div>

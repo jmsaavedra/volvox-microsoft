@@ -1,0 +1,18 @@
+<div class="container" style="padding-top: 50px;">
+	<div class="row">
+		<div class="col-sm-1 hidden-xs"></div>
+		<div class="col-xs-12 col-sm-10">
+			<div class="row">
+				<h4 translate="DIGEST.DAY">Daily Digest: {{thisMonth | capitalize}}</h4>
+			</div>
+			<div class="row gallery-grid">
+				<div ng-repeat="video in videos" class="col-md-2 col-xs-4">
+					<a ng-click="disallowSlide()" ui-sref="video_day({date: video.date})" class="grid-content-container">
+						<img ng-src="{{video.img}}" width="100%" alt="Video Thumbnail">
+					</a>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-1 hidden-xs"></div>
+	</div>
+</div>
