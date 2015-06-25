@@ -27,7 +27,8 @@ module.exports.uploadImage = function(filePath, fileName, cb){
     }, function(error, result, response) {
     if (!error) {
       
-      result ? console.log('new container created: '.green+today) : console.log('container already exists: '.gray+today);
+      if(result) console.log('new container created: '.green+today);
+      // : console.log('container already exists: '.gray+today);
       //console.log('container created result: '.green + result);
       //console.log('container created FULL response: '.green + JSON.stringify(response,null,'\t'));
       
@@ -90,5 +91,4 @@ function cutPasteFile(oldPath, newPath, _cb){
     _cb(e);
   })
 }
-
 

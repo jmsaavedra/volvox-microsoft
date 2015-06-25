@@ -12,8 +12,8 @@ process.env.UV_THREADPOOL_SIZE = 72;
 */
 
 /* GLOBALS */
-global.RAW_IMG_FOLDER   = __dirname+'/images-dl';
-global.SAVE_IMG_FOLDER   = '/Users/jmsaavedra/Desktop/images-saved/';
+global.RAW_IMG_FOLDER   = __dirname+'/images-to-upload';
+global.SAVE_IMG_FOLDER   = '/home/elbulli/Desktop/raw-camera-images';
 global.AZURE_BLOB_ADDR  = 'https://elbulliphoto.blob.core.windows.net';
 global.STORAGE_ACCOUNT  = 'elbulliphoto';
 global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';
@@ -23,21 +23,22 @@ global.BULLI_SERVER = {
   port: '8080'
 };
 
+var SNAP_INTERVAL = 60; // number of seconds between each snap
+
 var fs        = require('graceful-fs'),
-  http        = require('http'),
   path        = require('path'),
   colors      = require('colors'),
-  _           = require('lodash'),
   async       = require('async'),
   express     = require('express'),
+  http        = require('http'),
   app         = express(),
-  querystring = require('querystring'),
   server      = require('http').Server(app),
   io          = require('socket.io')(server),
   exec        = require('child_process').exec,
   azureFiler  = require('./app/components/azureFiler'),
   scheduler   = require('./app/components/scheduler'),
   Cameras     = require('./app/components/cameras'),
+  serverConn  = require('./app/components/serverConnect'),
   cameras     = null,
   port        = 8081,
   processingTake = false,
@@ -57,7 +58,10 @@ watchr.watch({
   listener:  function(changeType,filePath,fileCurrentStat,filePreviousStat){
     // console.log('changeType: '.cyan+changeType);
     if(changeType === 'create'){
-      console.log('File Added: '.green+filePath);
+      //console.log('File Added: '.green+filePath);
+
+
+
       var fileName = path.basename(filePath);
       imageProcessHandler(filePath, fileName, function(e){
         // console.log("fileCounter: "+fileCounter);
@@ -68,6 +72,9 @@ watchr.watch({
           fileCounter = 0;
         } //else console.log('DID NOT TAKE ALL PHOTOS: fileCounter: '.red + fileCounter);
       });
+
+
+
     } else {
       console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
     }
@@ -85,8 +92,9 @@ var imageProcessHandler = function(imgPath, imgName, cb){
     console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
     //*** send this data to the routing server to save to DB: ***//
-    postData(data);
-    cb(null);
+    serverConn.postData(data, function(e, data){
+      cb(e);
+    });
   });
 };
 
@@ -101,10 +109,6 @@ app.get('/snap', function(req, res) {
   if(snap()){
     return res.send('SUCCESS on take photo');
   } else return res.send('Wait for last snap to finish');
-  // snap(function(e){
-  //   if(e) return res.send(e);
-  //   res.send('SUCCESS on take photo');
-  // });
 });
 
 
@@ -121,52 +125,6 @@ function snap(){
 }
 
 
-
-
-/***
-/* POST data object to ElBulli Server
-*/
-var postData = function(data){
-
-  var post_data = querystring.stringify({
-    'date' : data.date,
-    'file' : data.file,
-    'type' : data.type
-  });
-
-    var post_options = {
-        host: global.BULLI_SERVER.host,
-      port: global.BULLI_SERVER.port,
-        path: global.BULLI_SERVER.path,
-      
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': post_data.length
-        }
-    };
-
-  /* Set up the request */
-  var post_req = http.request(post_options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log('Server Response: '.yellow + chunk);
-        if(JSON.parse(chunk).data !== true)
-          return console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
-        
-        console.log('SUCCESS HTTP POST to El Bulli Server.'.green); 
-        console.log('-----------------------------------------------\n'.gray);  
-      });
-  });
-
-  post_req.on('error', function(e) {
-    return console.log('>>! ERROR with POST request: '.red + e.message);
-  });
-
-  // execute post
-  post_req.write(post_data);
-  post_req.end();
-};
 
 
     
@@ -192,7 +150,7 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
         var listeningString = ' Magic happening on port: '+ port +"  ";
         console.log(listeningString.cyan.inverse);
         
-        var photoInterval = setInterval(snap, 30000);
+        var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
       }); 
     //}
   });
