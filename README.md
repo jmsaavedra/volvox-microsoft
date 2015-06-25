@@ -29,9 +29,18 @@ Volvox Labs + Microsoft Timelapse Project
     * ?????
   
 
-##Linux Cloud Box Setup
+##Linux Local Box Setup
 
-* [Install Node v0.12](https://nodejs.org/download/)
+* Install Node v0.10.39
+  * `sudo apt-get update`
+  * `sudo apt-get install build-essential libssl-dev`
+  * `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
+  * `source ~/.profile`
+  * `nvm install 0.10.39`
+  * `nvm use 0.10.39`
+  * `node -v`  // check that install worked
+  * `nvm alias default 0.10.39`
+  * `nvm use default`
 * Install github
   * `$ sudo apt-get git`
 * [Install ffmpeg](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/wiki/Installing-ffmpeg-on-Debian)
