@@ -23,7 +23,7 @@ global.BULLI_SERVER = {
   port: '8080'
 };
 
-var SNAP_INTERVAL = 60; // number of seconds between each snap
+var SNAP_INTERVAL = 30; // number of seconds between each snap
 
 var fs        = require('graceful-fs'),
   path        = require('path'),
@@ -35,10 +35,10 @@ var fs        = require('graceful-fs'),
   server      = require('http').Server(app),
   io          = require('socket.io')(server),
   exec        = require('child_process').exec,
-  azureFiler  = require('./app/components/azureFiler'),
-  scheduler   = require('./app/components/scheduler'),
+  moment      = require('moment'),
+  Scheduler   = require('./app/components/scheduler'),
+  ImgHandler  = require('./app/components/imageHandler'),
   Cameras     = require('./app/components/cameras'),
-  serverConn  = require('./app/components/serverConnect'),
   cameras     = null,
   port        = 8081,
   processingTake = false,
@@ -51,52 +51,49 @@ if (!fs.existsSync(global.SAVE_IMG_FOLDER)) fs.mkdirSync(global.SAVE_IMG_FOLDER)
 /* Gulp Watcher */
 var watchr = require('watchr');
 var takeNumber = 0;
-var fileCounter = 0;
+var imgCt = 0; // individual take image count
+
+
+
+var imageProcessQueue = async.queue(function (newImgPath, callback) {
+  // console.log('hello ' + task.name);
+  var newImg = new ImgHandler(newImgPath, function(e){
+    if(e) console.log('ERROR processing new image:'.red, e);
+    callback(e);
+  });
+}, 1);
+
+// assign a callback
+imageProcessQueue.drain = function() {
+    console.log('__________________________________________________________\n'.gray.bold);
+    console.log('All images have been uploaded and databased for take #'.green.bold+takeNumber);
+    console.log('__________________________________________________________\n'.gray.bold);
+    Scheduler.getTimeTilNextSnap(function(time){
+      console.log('>>> Time until next snap:'.cyan.bold, moment(time).from(new Date()),'>>>'.gray, time )
+    });
+    
+}
+
 
 watchr.watch({
   path: global.RAW_IMG_FOLDER,
   listener:  function(changeType,filePath,fileCurrentStat,filePreviousStat){
-    // console.log('changeType: '.cyan+changeType);
-    if(changeType === 'create'){
-      //console.log('File Added: '.green+filePath);
-
-
-
-      var fileName = path.basename(filePath);
-      imageProcessHandler(filePath, fileName, function(e){
-        // console.log("fileCounter: "+fileCounter);
-        fileCounter++;
-        //console.log("cameras.cameras_.length: "+cameras.cameras_.length);
-        if (fileCounter == cameras.cameras_.length){
-          processingTake = false;
-          fileCounter = 0;
-        } //else console.log('DID NOT TAKE ALL PHOTOS: fileCounter: '.red + fileCounter);
+    
+    if(changeType === 'create'){ 
+      imgCt++;
+      console.log('New File Added, imgCt:'.green,imgCt,': ',filePath);
+      /* add this image to the processing queue */
+      if (imgCt >= cameras.cameras_.length){
+        console.log("\n  RECEIVED 4 IMAGES  \n".cyan.bold);
+        imgCt = 0; //reset for next take
+        // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
+      }
+      imageProcessQueue.push(filePath, function (err) {
+        if(err) console.log('ERROR processImage: '.red, err); //console.log('finished processing image.'.green);
       });
-
-
-
-    } else {
-      console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
-    }
+    } //else console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
   }
 });
-
-
-/* Handler for after a file is added to watched folder */
-var imageProcessHandler = function(imgPath, imgName, cb){
-  console.log('UPLOADING IMAGE: '.cyan+imgPath);
-  azureFiler.uploadImage(imgPath, imgName, function(e, data){
-    if(e) return console.log('ERROR uploading to Azure: '.red.bold+e);
-    if(!data) return console.log('NO DATA RETURNED when uploading to Azure: '.red.bold+e);
-    
-    console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
-
-    //*** send this data to the routing server to save to DB: ***//
-    serverConn.postData(data, function(e, data){
-      cb(e);
-    });
-  });
-};
 
 
 /* Express config */
@@ -114,32 +111,28 @@ app.get('/snap', function(req, res) {
 
 function snap(){
   
-  if(!processingTake){
-    processingTake = true;
     takeNumber++;
     console.log('\n------------------\n'.gray+'Snap Photo! '.green + '  ||  '.gray.bold+'Take #'.cyan+takeNumber);
-    cameras.takePhotos(function(e){});
-    processingTake = false;
-    return true;// cb();
-  } else return false;//cb('Wait for last to finish');
+    cameras.takePhotos(function(e){
+      if(!e) return true
+      console.log('ERROR takePhotos:'.red,e);
+      return false;
+    });
 }
 
 
 
-
-    
-
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    //if(e){
+    if(e) console.log('camera setup failed:'.red, e);
       //console.log("camera setup failed, restarting app.");
       // setTimeout(function(){
       //   process.exit(1);  
       // }, 3000);
     //}
     //else {
-      console.log("camera setup complete".green);
+      console.log("camera setup complete".gray);
       setupComplete = true;
 
       /*** START THE HTTP SERVER ***/
@@ -150,7 +143,13 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
         var listeningString = ' Magic happening on port: '+ port +"  ";
         console.log(listeningString.cyan.inverse);
         
-        var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
+        // var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
+        Scheduler.init(snap, function(timeOfNextSnap){
+          moment.relativeTimeThreshold('s', 55);
+          moment.relativeTimeThreshold('m', 55);
+          // console.log('\n>>> Time until next snap:'.cyan.bold, moment(timeOfNextSnap).fromNow(),'>>>'.gray, timeOfNextSnap);
+          console.log('>>> Time until next snap:'.cyan.bold, moment(timeOfNextSnap).from(new Date()),'>>>'.gray, timeOfNextSnap )
+        }); //try passing in cameras
       }); 
     //}
   });

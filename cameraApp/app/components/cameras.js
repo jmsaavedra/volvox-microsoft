@@ -14,8 +14,9 @@ var colors  = require('colors'),
 */
 function Cameras(_cb){
   
-  var self = this;
+  // var self = this;
   this.cameras_ = null;
+  var self = this;
 
   GPhoto.list(function (list) {
     if (list.length === 0){
@@ -35,9 +36,12 @@ function Cameras(_cb){
       cb();
     }, function(_e){
       if(_e) return _cb(_e);
-      this.takePhotos(function(er){
-        _cb(er);
-      });
+      
+        _cb(null);
+      
+      // this.takePhotos(function(er){
+      //   _cb(er);
+      // });
     });
   });
   return self;
@@ -56,7 +60,7 @@ Cameras.prototype.takePhotos = takePhotos = function(_cb){
   var now = moment().format('HH-mm-ss');
 
   async.each(this.cameras_, function(cam, cb){
-    console.log("take picture on cam: "+JSON.stringify(cam));
+    // console.log("take picture on cam: "+JSON.stringify(cam));
 
     cam.takePicture({
       download:true

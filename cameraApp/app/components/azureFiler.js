@@ -15,6 +15,7 @@ var path      = require('path');
 var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
 
 
+
 /***
 /* Upload a File routine
 */
@@ -55,7 +56,7 @@ function uploadFile (container, fpath, name, callback){
 
       moveFile(container, fpath, name, function(e){
         if(e) console.log('error on moveFile: '.red + e);
-
+        else console.log('SUCCESS copy image to: '.yellow,fpath);
         var fileUrl = global.AZURE_BLOB_ADDR+'/'+result.container+'/'+result.blob;
         console.log('BLOB URL: '.cyan.bold + fileUrl);
         var data = {date: container, file: fileUrl, type: 'photo'};
