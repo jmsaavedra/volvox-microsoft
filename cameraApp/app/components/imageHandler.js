@@ -35,7 +35,7 @@ handler.uploadToAzure = function(img, callb){
 		console.log('POSTing to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 		//*** send this data to the routing server to save to DB: ***//
 		handler.postDataToElBulli(data, function(e, data){
-			callb();
+			callb(e, path.basename(img));
 		});
 	});
 }

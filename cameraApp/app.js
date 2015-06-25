@@ -13,7 +13,7 @@ process.env.UV_THREADPOOL_SIZE = 72;
 
 /* GLOBALS */
 global.RAW_IMG_FOLDER   = __dirname+'/images-to-upload';
-global.SAVE_IMG_FOLDER   = '/Users/jmsaavedra/Desktop/';// /home/elbulli/Desktop/raw-camera-images';
+global.SAVE_IMG_FOLDER   = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/';// 
 global.AZURE_BLOB_ADDR  = 'https://elbulliphoto.blob.core.windows.net';
 global.STORAGE_ACCOUNT  = 'elbulliphoto';
 global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';
@@ -53,11 +53,10 @@ var watchr = require('watchr');
 var takeNumber = 0;
 var imgCt = 0; // individual take image count
 
-
+var latestImages = [];
 
 var imageProcessQueue = async.queue(function (newImgPath, callback) {
-  // console.log('hello ' + task.name);
-  var newImg = new ImgHandler(newImgPath, function(e){
+  var newImg = new ImgHandler(newImgPath, function(e, savedPath){
     if(e) console.log('ERROR processing new image:'.red, e);
     callback(e);
   });
@@ -70,8 +69,9 @@ imageProcessQueue.drain = function() {
     console.log('__________________________________________________________\n'.gray.bold);
     Scheduler.getTimeTilNextSnap(function(time){
       console.log('>>> Time until next snap:'.cyan.bold, moment(time).from(new Date()),'>>>'.gray, time );
+      io.sockets.emit('finished', latestImages);
+
     });  
-    io.sockets.emit('finished', null);
 };
 
 
@@ -82,10 +82,12 @@ watchr.watch({
     if(changeType === 'create'){ 
       imgCt++;
       console.log('New File Added, imgCt:'.green,imgCt,': ',filePath);
+      var today = moment().format('YYYY-MM-DD');
+      latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
         console.log("\n  RECEIVED 4 IMAGES  \n".cyan.bold);
-        imgCt = 0; //reset for next take
+        //imgCt = 0; //reset for next take
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
       }
       imageProcessQueue.push(filePath, function (err) {
@@ -101,31 +103,18 @@ app.use(express.static('./public'));
 app.use('/images',express.static(global.SAVE_IMG_FOLDER));
 
 
-/* HTTP routes */
-app.get('/snap', function(req, res) { 
-  console.log('hit /test'.gray);
-  if(snap()){
-    return res.send('SUCCESS on take photo');
-  } else return res.send('Wait for last snap to finish');
-});
-
-
 function snap(){
-  
+    latestImages=[];
     takeNumber++;
-    console.log('\n------------------\n'.gray+'Snap Photo! '.green + '  ||  '.gray.bold+'Take #'.cyan+takeNumber);
+    imgCt = 0;
+    console.log('\n------------------\n'.gray+'  Snap Photo!  '.green.bold.inverse + '  ||  '.gray.bold+'Take #'.cyan.bold+takeNumber);
+    io.sockets.emit('loading',null);
     cameras.takePhotos(function(e){
       if(!e) return true
       console.log('ERROR takePhotos:'.red,e);
       return false;
     });
 }
-
-
-
-/* Simple Express and Socket to pass info. */
-app.use(express.static('./public'));
-app.use('/images',express.static(global.RAW_IMG_FOLDER));
 
 
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
@@ -169,7 +158,7 @@ var setupSockets = function(){
     console.log('socket connection created.'.yellow);
     //if(!setupComplete) 
       // socket.broadcast.emit('loading', null);
-      // io.sockets.emit('loading',null);
+      io.sockets.emit('finished',latestImages);
     // fs.readdir(global.RAW_IMG_FOLDER,function(err,files){
     //fs.readdir(global.SCALED_IMG_FOLDER,function(_err,files){
       //socket.emit('init', null);
