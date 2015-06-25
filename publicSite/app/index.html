@@ -32,14 +32,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a ui-sref="main" class="navbar-brand">
+          <a ui-sref="main({lang: lang})" class="navbar-brand">
             <img src="images/brand/elbulli_logo.png" alt="Elbulli Logo" height="18">
           </a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a ui-sref-active="menu-active" ui-sref="about" translate="NAV.ABOUT"></a></li>
-            <li><a ui-sref-active="menu-active" ui-sref="video_year" translate="NAV.VID"></a></li>
+            <li><a ui-sref-active="menu-active" ui-sref="about({lang: lang})" translate="NAV.ABOUT"></a></li>
+            <li><a ui-sref-active="menu-active" ui-sref="video_year({lang: lang})" translate="NAV.VID"></a></li>
             <li><a ui-sref-active="menu-active" ui-sref="photo"  translate="NAV.SCAN"></a></li>
           </ul>
 

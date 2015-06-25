@@ -24,15 +24,29 @@ angular
     'app.services',
     'app.filters'
   ])
-  .run(function($rootScope, $translate) {
+  .run(function($rootScope, $translate, $state, $stateParams, $timeout) {
     ////////////////
     // Run global functions
     $rootScope.allowSlide = true;
+    // Default language
+    $translate.use($rootScope.lang);
+    $timeout(function() {
+      $rootScope.lang = $stateParams.lang || 'en';
+      $translate.use($rootScope.lang);
+      console.log($stateParams.lang);
+    }, 1000);
+    
     // Toggle Language
     $rootScope.changeLanguage = function(lang) {
       // console.log(lang);
       $rootScope.lang = lang;
       $translate.use($rootScope.lang);
+      // Tweak route
+      $state.go($state.current, {
+        lang: $rootScope.lang
+      }, {
+        reload: true
+      });
     };
     $rootScope.heightMinusNavs = window.innerHeight - 140;
     // Global Listener

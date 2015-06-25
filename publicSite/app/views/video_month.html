@@ -1,15 +1,22 @@
-<div class="container" style="padding-top: 50px;">
-	<div class="row">
+<div class="container full-height">
+	<div class="row" style="padding-top: 100px;">
 		<div class="col-sm-1 hidden-xs"></div>
 		<div class="col-xs-12 col-sm-10">
 			<div class="row">
-				<h4 translate="DIGEST.DAY">Daily Digest: {{thisMonth | capitalize}}</h4>
+				<div class="col-xs-12">
+					<h4 translate="DIGEST.DAY">Daily Digest: {{thisMonth | capitalize}}</h4>
+				</div>
 			</div>
 			<div class="row gallery-grid">
-				<div ng-repeat="video in videos" class="col-md-2 col-xs-4">
-					<a ng-click="disallowSlide()" ui-sref="video_day({date: video.date})" class="grid-content-container">
-						<img ng-src="{{video.img}}" width="100%" alt="Video Thumbnail">
-					</a>
+				<div ng-repeat="video in videos" class="col-md-2 col-xs-4 thumbnail-container">
+					<button ng-click="disallowSlide()" ui-sref="video_day({lang: lang, year: video.ymd.y, month: video.ymd.m, day: video.ymd.d})" class="btn-link grid-content-container" style="background-image: url({{video.img}})" ng-style="{height: equalWidth + 'px', opacity: 0.5 + 0.5*($index/videos.length)}">
+						<h2>{{video.date | amDateFormat: 'DD'}}</h2>
+					</button>
+				</div>
+				<div class="col-md-2 col-xs-4 thumbnail-container">
+					<button class="btn grid-content-container" ng-style="{height: equalWidth + 'px'}" style="background: #BDBDBD">
+						<h4 style="color: #353535; text-decoration: none;">In Progress<br>Coming soon!</h4>
+					</button>
 				</div>
 			</div>
 		</div>

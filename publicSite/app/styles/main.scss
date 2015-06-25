@@ -4,6 +4,19 @@ $icon-font-path: "../bower_components/bootstrap-sass-official/assets/fonts/boots
 // endbower
 
 // Global Overrides
+textarea:hover, 
+input:hover, 
+textarea:active, 
+input:active, 
+textarea:focus, 
+input:focus,
+button:focus,
+button:active,
+button:hover
+{
+    outline:0px !important;
+    -webkit-appearance:none;
+}
 a:hover, a:visited {
 	text-decoration: none;
 }
@@ -71,20 +84,47 @@ body {
 // Gallery
 .gallery-grid {
 	div {
-		padding: 1px;
+		padding: 3px;
 	}
 }
 
 .grid-content-container {
+	width: 100%;
+	transition: 0.25s;
+	background-repeat: no-repeat;
+  	background-size: cover;
+  	background-position: center center;
+  	// padding: 3px;
 	h2	{
 		position: absolute;
-		top: 0;
-		left: 0;
+		left: 10px;
 		width: 100%;
-		text-align: center;
-		margin: 0;
-		padding-top: calc(50% - 15px);
+		text-align: left;
+		color: #fff;
+		font-size: 7vw;
+		bottom: 8px;
+		margin: 0px;
+		line-height: 1em;
 	}
+	h3	{
+		position: absolute;
+		left: 10px;
+		width: 100%;
+		text-align: left;
+		color: #fff;
+		font-size: 3vw;
+		bottom: 8px;
+		margin: 0px;
+		line-height: 1em;		
+	}
+}
+
+.grid-content-container:hover {
+	opacity: 1 !important;
+}
+
+.thumbnail-container {
+	overflow: hidden;
 }
 
 // Footer
@@ -101,4 +141,10 @@ body {
 // Misc
 .dim {
 	opacity: 0.3;
+}
+
+.controls-wrapper {
+	.title {
+		display: none;
+	}
 }

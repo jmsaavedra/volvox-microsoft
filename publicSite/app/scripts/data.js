@@ -14,51 +14,63 @@ angular
   .run(function($rootScope) {
 
     $rootScope.months = [{
-      month: 'august',
+      year: 2015,
+      month: '08',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('august 1 2015').unix() >= 0) ? true : false
     }, {
-      month: 'september',
+      year: 2015,
+      month: '09',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('september 1 2015').unix() >= 0) ? true : false
     }, {
-      month: 'october',
+      year: 2015,
+      month: '10',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('october 1 2015').unix() >= 0) ? true : false
     }, {
-      month: 'november',
+      year: 2015,
+      month: '11',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('november 1 2015').unix() >= 0) ? true : false
     }, {
-      month: 'december',
+      year: 2015,
+      month: '12',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('december 1 2015').unix() >= 0) ? true : false
     }, {
-      month: 'january',
+      year: 2016,
+      month: '01',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('january 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'february',
+      year: 2016,
+      month: '02',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('february 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'march',
+      year: 2016,
+      month: '03',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('march 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'april',
+      year: 2016,
+      month: '04',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('april 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'may',
+      year: 2016,
+      month: '05',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('may 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'june',
+      year: 2016,
+      month: '06',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('june 1 2016').unix() >= 0) ? true : false
     }, {
-      month: 'july',
+      year: 2016,
+      month: '07',
       image: 'http://placehold.it/300x300',
       isActive: (moment().unix() - moment('july 1 2016').unix() >= 0) ? true : false
     }];
