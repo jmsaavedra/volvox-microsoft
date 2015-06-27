@@ -19,35 +19,30 @@ angular
   	– Photo Gallery
   	*/
     $stateProvider
-      .state('main', {
-        url: '/',
+      .state('about', {
+        url: '/{lang:en|es}',
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .state('about', {
-        url: '/about',
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .state('video_year', {
-        url: '/video_year',
-        templateUrl: 'views/video_year.html',
+      .state('video', {
+        url: '/{lang:en|es}/video',
+        templateUrl: 'views/video.html',
         controller: 'VideoYearCtrl'
       })
-      .state('video_month', {
-        url: '/video_month/:month',
-        templateUrl: 'views/video_month.html',
+      .state('video.month', {
+        url: '/{year:2015|2016}/{month:[0-9]+}',
+        templateUrl: 'views/video.month.html',
         controller: 'VideoMonthCtrl'
       })
-      .state('video_date', {
-        url: '/video_date/:month/:date',
-        templateUrl: 'views/video_date.html',
+      .state('video.day', {
+        url: '/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
+        templateUrl: 'views/video.day.html',
         controller: 'VideoDayCtrl'
       })
       .state('photo', {
-        url: '/photo/:month',
+        url: '/{lang:en|es}/photo/:month',
         templateUrl: 'views/photo.html',
         controller: 'PhotoCtrl'
       });
-    $urlRouterProvider.otherwise('/');
+    $urlRouterProvider.otherwise('/en');
   });

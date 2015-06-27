@@ -1,6 +1,6 @@
 // Karma configuration
 // http://karma-runner.github.io/0.12/config/configuration-file.html
-// Generated on 2015-06-17 using
+// Generated on 2015-06-24 using
 // generator-karma 0.9.0
 
 module.exports = function(config) {
@@ -31,6 +31,7 @@ module.exports = function(config) {
       'bower_components/angular-translate/angular-translate.js',
       'bower_components/angular-ui-router/release/angular-ui-router.js',
       'bower_components/angular-ui-router-anim-in-out/anim-in-out.js',
+      'bower_components/angular-socialshare/angular-socialshare.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

@@ -9,9 +9,4 @@
  */
 angular.module('elbulliApp')
   .controller('PhotoCtrl', function ($scope) {
-    $scope.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
   });
