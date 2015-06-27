@@ -1,7 +1,9 @@
 {
   "name": "publicsite",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.13.0"
+  },
   "repository": {},
   "devDependencies": {
     "grunt": "^0.4.5",
