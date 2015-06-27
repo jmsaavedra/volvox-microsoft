@@ -105,7 +105,7 @@ module.exports = function(db, Model, vimeo) {
           console.log('new video saved successfully!');
           res.json({
             success: 200,
-            data: req.body
+            data: req.body.filename
           });
         }
       });
