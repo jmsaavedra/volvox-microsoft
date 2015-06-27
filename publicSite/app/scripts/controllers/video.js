@@ -10,6 +10,7 @@
 var moment = moment || {};
 angular.module('elbulliApp')
   .controller('VideoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
+    console.log('Video year');
     $scope.disallowSlide = function() {
       $rootScope.allowSlide = false;
       $timeout(function() {
@@ -18,6 +19,7 @@ angular.module('elbulliApp')
     };
   })
   .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout) {
+    console.log('Video month');
     $scope.thisMonth = moment($stateParams.month + ' 01 ' + $stateParams.year).format('MMMM, YYYY');
 
     // Dummy Data
@@ -95,7 +97,7 @@ angular.module('elbulliApp')
     //     alert(error);
     //   });
   })
-  .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server) {
+  .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout) {
 
     /*** DUmmy ***/
     $scope.video_content = {
@@ -117,8 +119,37 @@ angular.module('elbulliApp')
         vimeo_video_id: '27243869'
       }
     };
-    // $scope.video_content.vimeo_final.vimeo_video_id = 
+
+    // Back to month view
+    $scope.currentMonth = moment($scope.video_content.date).format('MM');
+    $scope.currentYear = moment($scope.video_content.date).format('YYYY');
+
+    $scope.vimeo_final_url = 'https://player.vimeo.com/video/' + $scope.video_content.vimeo_final.vimeo_video_id;
+    $scope.vimeo_cam0_url = 'https://player.vimeo.com/video/' + $scope.video_content.cam0.vimeo_video_id;
+    $scope.vimeo_cam1_url = 'https://player.vimeo.com/video/' + $scope.video_content.cam1.vimeo_video_id;
+    $scope.vimeo_cam2_url = 'https://player.vimeo.com/video/' + $scope.video_content.cam2.vimeo_video_id;
+    $scope.vimeo_cam3_url = 'https://player.vimeo.com/video/' + $scope.video_content.cam3.vimeo_video_id;
     // TO CONTINUE
+
+    // After loading all vimeos
+    // Get width
+    $scope.getVimeoHeight = function() {
+      $('#vimeo_final').attr({
+        height: $('#vimeo_final').width() * 9 / 16
+      });
+      $('.vimeo_cam').attr({
+        height: $('#vimeo_cam').width() * 9 / 16
+      });
+    };
+
+    // DOM Ready fix
+    $timeout(function() {
+      $scope.getVimeoHeight();
+    });
+
+    $(window).on('resize', function() {
+      $scope.getVimeoHeight();
+    });
 
     $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
     // Get video from vimeo

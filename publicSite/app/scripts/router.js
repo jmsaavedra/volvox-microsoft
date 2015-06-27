@@ -19,29 +19,24 @@ angular
   	– Photo Gallery
   	*/
     $stateProvider
-      .state('main', {
+      .state('about', {
         url: '/{lang:en|es}',
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .state('about', {
-        url: '/{lang:en|es}/about',
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .state('video_year', {
+      .state('video', {
         url: '/{lang:en|es}/video',
-        templateUrl: 'views/video_year.html',
+        templateUrl: 'views/video.html',
         controller: 'VideoYearCtrl'
       })
-      .state('video_month', {
-        url: '/{lang:en|es}/video/{year:2015|2016}/{month:[0-9]+}',
-        templateUrl: 'views/video_month.html',
+      .state('video.month', {
+        url: '/{year:2015|2016}/{month:[0-9]+}',
+        templateUrl: 'views/video.month.html',
         controller: 'VideoMonthCtrl'
       })
-      .state('video_day', {
-        url: '/{lang:en|es}/video/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
-        templateUrl: 'views/video_day.html',
+      .state('video.day', {
+        url: '/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
+        templateUrl: 'views/video.day.html',
         controller: 'VideoDayCtrl'
       })
       .state('photo', {

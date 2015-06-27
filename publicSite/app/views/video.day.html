@@ -1,0 +1,64 @@
+<div class="container full-height">
+	<!-- Prev and Next arrows -->
+	<div class="row" style="padding-top:80px;">
+		<div class="col-xs-4">
+			<a class="btn btn-link" ui-sref="video.month({year: currentYear, month: currentMonth})" style="padding: 5px 0px;">
+				<img src="images/chevron-left.svg" height="16">
+				<span>&nbsp;Back to Daily Digest</span>
+			</a>
+		</div>
+		<div class="col-xs-4"></div>
+		<div class="col-xs-4 text-right">
+			<!--
+			<a class="btn btn-link" ui-sref="video.day({})" style="padding: 5px 0px;">
+				<span>June 08&nbsp;</span>
+				<img src="images/chevron-right.svg" height="24">
+			</a>
+			-->
+		</div>
+	</div>
+	<div class="row" style="padding-top:20px;">
+		<div class="col-xs-12 col-md-2">
+			<h3 style="margin-top: 0px;">{{video_content.date | amDateFormat: 'MMMM DD'}}</h3>
+			<p>{{video_content.description}}</p>
+		</div>
+		<div class="col-xs-12 col-md-8">
+			<div class="row">
+				<div class="col-xs-12 no-h-padding">
+					<iframe id="vimeo_final" ng-src="{{vimeo_final_url}}" width="100%" height="{{vimeo_final_height}}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-md-6 no-h-padding">
+					<h5><span translate="CAMERA"></span> 1</h5>
+					<iframe class="vimeo_cam" id="vimeo_cam" ng-src="{{vimeo_cam0_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				</div>
+				<div class="col-xs-12 col-md-6 no-h-padding">
+					<h5><span translate="CAMERA"></span> 2</h5>
+					<iframe class="vimeo_cam" ng-src="{{vimeo_cam1_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				</div>
+				<div class="col-xs-12 col-md-6 no-h-padding">
+					<h5><span translate="CAMERA"></span> 3</h5>
+					<iframe class="vimeo_cam" ng-src="{{vimeo_cam2_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				</div>
+				<div class="col-xs-12 col-md-6 no-h-padding">
+					<h5><span translate="CAMERA"></span> 4</h5>
+					<iframe class="vimeo_cam" ng-src="{{vimeo_cam3_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-12 col-md-2">
+			<div class="row">
+				<div class="col-xs-4 col-sm-12" style="margin: 7px 0px 5px 0px">
+					<a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http://google.com">Share on Facebook</a>
+				</div>
+				<div class="col-xs-4 col-sm-12" style="margin: 7px 0px 5px 0px">
+					<a target="_blank" href="https://twitter.com/home?status=asdgasdgasdgs">Share on Twitter</a>
+				</div>
+				<div class="col-xs-4 col-sm-12" style="margin: 2px 0px 5px 0px">
+					<button class="btn btn-primary btn-sm">Share This Link</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

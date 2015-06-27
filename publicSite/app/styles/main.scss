@@ -21,6 +21,14 @@ a:hover, a:visited {
 	text-decoration: none;
 }
 
+.btn-link {
+	color: #000 !important;
+}
+
+.btn-link:hover {
+	text-decoration: none !important;
+}
+
 [ui-view] { 
 	width: 100%;
 	height: 100%;
@@ -28,9 +36,13 @@ a:hover, a:visited {
 	top: 0px;
 	overflow-y: auto;
 	overflow-x: auto;
+	&.has-padding {
+		padding-bottom: 60px;
+	}
 }
 
 // Body
+
 html {
 	min-height: 100%;
 	background: rgba(254,254,254,1);
@@ -139,12 +151,46 @@ body {
 }
 
 // Misc
+
+.no-h-padding {
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+}
+
 .dim {
 	opacity: 0.3;
+	pointer-events: none;
 }
 
 .controls-wrapper {
 	.title {
 		display: none;
 	}
+}
+
+.animated { 
+    -webkit-animation-duration: 3s; 
+    animation-duration: 3s; 
+    -webkit-animation-fill-mode: both; 
+    animation-fill-mode: both; 
+    -webkit-animation-timing-function: ease-in; 
+    animation-timing-function: ease-in; 
+    animation-iteration-count:infinite; 
+    -webkit-animation-iteration-count:infinite; 
+} 
+
+@keyframes bounce { 
+    0%, 10%, 15% {
+    	transform: translateY(0px);
+    };
+    5% {
+    	transform: translateY(-15px);
+    };
+    12% {
+    	transform: translateY(-10px);
+    };
+} 
+
+.bounce { 
+    animation-name: bounce; 
 }

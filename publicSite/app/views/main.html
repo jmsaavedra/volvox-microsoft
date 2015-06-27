@@ -6,11 +6,12 @@
 		<div class="col-xs-12 col-sm-10">
 			<h1 class="hidden-xs" translate="MAIN_TITLE"></h1>
 			<h3 class="visible-xs" translate="MAIN_TITLE"></h3>
-			<h3 class="text-muted hidden-xs" translate="MAIN_DESC"></h3>
-			<p class="text-muted visible-xs" translate="MAIN_DESC"></p>
+			<p class="text-muted hidden-xs lead" translate="MAIN_DESC"></p>
+			<p class="text-muted visible-xs lead" translate="MAIN_DESC"></p>
 			<p class="text-center" style="margin-top: 30px">
 				<button class="btn btn-link" ng-click="scrollToTechnical()">
-					<img src="images/chevron-down.png" width="36">
+					<p style="position: relative; top: 25px;">Project Information</p>
+					<img src="images/chevron-down.svg" width="48" class="animated bounce" style="position: relative; top: 25px;">
 				</button>
 			</p>
 		</div>
@@ -27,10 +28,21 @@
 		<div class="col-xs-12 col-sm-10">
 			<h3 class="hidden-xs" translate="TECH_TITLE"></h3>
 			<h3 class="visible-xs" translate="TECH_TITLE"></h3>
-			<p class="text-muted hidden-xs" translate="TECH_DESC"></p>
-			<p class="text-muted visible-xs" translate="TECH_DESC"></p>
-			<br>
-			<img src="images/tech.png" width="100%">
+			<p class="text-muted hidden-xs lead" translate="TECH_DESC"></p>
+			<p class="text-muted visible-xs lead" translate="TECH_DESC"></p>
+
+			<!-- Tech Explanation -->
+			<div class="row">
+				<div class="col-xs-12 col-sm-4">
+					<h4>Step 1</h4>
+					<p>Each camera is strategically placed to capture a still photograph in the lab every 60 seconds between the working hours of 9:00 am to 8:00</p>
+					<h4>Step 2</h4>
+					<p>Each produce 720 photographs per day.</p>
+				</div>
+				<div class="col-xs-12 col-sm-8">
+					<img src="images/tech.png" width="100%" alt="Technical Diagram">
+				</div>
+			</div>
 		</div>
 		<div class="col-sm-1 hidden-xs">
 		</div>

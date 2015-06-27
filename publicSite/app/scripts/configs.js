@@ -10,7 +10,17 @@
  */
 angular
   .module('app.configs', [])
-  .config(function($translateProvider) {
+  .config(function($translateProvider, $sceDelegateProvider, $locationProvider) {
+    // $locationProvider.html5Mode(true).hashPrefix('!');
+    // Whitelist URLs
+    $sceDelegateProvider.resourceUrlWhitelist([
+      // Allow same origin resource loads.
+      'self',
+      // Allow loading from our assets domain.  Notice the difference between * and **.
+      'https://player.vimeo.com/video/**'
+    ]);
+
+
     $translateProvider.useSanitizeValueStrategy('sanitize');
     // English
     $translateProvider.translations('en', {
@@ -27,7 +37,8 @@ angular
       DIGEST: {
         MONTH: 'Monthly Digest',
         DAY: 'Daily Digest'
-      }
+      },
+      CAMERA: 'Camera'
     });
     // Spanish
     $translateProvider.translations('es', {
@@ -42,7 +53,8 @@ angular
       DIGEST: {
         MONTH: 'Recopilación mensual',
         DAY: 'Resumen diario'
-      }
+      },
+      CAMERA: 'Cámara'
     });
     ///////////
     $translateProvider.preferredLanguage('en');
