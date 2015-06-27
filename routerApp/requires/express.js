@@ -104,7 +104,8 @@ module.exports = function(db, Model, vimeo) {
         } else {
           console.log('new video saved successfully!');
           res.json({
-            data: true
+            success: 200,
+            data: req.body
           });
         }
       });
@@ -148,14 +149,14 @@ module.exports = function(db, Model, vimeo) {
     // Regexp
     var r1 = /\d{4}\-/;
     var r2 = /\-\d{2}/;
-    var r_final = new RegExp(r1.source + month + r2.source);
+    var r_final = new RegExp(month + r2.source);
     Model.Video.find({
       date: {
         $regex: r_final
       }
     }, function(err, result) {
-      console.warn(err);
-      // console.log(result);
+      if (err) console.warn(err);
+      console.log(result);
       res.json({
         data: result
       });
@@ -166,15 +167,30 @@ module.exports = function(db, Model, vimeo) {
       Model.Video.findOne({
         date: date
       }, function(err, result) {
-        console.warn(err);
+        if (err) console.warn(err);
+        console.log(result);
+        var final_result = result;
         // Get Quadrant Video Description
-        vimeo.getVideoDetailFromId(result.vimeo_final, function(desc_result) {
-          result.description = 'Some Description';
+
+        vimeo.getVideoDetailFromId(final_result.vimeo_final.vimeo_video_id, function(vimeo_result) {
+          final_result.description = vimeo_result.description;
+          final_result.img = vimeo_result.pictures.sizes[2].link || '';
+
+          // Update Thumbnail (img) on Mongo
+          Model.Video.findOneAndUpdate({
+            date: date
+          }, {
+            img: final_result.img
+          }, {
+            upsert: true
+          }, function(err) {
+            if (err) console.log(err);
+          });
+
           res.json({
             data: result
           });
         });
-
       });
     })
     .get('/scanner/month/:month', function(req, res) {

@@ -26,7 +26,7 @@
 			</div>
 			<div class="row gallery-grid">
 				<div ng-repeat="video in videos" class="col-md-2 col-xs-4 thumbnail-container">
-					<button ng-click="disallowSlide()" ui-sref="video.day({lang: lang, year: video.ymd.y, month: video.ymd.m, day: video.ymd.d})" class="btn-link grid-content-container" style="background-image: url({{video.img}})" ng-style="{height: equalWidth + 'px'}">
+					<button ui-sref="video.day({lang: lang, year: {{video.date | amDateFormat: 'YYYY'}}, month: {{video.date | amDateFormat: 'MM' | toString}}, day: {{video.date | amDateFormat: 'DD' | toString}}})" class="btn-link grid-content-container" style="background-image: url({{video.img || 'http://elbulliweb.cloudapp.net/images/video_placeholder.eda98e0d.jpg'}})" ng-style="{height: equalWidth + 'px'}">
 						<h2>{{video.date | amDateFormat: 'DD'}}</h2>
 					</button>
 				</div>
