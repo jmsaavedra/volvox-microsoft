@@ -27,6 +27,6 @@ app.use('/', express.static(__dirname + '/dist'));
 // app.get();
 // app.post();
 
-app.listen(3000, function() {
-	console.log('Server running at port ' + 3000 + '. Ctrl+C to terminate.');
+app.listen(8000, function() {
+	console.log('Server running at port ' + 8000 + '. Ctrl+C to terminate.');
 }); //the port you want to use
