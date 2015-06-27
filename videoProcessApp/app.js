@@ -68,7 +68,7 @@ app.get('/test', function(req, res) {
 
 app.get('/start', function(req, res){
 
-  var date = '2015-06-23';
+  var date = '2015-06-25';
 
   processManager.beginCameraVideos(date, function(e, cameraVideos){
       if(e) console.log('error: '.red+e);
@@ -93,5 +93,7 @@ http.createServer(app).listen(port, function(){
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(listeningString.cyan.inverse);
 
-
+  // processManager.downloadImages('2015-06-25', function(e, imgs){
+  //   console.log('received images: '+JSON.stringify(imgs));
+  // });
 });

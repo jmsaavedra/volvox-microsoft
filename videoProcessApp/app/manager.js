@@ -11,6 +11,7 @@ var watchr 		= require('watchr'),
 	vidRenderer	= require('./videoRenderer'),
 	path 		= require('path'),
 	http 		= require('http'),
+	azure 		= require('./azureFiler'),
 	fs 			= require('graceful-fs'),
 	_ 			= require('underscore'),
 	mkdirp 	 	= require('mkdirp'),
@@ -23,6 +24,13 @@ var watchr 		= require('watchr'),
 */
 
 var Manager = {
+
+	downloadImages: function(date, callback){
+		var saveToFolder = path.join(global.RAW_IMGS_PATH, date);
+		azure.downloadImages(date, saveToFolder, function(e, localImgs){
+			callback(e, localImgs);
+		});
+	},
 
 	beginCameraVideos: function(date, callback){
 
