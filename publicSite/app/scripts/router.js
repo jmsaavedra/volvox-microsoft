@@ -42,7 +42,17 @@ angular
       .state('photo', {
         url: '/{lang:en|es}/photo/:month',
         templateUrl: 'views/photo.html',
-        controller: 'PhotoCtrl'
+        controller: 'PhotoYearCtrl'
+      })
+      .state('photo.month', {
+        url: '/{year:2015|2016}/{month:[0-9]+}',
+        templateUrl: 'views/photo.month.html',
+        controller: 'PhotoMonthCtrl'
+      })
+      .state('photo.day', {
+        url: '/{year:[0-9]+}/{month:[0-9]+}/{day:[0-9]+}',
+        templateUrl: 'views/photo.day.html',
+        controller: 'PhotoDayCtrl'
       });
     $urlRouterProvider.otherwise('/en');
   });

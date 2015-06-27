@@ -17,14 +17,13 @@ angular
     'anim-in-out',
     'angularMoment',
     'pascalprecht.translate',
-    'djds4rce.angular-socialshare',
     'app.data',
     'app.router',
     'app.configs',
     'app.services',
     'app.filters'
   ])
-  .run(function($rootScope, $translate, $state, $stateParams, $timeout, $FB, amMoment) {
+  .run(function($rootScope, $translate, $state, $stateParams, $timeout, amMoment) {
     ////////////////
     // Run global functions
     $rootScope.allowSlide = true;
@@ -35,9 +34,6 @@ angular
       amMoment.changeLocale($rootScope.lang);
       // console.log($stateParams.lang);
     }, 1000);
-
-    // Config for social sharing
-    $FB.init('918917801500205');
 
     // Toggle Language
     $rootScope.changeLanguage = function(lang) {

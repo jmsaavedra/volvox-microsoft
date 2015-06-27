@@ -3,7 +3,7 @@
 	<div class="row" style="padding-top:80px;">
 		<div class="col-xs-4">
 			<a class="btn btn-link" ui-sref="video.month({year: currentYear, month: currentMonth})" style="padding: 5px 0px;">
-				<img src="images/chevron-left.svg" height="16">
+				<span class="glyphicon glyphicon-chevron-left text-white"></span>
 				<span>&nbsp;Back to Daily Digest</span>
 			</a>
 		</div>
@@ -19,7 +19,7 @@
 	</div>
 	<div class="row" style="padding-top:20px;">
 		<div class="col-xs-12 col-md-2">
-			<h3 style="margin-top: 0px;">{{video_content.date | amDateFormat: 'MMMM DD'}}</h3>
+			<h3 style="margin-top: 0px;">{{video_content.date | amDateFormat: 'MMMM, DD'}}</h3>
 			<p>{{video_content.description}}</p>
 		</div>
 		<div class="col-xs-12 col-md-8">

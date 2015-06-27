@@ -2,7 +2,7 @@
 	<div class="row" style="padding-top:80px;">
 		<div class="col-xs-4">
 			<a class="btn btn-link" ui-sref="video" style="padding: 5px 0px;">
-				<img src="images/chevron-left.svg" height="16">
+				<span class="glyphicon glyphicon-chevron-left text-white"></span>
 				<span>&nbsp;Back to Monthly Digest</span>
 			</a>
 		</div>
@@ -26,13 +26,13 @@
 			</div>
 			<div class="row gallery-grid">
 				<div ng-repeat="video in videos" class="col-md-2 col-xs-4 thumbnail-container">
-					<button ng-click="disallowSlide()" ui-sref="video.day({lang: lang, year: video.ymd.y, month: video.ymd.m, day: video.ymd.d})" class="btn-link grid-content-container" style="background-image: url({{video.img}})" ng-style="{height: equalWidth + 'px', opacity: 0.5 + 0.5*($index/videos.length)}">
+					<button ng-click="disallowSlide()" ui-sref="video.day({lang: lang, year: video.ymd.y, month: video.ymd.m, day: video.ymd.d})" class="btn-link grid-content-container" style="background-image: url({{video.img}})" ng-style="{height: equalWidth + 'px'}">
 						<h2>{{video.date | amDateFormat: 'DD'}}</h2>
 					</button>
 				</div>
-				<div class="col-md-2 col-xs-4 thumbnail-container">
+				<div class="col-md-2 col-xs-4">
 					<button class="btn grid-content-container" ng-style="{height: equalWidth + 'px'}" style="background: #BDBDBD">
-						<h5 style="color: #353535; text-decoration: none;">In Progress<br>Coming soon!</h5>
+						<h5 style="color: #353535; text-decoration: none;">In Progress<br>Check back soon!</h5>
 					</button>
 				</div>
 			</div>

@@ -20,8 +20,9 @@ angular.module('elbulliApp')
   })
   .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout) {
     console.log('Video month');
-    $scope.thisMonth = moment($stateParams.month + ' 01 ' + $stateParams.year).format('MMMM, YYYY');
-
+    // console.log($stateParams.month + ' 01 ' + $stateParams.year);
+    $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
+    console.log($scope.thisMonth);
     // Dummy Data
     $scope.videos = [{
       date: '2015-08-01',
