@@ -9,6 +9,9 @@
  * Services module of the application.
  */
 var moment = moment || {};
+var DEBUG = true;
+var host = (DEBUG) ? 'http://localhost' : 'http://elbulliweb.cloudapp.net';
+
 angular
   .module('app.services', [])
 // Get all videos in the current month
@@ -18,12 +21,14 @@ angular
   var service = {};
 
   service.getMonthlyAsset = function(monthString, isVideo, ok, fail) {
-    var url = (isVideo) ? 'http://elbulliweb.cloudapp.net:8080/timelapse/month/' : 'http://elbulliweb.cloudapp.net:8080/scanner/month/';
+    var url = (isVideo) ? host + ':8080/timelapse/month/' : host + ':8080/scanner/month/';
     // Convert month into "XX"
-    var month = moment(monthString + ' 2015', 'MMMM YYYY').format('MM');
+    var month = moment(monthString).format('YYYY-MM');
+    // console.log(month);
     // GET REQUEST
     $http.get(url + month)
       .success(function(result) {
+        // console.log(result);
         if (ok) {
           ok(result);
         }
@@ -36,7 +41,7 @@ angular
   };
 
   service.getAssetsFromDate = function(dateString, isVideo, ok, fail) {
-    var url = (isVideo) ? 'http://elbulliweb.cloudapp.net:8080/timelapse/date/' : 'http://elbulliweb.cloudapp.net:8080/scanner/date/';
+    var url = (isVideo) ? host + ':8080/timelapse/date/' : host + ':8080/scanner/date/';
     $http.get(url + dateString)
       .success(function(result) {
         if (ok) {
