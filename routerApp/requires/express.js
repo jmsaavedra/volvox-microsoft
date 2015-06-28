@@ -163,88 +163,99 @@ module.exports = function(db, Model, vimeo) {
     });
   })
     .get('/timelapse/date/:date', function(req, res) {
-      var date = req.params.date; // YYYY-MM-DD
-      Model.Video.findOne({
-        date: date
-      }, function(err, result) {
-        if (err) console.warn(err);
-        console.log(result);
-        var final_result = result;
-        // Get Quadrant Video Description
-
-        vimeo.getVideoDetailFromId(final_result.vimeo_final.vimeo_video_id, function(vimeo_result) {
-          final_result.description = vimeo_result.description;
-          final_result.img = vimeo_result.pictures.sizes[2].link || '';
-
-          // Update Thumbnail (img) on Mongo
-          Model.Video.findOneAndUpdate({
+        var date = req.params.date; // YYYY-MM-DD
+        Model.Video.findOne({
             date: date
-          }, {
-            img: final_result.img
-          }, {
-            upsert: true
-          }, function(err) {
-            if (err) console.log(err);
-          });
+          }, function(err, result) {
+            if (err) console.warn(err);
+            // console.log(result);
+            var final_result = result;
 
-          res.json({
-            data: result
-          });
+            // Get Quadrant Video Description
+            vimeo.getVideoDetailFromId(final_result.vimeo_final.vimeo_video_id, function(vimeo_result) {
+              // console.log(chalk.green('Vimeo result'));
+              // console.log(vimeo_result);
+              var description = vimeo_result.description;
+              res.json({
+                data: result,
+                description: description
+              });
+            });
+            // Update thumbnail
+            vimeo.getVideoDetailFromId(final_result['cam' + Math.floor(Math.random() * 4)].vimeo_video_id,
+            function(vimeo_result_thumb) {
+              var img = vimeo_result_thumb.pictures.sizes[2].link || '';
+              // console.log(img);
+              // Update Thumbnail (img) on Mongo
+              Model.Video.findOneAndUpdate({
+                date: date
+              }, {
+                thumbnail: img,
+                updated_at: new Date().getTime()
+              }, {
+                upsert: true
+              }, function(err) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log('Done updating thumbnail');
+                }
+              });
+            });
         });
+  })
+  .get('/scanner/month/:month', function(req, res) {
+    var month = req.params.month; // 01-12
+    console.log(month);
+    // Regexp
+    var r1 = /\d{4}\-/;
+    var r2 = /\-\d{2}/;
+    var r_final = new RegExp(r1.source + month + r2.source);
+    Model.Scan.find({
+      date: {
+        $regex: r_final
+      }
+    }, function(err, result) {
+      console.warn(err);
+      // console.log(result);
+      res.json({
+        data: result
       });
-    })
-    .get('/scanner/month/:month', function(req, res) {
-      var month = req.params.month; // 01-12
-      console.log(month);
-      // Regexp
-      var r1 = /\d{4}\-/;
-      var r2 = /\-\d{2}/;
-      var r_final = new RegExp(r1.source + month + r2.source);
-      Model.Scan.find({
-        date: {
-          $regex: r_final
-        }
-      }, function(err, result) {
-        console.warn(err);
-        // console.log(result);
-        res.json({
-          data: result
-        });
+    });
+  })
+  .get('/scanner/date/:date', function(req, res) {
+    var date = req.params.date; // YYYY-MM-DD
+    Model.Scan.findOne({
+      date: date
+    }, function(err, result) {
+      console.warn(err);
+      res.json({
+        data: result
       });
-    })
-    .get('/scanner/date/:date', function(req, res) {
-      var date = req.params.date; // YYYY-MM-DD
-      Model.Scan.findOne({
-        date: date
-      }, function(err, result) {
-        console.warn(err);
-        res.json({
-          data: result
-        });
-      });
-    })
-  // For getting VIMEO info
-  .get('/vimeo/monthly', function(req, res) {
-    // /vimeo/monthly?month=january
-    var month = req.query.month;
-    vimeo.getMonthlyVideos(month, function(data) {
-      // Callback
+    });
+  })
+// For getting VIMEO info
+.get('/vimeo/monthly', function(req, res) {
+  // /vimeo/monthly?month=january
+  var month = req.query.month;
+  vimeo.getMonthlyVideos(month, function(data) {
+    // Callback
+    res.json(data);
+  });
+})
+  .get('/vimeo/id', function(req, res) {
+    // /vimeo/id?id=1234215
+    // console.log(req.query);
+    var id = req.query.id;
+    vimeo.getVideoDetailFromId(id, function(data) {
       res.json(data);
     });
   })
-    .get('/vimeo/id', function(req, res) {
-      // /vimeo/id?id=1234215
-      // console.log(req.query);
-      var id = req.query.id;
-      vimeo.getVideoDetailFromId(id, function(data) {
-        res.json(data);
-      });
-    })
-    .get('/', function(req, res) {
-      res.send('You just entered a restricted area. Keep out.');
-    });
+  .get('/', function(req, res) {
+    res.send('You just entered a restricted area. Keep out.');
+  });
 
 
-  // Finally return app
-  return app;
+// Finally return app
+return app;
 };

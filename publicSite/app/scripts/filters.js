@@ -11,8 +11,8 @@
 angular
   .module('app.filters', [])
 .filter('toString', function() {
-  return function() {
-
+  return function(input) {
+    return input.toString();
   };
 })
 // https://gist.github.com/svenanders/7289017
