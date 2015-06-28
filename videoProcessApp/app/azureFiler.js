@@ -49,12 +49,12 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
                 console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
                 return cb();
               } else {
+                //delete this broken ass file.
                 rimraf(thisLocalFilePath, function(e){
-                  //delete this broken ass file.
                   return cb();
                 });
               }
-            })
+            });
           } else {
             blobService.getBlobToLocalFile(containerName, blob.name, thisLocalFilePath, function (error2) {
               if (error2) {

@@ -7,21 +7,18 @@
 *
 */
 
-var watchr 		= require('watchr'),
-	vidRenderer	= require('./videoRenderer'),
+var vidRenderer	= require('./videoRenderer'),
+	vimeo 		= require('./vimeo'),
 	path 		= require('path'),
 	http 		= require('http'),
 	azure 		= require('./azureFiler'),
 	fs 			= require('graceful-fs'),
 	_ 			= require('underscore'),
 	mkdirp 	 	= require('mkdirp'),
+	rimraf		= require('rimraf'),
+	request 	= require('request'),
 	async 		= require('async');
 		
-
-
-/***
-/* INIT Folder Watcher 
-*/
 
 var Manager = {
 
@@ -29,30 +26,28 @@ var Manager = {
 
 		/* download all images from azure to this machine for processing */
 		Manager.downloadImages(date, function(e, imgs){
-	    	if(e){
-	      		console.log('ERROR DOWNLOADING IMAGES: '.red.bold,e);
-	     		callback(e);
-	    	} 
-		    else { //console.log('received images: '+JSON.stringify(imgs));
+	    	if(e) return callback(e); //console.log('received images: '+JSON.stringify(imgs));
 		    	
-		    	/* make individual camera movies */
-		    	Manager.beginCameraVideos(date, function(e, cameraVideos){
-		        	if(e) console.log('error: '.red+e);
-		        	console.log('finished procesing individual videos: '.green);
-		        	console.log(JSON.stringify(cameraVideos, null, '\t'));
+	    	/* make individual camera movies */
+	    	Manager.beginCameraVideos(date, function(er, cameraVideos){
+	        	if(er) return callback(er);
+	        	console.log('finished procesing individual videos: '.green);
+	        	console.log(JSON.stringify(cameraVideos, null, '\t'));
 
-		        	/* make the final video */
-		        	vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
-		          		console.log('Finished Final Render:'.green, finalVidPath);
+	        	/* make the final video */
+	        	Manager.processFinalVideo(date, cameraVideos, function(err, finalVid){
+	        		if(err) return callback(err);
 
-		          		/* last thing: copy to watched folder. will upload to Vimeo then. */
-		          		var copyTo = path.join(global.FOLDER_TO_WATCH,path.basename(finalVidPath));
-		          		copyFile(finalVidPath, copyTo, function(e, newPath){
-		          			callback(null, newPath);
-		          		});
-		        	});
-		     	});
-		    }
+	        		if(!global.UPLOAD_FLAG) // not in dev mode
+	        			return callback(null, finalVid);
+	        		
+	        		/* delete all the process files */
+	        		rimraf(path.join(global.PROCESS_FOLDER,date), function(_e){
+	        			if(!_e)console.log('SUCCESS removed all process files.'.gray);
+	        			callback(_e, finalVid);
+	        		});
+	        	});
+	     	});
 		});
 	},
 
@@ -65,9 +60,8 @@ var Manager = {
 
 	beginCameraVideos: function(date, callback){
 
-		/** 2D array of ALL CAMERA RAW IMAGE FILEPATHS
-		* 	- will hold: [ [cam0imgs], [cam1imgs],.. ]
-		*/
+		/* 2D array of ALL CAMERA RAW IMAGE FILEPATHS
+		- will hold: [ [cam0imgs], [cam1imgs],.. ]*/
 		var images = [ [], [], [], [] ]; 
 
 		var todayRawImgPath = path.join(global.RAW_IMGS_PATH, date);
@@ -91,14 +85,14 @@ var Manager = {
 				if(err) return callback(err);
 				images = _.sortBy(images, function(name){return name;});
 				// console.log('completed all camera images 2D array: '+JSON.stringify(images, null, '\t'));
-				Manager.copyToProcessFolder(date, images, todayProcessImgPath, function(_e, camVideos){
+				Manager.processCameraVideos(date, images, todayProcessImgPath, function(_e, camVideos){
 					callback(_e, camVideos);
 				});
 			});
 		});
 	},
 
-	copyToProcessFolder: function(date, allCameraImgs, processFolder, callback){
+	processCameraVideos: function(date, allCameraImgs, processFolder, callback){
 		console.log('copying to processFolder: '.cyan+processFolder);
 		
 		var cameraCt = 0;
@@ -110,37 +104,79 @@ var Manager = {
 			var frameCt = 0;
 			async.mapSeries(thisCamImgs, function(img, cb){ //for each image individually of this camera
 				
-				var processImgPath = path.join(thisCamImgFolder, 'frame-'+frameCt.toString()+'.jpg');
+				vidRenderer.processRawImage(img, frameCt, thisCamImgFolder, function(e, processedImagePath){
+					frameCt++;
+					cb(e, processedImagePath);
+				});
+				
 
 				/***** HERE INSERT IMAGE CROP AND SAVE, REMOVE COPY ******/
-				copyFile(img, processImgPath, function(e, path){ // copy to the process folder
-					frameCt++;
-					cb(e, path);
-				});
+				// copyFile(img, processImgPath, function(e, path){ // copy to the process folder
+				// 	frameCt++;
+				// 	cb(e, path);
+				// });
 			}, function(e, imgs){
 
 				/** BEGIN the processing of this camera's video! **/
-				vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, localVid){
+				vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, processedVid){
+					if(err) return _cb(err);
 					cameraCt++;
-					var copyTo = path.join(global.FOLDER_TO_WATCH,path.basename(localVid));
 
-					/* copy to WATCH folder, this vid will get uploaded to vimeo now */
-					copyFile(localVid, copyTo, function(e, newPath){
-						_cb(err, localVid);	//pass process folder video URI
+					/* UPLOAD to vimeo, update server/db with http post */
+					Manager.uploadVideo(processedVid, function(_e, file){
+						_cb(_e, processedVid);
 					});
 				});
 			});
-		}, function(_e, allCamVideos){
-			callback(_e, allCamVideos);
+		}, function(_err, allCamVideos){
+			callback(_err, allCamVideos);
 		});
 	},
+
+	processFinalVideo: function(date, cameraVideos, callback){
+
+		/* process final composite video */
+	    vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
+	  		console.log('Finished Final Render:'.green, finalVidPath);
+	  		if(e) return callback(e);
+
+	  		/* now upload this vid! */
+	  		Manager.uploadVideo(finalVidPath, function(_e, file){
+	  			callback(_e, finalVidPath);
+	  		});
+		});
+	},
+
+	uploadVideo: function(filePath, callback){
+
+		if(!global.UPLOAD_FLAG) //in case of dev
+			return callback(null, filePath);
+
+		vimeo.uploadVideo(filePath, function(e, data){
+			if(e){
+				console.log('ERROR uploading to Vimeo: '.red.bold+e);	
+				return callback(e);
+			} 
+			// if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
+			console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
+
+			// send this data to the routing server to save to DB:
+			postData(data, function(_e, filename){
+				if(_e) console.log('error posting to our server: '.red+_e);
+				callback(_e, filename);
+			});
+		});
+	}
 };
 
 module.exports = Manager;
 
 
+/***
+* COPY FILE to a new path
+*/
 function copyFile(oldPath, newPath, _cb){
-	console.log('copying file from'.gray, '\n', oldPath, '\n>>> to'.gray, newPath);
+	//console.log('copying file from'.gray, '\n', oldPath, '\n>>> to'.gray, newPath);
 	fs.exists(newPath, function(exists){
 		if(!exists){
 			fs.link(oldPath, newPath, function(e, stats){
@@ -150,3 +186,23 @@ function copyFile(oldPath, newPath, _cb){
 		} else _cb(null, newPath);
 	});
 }
+
+
+/***
+* POST data object to ElBulli Server
+*/
+var postData = function(data, cb){
+	var postURL = global.BULLI_SERVER.host+':'+global.BULLI_SERVER.port+global.BULLI_SERVER.path;
+	// console.log('posting to url: '+postURL);
+	request.post({
+		url: postURL,
+		body: data,
+		json: true
+	},
+	function(err,httpResponse,body){
+		if(err) console.log('postData err: '+err);
+		// console.log('httpResponse: '+JSON.stringify(httpResponse, null, '\t'));
+		console.log('server response body: '.cyan+JSON.stringify(body, null, '\t'));
+		cb(err, body.data);
+	});
+};
