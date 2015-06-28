@@ -49,6 +49,8 @@ var Process = {
 					callb(err.message);
 				})
 				.on('progress', function(progress) {
+					console.log(progress);
+					console.log(JSON.stringify(progress));
 					var currProgress = Math.round(progress.percent);
 					if(currProgress != progressCt){
 						console.log('Processing '.gray,' camera-'+camId+'_'+date+'.mp4 ',': '.gray + currProgress + '% done');
