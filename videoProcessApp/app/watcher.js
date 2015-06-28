@@ -62,7 +62,7 @@ module.exports.init = function(){
 							});
 						});
 					});
-
+					
 	            } else if (arguments[0] === 'delete'){
 
 	            	/* FILE HAS BEEN DELETED */	            	

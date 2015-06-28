@@ -97,6 +97,7 @@ http.createServer(app).listen(port, function(){
 function initScheduler(){
 
   later.date.localTime(); // use local time
+  console.log(new Date());
 
   /* SHOWTIME */
   // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday();
