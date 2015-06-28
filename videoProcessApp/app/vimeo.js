@@ -26,8 +26,7 @@ var vimeoApi = {
     var postData = {}; //holds object to update elbulli web server with.
 
     if(fname.indexOf('camera') === 0){
-      var cam = fname.split('_')[0].replace(/-/, ' ');
-      title += ' - '+cam;
+      
     } else {
       
     }
@@ -49,41 +48,41 @@ var vimeoApi = {
     		var vimData = JSON.parse(JSON.stringify(_body));
     		var videoId = path.basename(vimData.uri);
         if(fname.indexOf('camera') > -1){
+          var cam = fname.split('_')[0].replace(/-/, ' ');
+          title += ' - '+cam;
           var camNum = parseInt(fname[7]);
-          switch(camNum){
-            case 0:
-              postData.cam0 = {
-                vimeo_video_id: videoId 
-              };
-              break;
-            case 1:
-              postData.cam1 = {
-                vimeo_video_id: videoId 
-              };
-              break;
-            case 2:
-              postData.cam2 = {
-                vimeo_video_id: videoId 
-              };
-              break;
-            case 3:
-              postData.cam3 = {
-                vimeo_video_id: videoId 
-              };
-              break;
-            default:
-              console.log('camnum not found: '+camNum);
-              break;
-          }
-        } else {
-          postData.vimeo_final = {
-            vimeo_video_id: videoId
-          };
-        }
+          if      (camNum === 0) postData.cam0 = { vimeo_video_id: videoId };
+          else if (camNum === 1) postData.cam1 = { vimeo_video_id: videoId };
+          else if (camNum === 2) postData.cam2 = { vimeo_video_id: videoId };
+          else if (camNum === 3) postData.cam3 = { vimeo_video_id: videoId };
+          else console.log('camNum not found: '+camNum);
+        } else postData.vimeo_final = { vimeo_video_id: videoId };
+        //   switch(camNum){
+        //     case 0:
+        //       postData.cam0 = { vimeo_video_id: videoId };
+        //       break;
+        //     case 1:
+        //       postData.cam1 = { vimeo_video_id: videoId };
+        //       break;
+        //     case 2:
+        //       postData.cam2 = { vimeo_video_id: videoId };
+        //       break;
+        //     case 3:
+        //       postData.cam3 = { vimeo_video_id: videoId };
+        //       break;
+        //     default:
+        //       console.log('camNum not found: '+camNum);
+        //       break;
+        //   }
+        // } else {
+        //   postData.vimeo_final = {
+        //     vimeo_video_id: videoId
+        //   };
+        // }
     		
         var newMetadata = {
           name: title,
-          description: 'ElBulliLab Timelapse, '+date+'.',
+          description: 'elBulliLab Timelapse, captured on '+date+'.  Read more at http://elbulli.com',
           privacy : {
             view: 'anybody'
           }
