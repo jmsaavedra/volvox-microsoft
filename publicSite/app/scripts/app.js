@@ -58,4 +58,6 @@ angular
     window.addEventListener('resize', function() {
       $rootScope.heightMinusNavs = window.innerHeight - 140;
     });
+  }).constant('angularMomentConfig', {
+    timezone: 'Europe/Madrid' // optional
   });
