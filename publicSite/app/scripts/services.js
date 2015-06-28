@@ -23,12 +23,13 @@ angular
   service.getMonthlyAsset = function(monthString, isVideo, ok, fail) {
     var url = (isVideo) ? host + ':8080/timelapse/month/' : host + ':8080/scanner/month/';
     // Convert month into "XX"
-    var month = moment(monthString).format('YYYY-MM');
+    console.log(monthString);
+    var month = moment(monthString, 'MMMM, YYYY').format('YYYY-MM');
     // console.log(month);
     // GET REQUEST
     $http.get(url + month)
       .success(function(result) {
-        // console.log(result);
+        console.log(result);
         if (ok) {
           ok(result);
         }
