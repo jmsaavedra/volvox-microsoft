@@ -148,19 +148,21 @@ angular.module('elbulliApp')
     // Get video from vimeo
     Server.getAssetsFromDate($scope.queryDate, true, function(result) {
       // Success
-      $scope.data = result.data;
+      $scope.video_content = result.data;
+      $scope.description = result.description;
+      console.log($scope.video_content);
       // DOM Ready fix
       $timeout(function() {
         $scope.getVimeoHeight();
         // Back to month view
         var vimeo_player_url = 'https://player.vimeo.com/video/';
-        $scope.currentMonth = moment($scope.data.date).format('MM');
-        $scope.currentYear = moment($scope.data.date).format('YYYY');
-        $scope.vimeo_final_url = vimeo_player_url + $scope.data.vimeo_final.vimeo_video_id;
-        $scope.vimeo_cam0_url = vimeo_player_url + $scope.data.cam0.vimeo_video_id;
-        $scope.vimeo_cam1_url = vimeo_player_url + $scope.data.cam1.vimeo_video_id;
-        $scope.vimeo_cam2_url = vimeo_player_url + $scope.data.cam2.vimeo_video_id;
-        $scope.vimeo_cam3_url = vimeo_player_url + $scope.data.cam3.vimeo_video_id;
+        $scope.currentMonth = moment($scope.video_content.date).format('MM');
+        $scope.currentYear = moment($scope.video_content.date).format('YYYY');
+        $scope.vimeo_final_url = vimeo_player_url + $scope.video_content.vimeo_final.vimeo_video_id;
+        $scope.vimeo_cam0_url = vimeo_player_url + $scope.video_content.cam0.vimeo_video_id;
+        $scope.vimeo_cam1_url = vimeo_player_url + $scope.video_content.cam1.vimeo_video_id;
+        $scope.vimeo_cam2_url = vimeo_player_url + $scope.video_content.cam2.vimeo_video_id;
+        $scope.vimeo_cam3_url = vimeo_player_url + $scope.video_content.cam3.vimeo_video_id;
       });
     }, function(error) {
       // Fail
