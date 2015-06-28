@@ -64,7 +64,8 @@ app.use(express.static(__dirname+ '/public'));
 
 
 app.get('/start', function(req, res){
-  var today = moment().format('YYYY-MM-DD');
+  // var today = moment().format('YYYY-MM-DD');
+  var today = '2015-06-27';
   console.log('>>> kicking off video process for: '.green.bold+today);
   processManager.beginDailyProcess(today, function(e, finalFilePath){
     if(e) console.log('FAILED DAILY VIDEO PROCESS:'.red.bold.inverse, e);
@@ -97,7 +98,7 @@ http.createServer(app).listen(port, function(){
 function initScheduler(){
 
   later.date.localTime(); // use local time
-  console.log(new Date());
+  console.log('local time: '+new Date());
 
   /* SHOWTIME */
   // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday();
