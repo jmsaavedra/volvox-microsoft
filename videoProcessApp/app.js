@@ -18,18 +18,23 @@ global.VIMEO_CLIENT_ID = '703165f789ba78ad4e2566dcd65113df4e0e4b70';
 global.VIMEO_CLIENT_SECRET = 'S7CherScJPSuuC4Z3fFBCbvBM5/BUuJ3UQvsgIa3DmNXbCY9Qw4qb9dOSMJsfXJCmEtOthny+m8eNGzbzUEhRpNue8VDCmGfKs8fAJEhPvcLkkjUeJPjBYu9/PnzVkN4';
 global.VIMEO_ACCESS_TOKEN = '0e916bf3af2e06f8eb82b5f87ee2e445';
 
-//FOLDER GLOBALS
-global.RAW_IMGS_PATH    = '/Users/jmsaavedra/Desktop/images-saved/'; //raw camera images
-global.PROCESS_FOLDER   = '/Users/jmsaavedra/Desktop/process';       //folder where we'll store stuff as it's created
-global.FOLDER_TO_WATCH  = '/Users/jmsaavedra/Desktop/finalvids';     //will upload any video that goes in here to vimeo
-global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net',  //our server to update the DB with data, video links, etc
-                            path: '/timelapse/new',
-                            port: '8080' };
+
 
 var express     = require('express');
 var colors      = require('colors');
+var later       = require('later');
+var moment      = require('moment');
 var http        = require('http');
+var path        = require('path');
 var port        = '8080'; //select a port for this server to run on
+
+//FOLDER GLOBALS
+global.RAW_IMGS_PATH    = path.join(__dirname,'_raw-images'); //raw camera images
+global.PROCESS_FOLDER   = path.join(__dirname,'_processed-files');       //folder where we'll store stuff as it's created
+global.FOLDER_TO_WATCH  = path.join(__dirname,'_vids-to-upload');     //will upload any video that goes in here to vimeo
+global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net',  //our server to update the DB with data, video links, etc
+                            path: '/timelapse/new',
+                            port: '8080' };
 
 //custom modules
 var watcher 	     = require('./app/watcher').init();
@@ -37,6 +42,7 @@ var vimeo          = require('./app/vimeo');
 var processManager = require('./app/manager');
 var vidRenderer    = require('./app/videoRenderer');
 
+var testDate = '2015-06-26'; /* for testing */
 
 /****
 * CONFIGURE Express
@@ -53,32 +59,22 @@ app.use(express.static(__dirname+ '/public'));
 /****
 * ROUTES
 * ==============================================
-* - these are the HTTP /routes that we can hit
 *
 */
 
-app.get('/test', function(req, res) { 
-  console.log('hit /test'.gray);	
-  res.send('you hit /test!');
-	// azureFiler.uploadImage('/Users/jmsaavedra/Desktop/____watcher-test/5511a1a8f20a6250693c8ff1.jpg', function(e, data){
-	// 	if(e) res.send('ERROR creating container: '+e);
-	// 	else res.send('created container: '+data);
-	// });
-});
 
 app.get('/start', function(req, res){
-
-  var date = '2015-06-25';
-
-  processManager.beginCameraVideos(date, function(e, cameraVideos){
-      if(e) console.log('error: '.red+e);
-      console.log('finished procesing individual videos: '.green);
-      console.log(JSON.stringify(cameraVideos, null, '\t'));
-      vidRenderer.makeFinalVideo(cameraVideos, function(e, finalVidPath){
-        console.log('Finished Final Render:'.green.inverse, finalVidPath);
-      });
-    });
-    res.send('started daily process.');
+  var today = moment().format('YYYY-MM-DD');
+  console.log('>>> kicking off video process for: '.green.bold+today);
+  processManager.beginDailyProcess(today, function(e, finalFilePath){
+    if(e) console.log('FAILED DAILY VIDEO PROCESS:'.red.bold.inverse, e);
+    else console.log('COMPLETED DAY AND VIDEOS. '.green.bold.inverse, finalFilePath);
+    /***************
+    //TODO: DELETE ALL PROCESS FILES (individual images, vids) FROM THIS MACHINE! We're DONE.
+    //TODO: Decide if this should go to Azure File Storage for backup or not.
+    */
+  });
+  res.send('started daily process.');
 });
 
 
@@ -93,7 +89,29 @@ http.createServer(app).listen(port, function(){
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(listeningString.cyan.inverse);
 
-  // processManager.downloadImages('2015-06-25', function(e, imgs){
-  //   console.log('received images: '+JSON.stringify(imgs));
-  // });
+  initScheduler();
 });
+
+
+
+function initScheduler(){
+
+  later.date.localTime(); // use local time
+
+  /* SHOWTIME */
+  // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday();
+  var processSched = later.parse.recur().on('18:34:10').time();
+  var processTimeout = later.setTimeout(
+    function() { 
+      var thisDay = moment().format('YYYY-MM-DD');
+      console.log('>>> kicking off video process for: '.green.bold+thisDay);
+      processManager.beginDailyProcess(thisDay, function(e, finalFilePath){
+        if(e) console.log('FAILED DAILY VIDEO PROCESS:'.red.bold.inverse, e);
+        else console.log('COMPLETED DAY AND VIDEOS. '.green.bold.inverse, finalFilePath);
+        /***************
+        //TODO: DELETE ALL PROCESS FILES (individual images, vids) FROM THIS MACHINE! We're DONE.
+        //TODO: Decide if this should go to Azure File Storage for backup or not.
+        */
+      });
+    }, processSched);
+}

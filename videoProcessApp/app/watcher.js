@@ -15,6 +15,7 @@
 var watchr 		= require('watchr'),
 	vimeo 		= require('./vimeo'),
 	path 		= require('path'),
+	rimraf 		= require('rimraf');
 	http 		= require('http'),
 	// querystring = require('querystring');
 	request = require('request');
@@ -46,7 +47,6 @@ module.exports.init = function(){
 	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER */
 	            	console.log('>> new local file created: '.cyan);
 	            	console.log('\t'+arguments[1]);
-	            	var fname = path.basename(arguments[1]);
 
 					vimeo.uploadVideo(arguments[1], function(e, data){
 						if(e) return console.log('ERROR uploading to Vimeo: '.red.bold+e);
@@ -54,7 +54,13 @@ module.exports.init = function(){
 						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
 						// send this data to the routing server to save to DB:
-						postData(data);
+						postData(data, function(_e, filename){
+							if(_e) console.log('error posting to our server: '.red+_e);
+							rimraf(path.join(global.FOLDER_TO_WATCH,filename), function(_er){
+								if(_er) console.log('error removing uploaded video: '.red+_er);
+								// console.log('Deleted: '+filename);
+							});
+						});
 					});
 
 	            } else if (arguments[0] === 'delete'){
@@ -86,9 +92,9 @@ module.exports.init = function(){
 /***
 /* POST data object to ElBulli Server
 */
-var postData = function(data){
+var postData = function(data, cb){
 	var postURL = global.BULLI_SERVER.host+':'+global.BULLI_SERVER.port+global.BULLI_SERVER.path;
-	console.log('posting to url: '+postURL);
+	// console.log('posting to url: '+postURL);
 	request.post({
 		url: postURL,
 		body: data,
@@ -96,8 +102,9 @@ var postData = function(data){
 	},
 	function(err,httpResponse,body){
 		if(err) console.log('postData err: '+err);
-		console.log('httpResponse: '+httpResponse);
-		console.log('body: '+body);
+		// console.log('httpResponse: '+JSON.stringify(httpResponse, null, '\t'));
+		console.log('server response body: '.cyan+JSON.stringify(body, null, '\t'));
+		cb(err, body.data);
 	});
 };
 // var postData = function(data, video){

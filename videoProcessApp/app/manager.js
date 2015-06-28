@@ -25,6 +25,37 @@ var watchr 		= require('watchr'),
 
 var Manager = {
 
+	beginDailyProcess: function(date, callback){
+
+		/* download all images from azure to this machine for processing */
+		Manager.downloadImages(date, function(e, imgs){
+	    	if(e){
+	      		console.log('ERROR DOWNLOADING IMAGES: '.red.bold,e);
+	     		callback(e);
+	    	} 
+		    else { //console.log('received images: '+JSON.stringify(imgs));
+		    	
+		    	/* make individual camera movies */
+		    	Manager.beginCameraVideos(date, function(e, cameraVideos){
+		        	if(e) console.log('error: '.red+e);
+		        	console.log('finished procesing individual videos: '.green);
+		        	console.log(JSON.stringify(cameraVideos, null, '\t'));
+
+		        	/* make the final video */
+		        	vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
+		          		console.log('Finished Final Render:'.green, finalVidPath);
+
+		          		/* last thing: copy to watched folder. will upload to Vimeo then. */
+		          		var copyTo = path.join(global.FOLDER_TO_WATCH,path.basename(finalVidPath));
+		          		copyFile(finalVidPath, copyTo, function(e, newPath){
+		          			callback(null, newPath);
+		          		});
+		        	});
+		     	});
+		    }
+		});
+	},
+
 	downloadImages: function(date, callback){
 		var saveToFolder = path.join(global.RAW_IMGS_PATH, date);
 		azure.downloadImages(date, saveToFolder, function(e, localImgs){
@@ -80,6 +111,8 @@ var Manager = {
 			async.mapSeries(thisCamImgs, function(img, cb){ //for each image individually of this camera
 				
 				var processImgPath = path.join(thisCamImgFolder, 'frame-'+frameCt.toString()+'.jpg');
+
+				/***** HERE INSERT IMAGE CROP AND SAVE, REMOVE COPY ******/
 				copyFile(img, processImgPath, function(e, path){ // copy to the process folder
 					frameCt++;
 					cb(e, path);
@@ -89,7 +122,12 @@ var Manager = {
 				/** BEGIN the processing of this camera's video! **/
 				vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, localVid){
 					cameraCt++;
-					_cb(err, localVid);	
+					var copyTo = path.join(global.FOLDER_TO_WATCH,path.basename(localVid));
+
+					/* copy to WATCH folder, this vid will get uploaded to vimeo now */
+					copyFile(localVid, copyTo, function(e, newPath){
+						_cb(err, localVid);	//pass process folder video URI
+					});
 				});
 			});
 		}, function(_e, allCamVideos){
@@ -102,6 +140,7 @@ module.exports = Manager;
 
 
 function copyFile(oldPath, newPath, _cb){
+	console.log('copying file from'.gray, '\n', oldPath, '\n>>> to'.gray, newPath);
 	fs.exists(newPath, function(exists){
 		if(!exists){
 			fs.link(oldPath, newPath, function(e, stats){

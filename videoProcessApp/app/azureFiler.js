@@ -11,6 +11,7 @@
 var moment    = require('moment');
 var azure     = require('azure-storage');
 var fs        = require('graceful-fs');
+var rimraf    = require('rimraf');
 var async     = require('async');
 var path      = require('path');
 var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
@@ -18,7 +19,7 @@ var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE
 
 
 module.exports.downloadImages = function (containerName, destinationDirectoryPath, callback) {
-  console.log('Entering downloadBlobs, container:'.green, containerName);
+  console.log('Downloading images from Container:'.green, containerName);
   var localImgs = [];
 
   // Validate directory
@@ -35,25 +36,51 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
       console.log(error);
     } else {
       var blobs = result.entries;
-
-      console.log('total files in this container: '+ blobs.length);
-
+      console.log('Total ct files in this container: '.cyan.bold+ blobs.length);
+      var fileCt = 0;
       async.eachSeries(blobs, function (blob, cb) {
-        blobService.getBlobToLocalFile(containerName, blob.name, destinationDirectoryPath + '/' + blob.name, function (error2) {
-          // blobsDownloaded++;
-          if (error2) {
-            console.log('error on blob download:'.red, error2);
-            cb(error2);
+        fileCt++;
+        var thisLocalFilePath = destinationDirectoryPath + '/' + blob.name;
+
+        fs.exists(thisLocalFilePath, function(exists){
+          if(exists){
+            fs.stat(thisLocalFilePath, function(e, stats){
+              if(stats.size > 1000){//if it's more than 1000 bytes big
+                console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
+                return cb();
+              } else {
+                rimraf(thisLocalFilePath, function(e){
+                  //delete this broken ass file.
+                  return cb();
+                });
+              }
+            })
           } else {
-            console.log(' Blob ' + blob.name + ' download finished.');
-            localImgs.push(blob.name);
-            cb();
+            blobService.getBlobToLocalFile(containerName, blob.name, thisLocalFilePath, function (error2) {
+              if (error2) {
+                console.log('error on blob download:'.red, error2);
+                cb(error2);
+              } else {
+                console.log('Finished downloading file '.green, fileCt+'/'.gray+blobs.length,':',blob.name);
+                localImgs.push(blob.name);
+                cb();
+              }
+            });
           }
         });
+        // if(fs.existsSync(thisLocalFilePath)){
+        //   if(fs.statSync(thisLocalFilePath).size > 1000){ //if it's more than 1000 bytes big
+        //     console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
+        //     return cb();
+        //   }
+        // }
+
       }, function(e){
           if(e) return callback(e);
-          console.log('All files downloaded');
-          callback(null, localImgs);
+          else {
+            console.log(' ALL FILES DOWNLOADED '.green.bold.inverse, containerName);
+            callback(null, localImgs);
+          }
       });
     }
   });
@@ -123,7 +150,7 @@ function moveFile(container, fpath, name, cb){
       // console.log('folder exists')
       cutPasteFile(fpath, path.join(global.SAVE_IMG_FOLDER, container, name), cb);
     } else {
-      console.log('folder NOT exist, creating now')
+      console.log('folder NOT exist, creating now');
        fs.mkdirSync(path.join(global.SAVE_IMG_FOLDER, container));
        cutPasteFile(fpath, path.join(global.SAVE_IMG_FOLDER, container, name), cb);
     }
@@ -134,6 +161,6 @@ function cutPasteFile(oldPath, newPath, _cb){
   fs.rename(oldPath, newPath, function(e, stats){
     if(e) console.log('error fs.rename: '.red + e);
     _cb(e);
-  })
+  });
 }
 

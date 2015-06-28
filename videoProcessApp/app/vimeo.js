@@ -15,56 +15,107 @@ var lib = new Vimeo(global.VIMEO_CLIENT_ID, global.VIMEO_CLIENT_SECRET, global.V
 var vimeoApi = {
 
 	uploadVideo: function(URI, cb){
+    console.log('Start uploading file to Vimeo. '.yellow);
 
-		var today = moment().format('YYYY-MM-DD');
-		var title = moment().format('mmmm DD, YYYY');
+    var fname = path.basename(URI, '.mp4');
+    var rawDate = fname.split('_')[1].toString();
+    var date = moment(rawDate).format('MMMM DD, YYYY');
+
+		var title = 'ElBulliLab: '+date;
+
+    var postData = {}; //holds object to update elbulli web server with.
+
+    if(fname.indexOf('camera') === 0){
+      var cam = fname.split('_')[0].replace(/-/, ' ');
+      title += ' - '+cam;
+    } else {
+      
+    }
 
 		lib.streamingUpload(URI,  function (error, body, status_code, headers) {
 	    if (error) {
-	        // throw error;
-	        cb(error);
+	        return cb(error);
 	    }
 
 	    lib.request(headers.location, function (error, _body, status_code, headers) {
-    		console.log('status_code: ' + status_code);
+    		console.log('vimeo upload status_code: '.cyan + status_code);
+        
+        if(error || status_code !== 200){
+          console.log('vimeo upload fail _body: '.red+JSON.stringify(_body));
+          console.log('vimeo upload fail headers: '.red+JSON.stringify(headers));
+          return cb(error);
+        } 
 
     		var vimData = JSON.parse(JSON.stringify(_body));
     		var videoId = path.basename(vimData.uri);
-    		// console.log('vimData: '+JSON.stringify(vimData));
-    		// console.log('metadata: '+JSON.stringify(vimData.metadata));
-    		// console.log('------------\n metadata.connections.pictures: '+JSON.stringify(vimData.metadata.connections.pictures));
-    		// console.log('------------\n metadata.connections.pictures.uri: '+vimData.metadata.connections.pictures.uri);
+        if(fname.indexOf('camera') > -1){
+          var camNum = parseInt(fname[7]);
+          switch(camNum){
+            case 0:
+              postData.cam0 = {
+                vimeo_video_id: videoId 
+              };
+              break;
+            case 1:
+              postData.cam1 = {
+                vimeo_video_id: videoId 
+              };
+              break;
+            case 2:
+              postData.cam2 = {
+                vimeo_video_id: videoId 
+              };
+              break;
+            case 3:
+              postData.cam3 = {
+                vimeo_video_id: videoId 
+              };
+              break;
+            default:
+              console.log('camnum not found: '+camNum);
+              break;
+          }
+        } else {
+          postData.vimeo_final = {
+            vimeo_video_id: videoId
+          };
+        }
     		
-    		vimeoApi.updateVideoMetadataFromId(videoId, title, function(e, data){
-    			
-        	var thisVid = {
-        		vimeo_video_id : videoId,
-        		img : 'http://elbulliweb.cloudapp.net/images/video_placeholder.jpg'
-        	};
+        var newMetadata = {
+          name: title,
+          description: 'ElBulliLab Timelapse, '+date+'.',
+          privacy : {
+            view: 'anybody'
+          }
+        };
 
-	        var data = {
-	        	cam0 : thisVid,
-	        	complete : true,
-	        	date : today,
-	        	type : 'video',
-	        	show : true
-	        }
+    		vimeoApi.updateVideoMetadataFromId(videoId, newMetadata, function(e, data){
 
-	        cb(null, data);		    			
+          postData.date= rawDate;
+          postData.type= 'video';
+          postData.complete= true;
+          postData.show= true;
+          postData.filename = path.basename(URI);
+          
+	        cb(e, postData);		    			
     		});
 	    });
 		});
 	},
 
 
-	updateVideoMetadataFromId: function(id, _name, cb){
+	updateVideoMetadataFromId: function(id, metadata, _cb){
 
-		// lib.request({
-		// 	path: '/videos/' + id,
-		// 	query: {
-		// 		name: 
-		// 	}
-		// })
+		lib.request({
+  			path: '/videos/' + id,
+        method: 'PATCH',
+  			query: metadata
+      },
+      function(err, body, status_code, headers){
+		    if(err) console.log('vimeo metadata err: '.red+err);
+        console.log('vimeo metadata status_code: '.cyan+status_code);
+        _cb(err, body);
+      });
 	},
 
 

@@ -26,7 +26,7 @@ var Process = {
 		var todaysProcessFolder = path.join(global.PROCESS_FOLDER, date);
 		var thisCamFolder = path.join(todaysProcessFolder, camId.toString());
 		// var thisCamImgFolder = path.join(thisCamFolder, 'imgs');
-		var videoOutputFilePath = path.join(todaysProcessFolder, 'camera_'+camId.toString()+'.mp4');
+		var videoOutputFilePath = path.join(todaysProcessFolder, 'camera-'+camId.toString()+'_'+date+'.mp4');
 		
 		var imgsToUse = [];
 		console.log('making video camID: '.cyan+camId);
@@ -49,24 +49,25 @@ var Process = {
 					callb(err.message);
 				})
 				.on('progress', function(progress) {
-					var currProgress = Math.round(progress.percent*1.1);
+					var currProgress = Math.round(progress.percent);
 					if(currProgress != progressCt){
-						console.log('Processing '.gray,' camera_'+camId+'.mp4 ',': '.gray + currProgress + '% done');
+						console.log('Processing '.gray,' camera-'+camId+'_'+date+'.mp4 ',': '.gray + currProgress + '% done');
 						progressCt = currProgress;
 					}
 				})
 				.on('end', function() {
-				    console.log('Merging finished !');
+				    console.log('single camera video finished !'.green);
 				    callb(null, videoOutputFilePath);
 				})
 			.run();
 		});
 	},
 
-	makeFinalVideo: function(vids, callback){
+	makeFinalVideo: function(vids, date, callback){
 
 		/* RENDER THE FINAL COMBINED VIDEO */
-		var outpath = path.join(path.dirname(vids[0]), "combinedFinal.mp4"); //same dir as cam vids
+		var outFile = 'combinedFinal_'+date+'.mp4';
+		var outpath = path.join(path.dirname(vids[0]), outFile); //same dir as cam vids
 		console.log('Rendering final combined video: '.cyan+outpath);
 
 		var progressCt = -1;
@@ -91,12 +92,13 @@ var Process = {
 		    //])
 		    .output(outpath)
 		    .on('end', function() {
-		      callback(null,outpath);
+		    	console.log('final video render finished!'.green)
+		      	callback(null,outpath);
 		    })
 			.on('progress', function(progress) {
-				var currProgress = Math.round(progress.percent*1.1);
+				var currProgress = Math.round(progress.percent);
 				if(currProgress != progressCt){
-					console.log('Processing'.gray,'combinedFinal.mp4',':'.gray, currProgress+'% done');
+					console.log('Processing'.gray, outFile,':'.gray, currProgress+'% done');
 					progressCt = currProgress;
 				}
 			})
