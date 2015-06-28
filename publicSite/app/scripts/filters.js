@@ -10,6 +10,11 @@
  */
 angular
   .module('app.filters', [])
+.filter('toString', function() {
+  return function(input) {
+    return input.toString();
+  };
+})
 // https://gist.github.com/svenanders/7289017
 .filter('limitFromTo', function() {
   return function(input, offset, limit) {

@@ -34,18 +34,10 @@ var videoSchema = new Schema({
     vimeo_video_id: {
       type: String,
       default: null
-    },
-    img: {
-      type: String,
-      default: null
     }
   },
   cam0: {
     vimeo_video_id: {
-      type: String,
-      default: null
-    },
-    img: {
       type: String,
       default: null
     }
@@ -54,18 +46,10 @@ var videoSchema = new Schema({
     vimeo_video_id: {
       type: String,
       default: null
-    },
-    img: {
-      type: String,
-      default: null
     }
   },
   cam2: {
     vimeo_video_id: {
-      type: String,
-      default: null
-    },
-    img: {
       type: String,
       default: null
     }
@@ -74,12 +58,9 @@ var videoSchema = new Schema({
     vimeo_video_id: {
       type: String,
       default: null
-    },
-    img: {
-      type: String,
-      default: null
     }
   },
+  thumbnail: String,
   date: {
     type: String,
     default: moment().format('YYYY-MM-DD')
