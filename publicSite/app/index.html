@@ -9,6 +9,8 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
+    <link rel='stylesheet' href='bower_components/slick-carousel/slick/slick.css' />
+    <link rel='stylesheet' href='bower_components/slick-carousel/slick/slick-theme.css' />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -25,7 +27,7 @@
     <!-- Add your site or application content here -->
     
     <nav class="navbar navbar-default navbar-fixed-top">
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
@@ -56,9 +58,9 @@
     <div ui-view></div>
 
     <footer class="footer sticky-footer">
-      <div class="container">
+      <div class="container-fluid">
         <div class="col-xs-12 text-right">
-          <span translate="POWERED"></span>
+          <span class="text-black" translate="POWERED" style="margin-right: 5px;"></span>
           <a target="_blank" href="http://microsoft.com">
             <img src="images/brand/ms_logo.png" alt="Microsoft" height="30" style="vertical-align: middle;">
           </a>
@@ -92,6 +94,8 @@
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/angular-ui-router-anim-in-out/anim-in-out.js"></script>
     <script src="bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
+    <script src="bower_components/slick-carousel/slick/slick.min.js"></script>
+    <script src="bower_components/angular-slick/dist/slick.js"></script>
     <!-- endbower -->
     
     <script src="bower_components/moment/locale/es.js"></script>
