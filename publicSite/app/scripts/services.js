@@ -9,7 +9,7 @@
  * Services module of the application.
  */
 var moment = moment || {};
-var DEBUG = true;
+var DEBUG = false;
 var host = (DEBUG) ? 'http://localhost' : 'http://elbulliweb.cloudapp.net';
 
 angular
