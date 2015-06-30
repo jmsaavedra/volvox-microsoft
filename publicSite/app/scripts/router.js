@@ -54,5 +54,5 @@ angular
         templateUrl: 'views/photo.day.html',
         controller: 'PhotoDayCtrl'
       });
-    $urlRouterProvider.otherwise('/en');
+    $urlRouterProvider.otherwise('/es');
   });

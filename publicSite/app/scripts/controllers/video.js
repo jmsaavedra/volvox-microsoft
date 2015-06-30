@@ -10,19 +10,13 @@
 var moment = moment || {};
 angular.module('elbulliApp')
   .controller('VideoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
-    console.log('Video year');
-    $scope.disallowSlide = function() {
-      $rootScope.allowSlide = false;
-      $timeout(function() {
-        $rootScope.allowSlide = true;
-      }, 0);
-    };
+    // console.log('Video year');
   })
-  .controller('VideoMonthCtrl', function($state, $scope, $rootScope, $stateParams, Server, $timeout) {
-    console.log('Video month');
+  .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $state) {
+    // console.log('Video month');
     // console.log($stateParams.month + ' 01 ' + $stateParams.year);
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
-    console.log($scope.thisMonth);
+    // console.log($scope.thisMonth);
     // Dummy Data
     /*
     $scope.videos = [{
@@ -89,14 +83,19 @@ angular.module('elbulliApp')
       $scope.thisMonth,
       true,
       function(result) {
-        $scope.videos = result.data;
-        $timeout(function() {
-          $scope.equalWidth = angular.element('.thumbnail-container').width();
-        }, 0);
-
-        console.info($scope.videos);
-      }, function(error) {
-        if (error) alert(error);
+        if (result.data.length == 0) {
+          $state.go('video');
+        } else {
+          $scope.videos = result.data.sort(function(a, b) {
+            return a.date.substr(a.date.length - 2, a.date.length) - b.date.substr(b.date.length - 2, b.date.length);
+          });
+          $timeout(function() {
+            $scope.equalWidth = angular.element('.thumbnail-container').width();
+          }, 0);
+        }
+      },
+      function(error) {
+        // if (error) alert(error);
         // alert(error);
         $state.go('video', {
           lang: $rootScope.lang

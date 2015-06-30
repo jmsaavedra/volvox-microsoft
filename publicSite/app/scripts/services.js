@@ -9,7 +9,7 @@
  * Services module of the application.
  */
 var moment = moment || {};
-var DEBUG = false;
+var DEBUG = true;
 var host = (DEBUG) ? 'http://localhost' : 'http://elbulliweb.cloudapp.net';
 
 angular
@@ -23,7 +23,7 @@ angular
   service.getMonthlyAsset = function(monthString, isVideo, ok, fail) {
     var url = (isVideo) ? host + ':8080/timelapse/month/' : host + ':8080/scanner/month/';
     // Convert month into "XX"
-    console.log(monthString);
+    // console.log(monthString);
     var month = moment(monthString, 'MMMM, YYYY').format('YYYY-MM');
     // console.log(month);
     // GET REQUEST
