@@ -10,6 +10,7 @@
 /* Includes and Azure Service */
 var moment 		= require('moment');
 var azure 		= require('azure-storage');
+var nodemailer  = require('./nodemailer');
 var blobService = azure.createBlobService(global.KEYS.AZURE_SCAN_STORAGE_ACCOUNT, global.KEYS.AZURE_SCAN_STORAGE_KEY);
 
 
@@ -36,6 +37,10 @@ module.exports.uploadImage = function(filePath, fileName, cb){
 	  	console.log('>> creating container error: '.red + error);
 	  	console.log('>> result: '.red + result);
 	  	console.log('>> response: '.red + JSON.stringify(response,null,'\t'));
+	  	var body = 'error creating container: ' + error;
+	  	body += '\n>> result: ' + result;
+	  	body += '\n>> resp: '.red + JSON.stringify(response,null,'\t');
+	  	reportError('Error: Scan Upload to Azure', body);
 	  	cb(error);
 	  }
 	});
@@ -60,10 +65,22 @@ function uploadFile (container, path, name, callback){
 	  	console.log('error creating blockBlob: '.red + error);
 	  	console.log('error creating blockBlob result: '.red + result);
 	  	console.log('error creating blockBlob resp: '.red + JSON.stringify(response,null,'\t'));
-
+	  	console.log('sending error report email...'.yellow);
+	  	var body = 'error creating blockBlob: ' + error;
+	  	body += '\nerror creating blockBlob result: ' + result;
+	  	body += '\nerror creating blockBlob resp: '.red + JSON.stringify(response,null,'\t');
+	  	reportError('Error: Scan Upload to Azure', body);
 	  	callback(error);
 	  }
 	});
 }
 
+
+function reportError(subj, body){
+	
+	nodemailer.sendEmail(subj, body, function(e, info){
+		if(e) console.log('fail send email.'.red.bold);
+		else return console.log('Message sent: '+info.response);
+	});
+}
 

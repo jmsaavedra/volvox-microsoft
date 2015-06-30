@@ -19,11 +19,6 @@ var port        = '8081'; //select a port for this server to run on
 global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
 global.FOLDER_TO_WATCH = path.join(__dirname,'_scans');
 
-global.BULLI_SERVER = {
-  host: 'elbulliweb.cloudapp.net',
-  path: '/scanner/new',
-  port: '8080'
-};
 
 /** THE WATCHER WATCHES **/
 var watcher 	= require('./app/watcher').init();

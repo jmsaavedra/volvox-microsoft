@@ -14,6 +14,7 @@
 
 var watchr 		= require('watchr'),
 	azureFiler 	= require('./azureFiler'),
+	nodemailer  = require('./nodemailer'),
 	path 		= require('path'),
 	http 		= require('http'),
 	querystring = require('querystring');
@@ -115,8 +116,10 @@ var postData = function(data){
 	  	res.setEncoding('utf8');
 	  	res.on('data', function (chunk) {
 	  		console.log('Server Response: '.yellow + chunk);
-	  		if(JSON.parse(chunk).data !== true)
+	  		if(JSON.parse(chunk).data !== true){
+	  			reportError('ERROR ON POST TO EL BULLI SERVER', chunk);
 	  			return console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
+	  		}
 	  		
 	  		console.log('SUCCESS HTTP POST to El Bulli Server.'.green);	
 	  		console.log('-----------------------------------------------\n'.gray);	
@@ -124,7 +127,13 @@ var postData = function(data){
 	});
 
 	post_req.on('error', function(e) {
-	  return console.log('>>! ERROR with POST request: '.red + e.message);
+		console.log('>>! ERROR with POST request: '.red + e.message);
+		console.log('sending email... '.yellow.bold);
+		var body = 'ERROR trying to POST to elbulliserver:\n'+e.message;
+		body += '\n\npost_options: '+'\n'+JSON.stringify(post_options,null,'\t');
+		body += '\n\npost_data: \n'+JSON.stringify(post_data,null,'\t');
+		body += 'Date: '+data.date;
+		return reportError('Error Posting Scan to Server',body);
 	});
 
 	// execute post
@@ -132,6 +141,14 @@ var postData = function(data){
 	post_req.end();
 };
 
+
+function reportError(subj, body){
+	
+	nodemailer.sendEmail(subj, body, function(e, info){
+		if(e) console.log('fail send email.'.red.bold);
+		else return console.log('Message sent: '+info.response);
+	});
+}
 
 
 
