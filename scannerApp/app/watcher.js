@@ -36,7 +36,7 @@ module.exports.init = function(){
 	            if (err) {
 	                console.log("watching the path " + watcherInstance.path + " failed with error: ".red.bold, err);
 	            } else {
-	                console.log("INIT watching the path: ".green.bold + watcherInstance.path + " SUCCESS".green.bold);
+	                console.log("Watching for scans in folder: \n    ".green.bold + watcherInstance.path.magenta.bold + "\nSUCCESS".green.bold+'\n================================='.gray.bold);
 	            }
 	        },
 	        change: function(changeType,filePath,fileCurrentStat,filePreviousStat){
@@ -97,17 +97,18 @@ var postData = function(data){
 		'type' : data.type
 	});
 
-   	var post_options = {
-      	host: global.BULLI_SERVER.host,
-	    port: global.BULLI_SERVER.port,
-      	path: global.BULLI_SERVER.path,
-      
-      	method: 'POST',
-      	headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': post_data.length
-      	}
-  	};
+	var post_options = {
+		host: global.KEYS.BULLI_SERVER.host,
+		port: global.KEYS.BULLI_SERVER.port,
+		path: global.KEYS.BULLI_SERVER.PATH.scan,
+
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': post_data.length
+		}
+	};
+  	// console.log('post_options: '+JSON.stringify(post_options,null,'\t'));
 
 	/* Set up the request */
 	var post_req = http.request(post_options, function(res) {

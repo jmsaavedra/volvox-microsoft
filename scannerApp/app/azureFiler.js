@@ -10,7 +10,7 @@
 /* Includes and Azure Service */
 var moment 		= require('moment');
 var azure 		= require('azure-storage');
-var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
+var blobService = azure.createBlobService(global.KEYS.AZURE_SCAN_STORAGE_ACCOUNT, global.KEYS.AZURE_SCAN_STORAGE_KEY);
 
 
 /***
