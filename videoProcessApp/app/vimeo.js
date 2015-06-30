@@ -9,7 +9,9 @@ var moment    = require('moment');
 var Vimeo = require('vimeo').Vimeo;
 // https://github.com/vimeo/vimeo.js
 
-var lib = new Vimeo(global.VIMEO_CLIENT_ID, global.VIMEO_CLIENT_SECRET, global.VIMEO_ACCESS_TOKEN);
+var lib = new Vimeo(global.KEYS.VIMEO_CLIENT_ID, 
+                    global.KEYS.VIMEO_CLIENT_SECRET, 
+                    global.KEYS.VIMEO_ACCESS_TOKEN );
 
 // Export
 var vimeoApi = {
@@ -133,8 +135,6 @@ var vimeoApi = {
       }
     });
   },
-
-
 
 
   getMonthlyVideos: function(month, cb) {

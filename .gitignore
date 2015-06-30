@@ -29,3 +29,5 @@ node_modules
 
 # Public site configurations
 
+**/.DS_Store
+AuthKeys.js

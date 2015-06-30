@@ -7,19 +7,6 @@
 *
 */
 
-//TODO: move all of these credentials to secure (NOT COMMITTED TO GITHUB) file
-
-//AZURE CREDENTIALS
-global.STORAGE_ACCOUNT  = 'elbulliphoto';
-global.STORAGE_KEY      = '/nGzMNHlVPDxIhDeVBHwT5JYwx4xrosjPU90uszrlZSClLC956XNoIHduNHADqrr4L+Axm36D2LS215tWLSR5g==';
-
-//VIMEO CREDENTIALS
-global.VIMEO_CLIENT_ID = '703165f789ba78ad4e2566dcd65113df4e0e4b70';
-global.VIMEO_CLIENT_SECRET = 'S7CherScJPSuuC4Z3fFBCbvBM5/BUuJ3UQvsgIa3DmNXbCY9Qw4qb9dOSMJsfXJCmEtOthny+m8eNGzbzUEhRpNue8VDCmGfKs8fAJEhPvcLkkjUeJPjBYu9/PnzVkN4';
-global.VIMEO_ACCESS_TOKEN = '0e916bf3af2e06f8eb82b5f87ee2e445';
-
-
-
 var express     = require('express');
 var colors      = require('colors');
 var later       = require('later');
@@ -28,21 +15,29 @@ var http        = require('http');
 var path        = require('path');
 var port        = '8080'; //select a port for this server to run on
 
+//GLOBAL CREDENTIALS
+global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
+
 //FOLDER GLOBALS
 global.UPLOAD_FLAG      = true; // true to upload to Vimeo + elBulli server, false for dev only.
 global.INTRO_OUTRO_VID  = path.join(__dirname,'assets','intro-outro.mp4');
-global.RAW_IMGS_PATH    = path.join(__dirname,'_raw-images');       // raw camera images downloaded from azure
-global.PROCESS_FOLDER   = path.join(__dirname,'_processed-files');  // folder where we'll store stuff as it's created
-global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net', // our server to update the DB with data, video links, etc
-                            path: '/timelapse/new',
-                            port: '8080' };
+global.PROCESS_FOLDER   = path.join(__dirname,'_process-files');  // folder where we'll store stuff as it's created
+global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');     // ONLY IF NEEDED (unused normally)
+// global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net', // our server to update the DB with data, video links, etc
+//                             path: '/timelapse/new',
+//                             port: '8080' };
+
+//number of daily process attempts
+global.PROCESS_ATTEMPTS = 0;
+global.DATE_TODAY = '2015-06-28'; /* for testing */
 
 //custom modules
-// var watcher 	     = require('./app/watcher').init();
 var vimeo          = require('./app/vimeo');
 var processManager = require('./app/manager');
 var vidRenderer    = require('./app/videoRenderer');
-var testDate = '2015-06-27'; /* for testing */
+var nodemailer     = require('./app/nodemailer');
+var watcher        = require('./app/watcher').init(); /* TO USE ONLY IF NEEDED */
+
 
 /****
 * CONFIGURE Express
@@ -51,8 +46,6 @@ var testDate = '2015-06-27'; /* for testing */
 */
 //instantiate object of express as app
 var app = express();
-
-//use the public folder to serve files and directories STATICALLY (meaning from file)
 app.use(express.static(__dirname+ '/public'));
 
 
@@ -61,16 +54,9 @@ app.use(express.static(__dirname+ '/public'));
 * ==============================================
 *
 */
-
-
 app.get('/start', function(req, res){
-  // var today = moment().format('YYYY-MM-DD');
-  var today = testDate;
-  console.log('>>> kicking off video process for: '.green.bold+today);
-  processManager.beginDailyProcess(today, function(e, finalFilePath){
-    if(e) console.log('FAILED DAILY VIDEO PROCESS:'.red.bold.inverse, e);
-    else console.log('COMPLETED DAY AND VIDEOS. '.green.bold.inverse);
-  });
+  global.DATE_TODAY = '2015-06-28'; /* for testing */
+  executeVideoProcess();
   res.send('started daily process.');
 });
 
@@ -85,31 +71,83 @@ http.createServer(app).listen(port, function(){
   console.log('  Video Process Server Booting  '.white.bold.inverse);
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(listeningString.cyan.inverse);
-
   initScheduler();
 });
 
 
-
+/****
+* INITIALIZE THE SCHEDULER
+* ==============================================
+*
+*/
 function initScheduler(){
 
   later.date.localTime(); // use local time
-  console.log('local time: '+new Date());
+  console.log('local time: '.gray.bold+new Date());
 
-  /* SHOWTIME */
-  // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday();
-  var processSched = later.parse.recur().on('18:34:10').time();
+  // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday(); /* SHOWTIME */
+  var processSched = later.parse.recur().on('01:53:40').time(); /* DEVTIME */
   var processTimeout = later.setTimeout(
     function() { 
-      var thisDay = moment().format('YYYY-MM-DD');
-      console.log('>>> kicking off video process for: '.green.bold+thisDay);
-      processManager.beginDailyProcess(thisDay, function(e, finalFilePath){
-        if(e) console.log('FAILED DAILY VIDEO PROCESS:'.red.bold.inverse, e);
-        else console.log('COMPLETED DAY AND VIDEOS. '.green.bold.inverse);
-        /***************
-        //TODO: DELETE ALL PROCESS FILES (individual images, vids) FROM THIS MACHINE! We're DONE.
-        //TODO: Decide if this should go to Azure File Storage for backup or not.
-        */
-      });
+      global.DATE_TODAY= moment().format('YYYY-MM-DD');
+      executeVideoProcess();
     }, processSched);
+  var nextProcessTime = later.schedule(processSched).nextRange(1, new Date())[0];
+  console.log('\n>>> next video process will happen'.cyan.bold, moment(nextProcessTime).from(new Date()),'>>>'.gray,nextProcessTime);
+}
+
+
+/****
+* EXECUTE VIDEO PROCESS ROUTINE
+* ==============================================
+*
+*/
+function executeVideoProcess(){
+
+  console.log('\nexecuting daily video process for date: '.magenta.bold.inverse, global.DATE_TODAY);
+
+  global.DL_PROCESS = function(){
+    global.PROCESS_ATTEMPTS++;
+    if(global.PROCESS_ATTEMPTS > 6) processFailed(null);
+    console.log('\n>>> KICKING OFF daily video process, attempt'.green.bold, global.PROCESS_ATTEMPTS,' for: '.green.bold+global.DATE_TODAY);
+    processManager.beginDailyProcess(global.DATE_TODAY, function(e){
+      if(e){
+        console.log('FAILED DAILY VIDEO PROCESS:'.red.inverse, e);
+        if(global.PROCESS_ATTEMPTS < 5){
+          console.log('Failed on attempt'.red.bold,global.PROCESS_ATTEMPTS,'.  retrying in a few seconds...'.yellow);
+          clearTimeout(global.DL_WATCHDOG);
+          global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);
+        }
+        else processFailed(e);
+      } 
+      else{
+        console.log('COMPLETED PROCESSING OF TODAY\'S VIDEOS. '.green.bold.inverse, '\nTOOK'.green.bold, global.PROCESS_ATTEMPTS,'ATTEMPTS.\n'.green.bold, '\n========================================================================\n\n'.gray.bold);
+        global.PROCESS_ATTEMPTS = 0;
+      } 
+    });
+  }
+  /* run this now! */
+  global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000); //shouldn't take more than 6 secs to DL any 1 image.
+}
+
+
+/****
+* IN CASE OF MULTIPLE FAILED PROCESS ATTEMPTS
+* ==============================================
+*
+*/
+function processFailed(errMsg){
+
+  clearTimeout(global.DL_WATCHDOG); //stop trying 
+  console.log('FAILED'.red.bold,global.PROCESS_ATTEMPTS,'TIMES, EMAILING YOU NOW.'.red.bold);
+
+  var body = '\ndaily video process has failed.\n';
+  if(errMsg)  body += '\nreturned error: '+errMsg;
+  else  body+=', attempted and failed image download multiple times.';
+  body += '\n\ndate: '+global.DATE_TODAY+'\n\nnumber of attempts: '+global.PROCESS_ATTEMPTS;
+  
+  nodemailer.sendEmail('Daily Video Process Failed', body.toString(), function(e, info){
+    if(e) return console.log('error sending email: '.red, e);
+    console.log('E-mail sent: ', info.response);
+  });
 }

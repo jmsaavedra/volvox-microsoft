@@ -5,27 +5,22 @@
 *
 * Scanner application
 *  - watches a specific folder for new files
-*  - uploads file to 
+*  - uploads file to Azure, updates elBulli database
 *
 */
-
-//TODO: move all of these credentials to secure (NOT COMMITTED TO GITHUB) file
-global.RAW_IMG_FOLDER = __dirname+'/images';
-global.STORAGE_ACCOUNT = 'elbulliscanner';
-global.STORAGE_KEY = 'bmZLz1PPrcwj48gl7fLxEk4r+I1qqQEZpPA7ng2QV9sgY/VqPcvkWiFeMUZn142TXu92qH3tPSJwfvQair8PqA==';
-global.FOLDER_TO_WATCH = '/Users/jmsaavedra/Desktop/____watcher-test';
-global.BULLI_SERVER = {
-  host: 'elbulliweb.cloudapp.net',
-  path: '/scanner/new',
-  port: '8080'
-};
 
 var express     = require('express');
 var colors      = require('colors');
 var http        = require('http');
-var port        = '8080'; //select a port for this server to run on
+var path        = require('path');
+var port        = '8081'; //select a port for this server to run on
 
-//custom modules
+/** GLOBALS **/
+global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
+global.FOLDER_TO_WATCH = path.join(__dirname,'_scans');
+
+
+/** THE WATCHER WATCHES **/
 var watcher 	= require('./app/watcher').init();
 
 
