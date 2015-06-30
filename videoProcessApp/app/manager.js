@@ -38,13 +38,9 @@ var Manager = {
 	        	Manager.processFinalVideo(date, cameraVideos, function(err, finalVid){
 	        		if(err) return callback(err);
 
-	        		if(!global.UPLOAD_FLAG) // not in dev mode
-	        			return callback(null, finalVid);
-	        		
-	        		/* delete all the process files */
-	        		rimraf(path.join(global.PROCESS_FOLDER,date), function(_e){
-	        			if(!_e)console.log('SUCCESS removed all process files.'.gray);
-	        			callback(_e, finalVid);
+	        		/* delete all process files off of this machine */
+	        		Manager.cleanup(date, function(_e){
+	        			callback(_e);
 	        		});
 	        	});
 	     	});
@@ -52,7 +48,7 @@ var Manager = {
 	},
 
 	downloadImages: function(date, callback){
-		var saveToFolder = path.join(global.RAW_IMGS_PATH, date);
+		var saveToFolder = path.join(global.PROCESS_FOLDER, date, 'raw');
 		azure.downloadImages(date, saveToFolder, function(e, localImgs){
 			callback(e, localImgs);
 		});
@@ -64,7 +60,7 @@ var Manager = {
 		- will hold: [ [cam0imgs], [cam1imgs],.. ]*/
 		var images = [ [], [], [], [] ]; 
 
-		var todayRawImgPath = path.join(global.RAW_IMGS_PATH, date);
+		var todayRawImgPath = path.join(global.PROCESS_FOLDER, date, 'raw');
 		var todayProcessImgPath = path.join(global.PROCESS_FOLDER, date);
 		
 		mkdirp.sync(todayProcessImgPath) ? console.log('created today\'s process folder:'.yellow, todayProcessImgPath)
@@ -149,8 +145,10 @@ var Manager = {
 
 	uploadVideo: function(filePath, callback){
 
-		if(!global.UPLOAD_FLAG) //in case of dev
+		if(!global.UPLOAD_FLAG){ //in case of dev
+			console.log('global.UPLOAD_FLAG set to false, not uploading'.red.bold);
 			return callback(null, filePath);
+		}
 
 		vimeo.uploadVideo(filePath, function(e, data){
 			if(e){
@@ -165,6 +163,19 @@ var Manager = {
 				if(_e) console.log('error posting to our server: '.red+_e);
 				callback(_e, filename);
 			});
+		});
+	},
+
+	cleanup: function(date, callback){
+		if(!global.UPLOAD_FLAG){ // not in dev mode
+			console.log('global.UPLOAD_FLAG set to false, not deleting process files'.red.bold);
+			return callback(null);
+		}
+		
+		/* delete all the process files */
+		rimraf(path.join(global.PROCESS_FOLDER,date), function(_e){
+			if(!_e)console.log('SUCCESS removed all process files.'.gray);
+			callback(_e);
 		});
 	}
 };
@@ -192,7 +203,7 @@ function copyFile(oldPath, newPath, _cb){
 * POST data object to ElBulli Server
 */
 var postData = function(data, cb){
-	var postURL = global.BULLI_SERVER.host+':'+global.BULLI_SERVER.port+global.BULLI_SERVER.path;
+	var postURL = 'http://'+global.KEYS.BULLI_SERVER.host+':'+global.KEYS.BULLI_SERVER.port+global.KEYS.BULLI_SERVER.PATH.video;
 	// console.log('posting to url: '+postURL);
 	request.post({
 		url: postURL,
@@ -200,8 +211,11 @@ var postData = function(data, cb){
 		json: true
 	},
 	function(err,httpResponse,body){
-		if(err) console.log('postData err: '+err);
-		// console.log('httpResponse: '+JSON.stringify(httpResponse, null, '\t'));
+		if(err){
+			console.log('httpResponse: '+JSON.stringify(httpResponse, null, '\t'));	
+			return cb('postData err: '+err);	
+		} 
+		
 		console.log('server response body: '.cyan+JSON.stringify(body, null, '\t'));
 		cb(err, body.data);
 	});

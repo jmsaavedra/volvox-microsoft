@@ -14,7 +14,8 @@ var fs        = require('graceful-fs');
 var rimraf    = require('rimraf');
 var async     = require('async');
 var path      = require('path');
-var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
+var mkdirp    = require('mkdirp');
+var blobService = azure.createBlobService(global.KEYS.AZURE_PHOTO_STORAGE_ACCOUNT, global.KEYS.AZURE_PHOTO_STORAGE_KEY);
 
 
 
@@ -23,17 +24,21 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
   var localImgs = [];
 
   // Validate directory
-  if (!fs.existsSync(destinationDirectoryPath)) {
-    console.log(destinationDirectoryPath + ' does not exist. Attempting to create this directory...');
-    fs.mkdirSync(destinationDirectoryPath);
-    console.log(destinationDirectoryPath + ' created.');
-  }
+  mkdirp.sync(destinationDirectoryPath) ? console.log('created today\'s process folder:'.yellow, destinationDirectoryPath)
+                     : console.log('re-processing today in folder:'.yellow, destinationDirectoryPath);
+
+  // if (!fs.existsSync(destinationDirectoryPath)) {
+  //   console.log(destinationDirectoryPath + ' does not exist. Attempting to create this directory...');
+  //   fs.mkdirSync(destinationDirectoryPath);
+  //   console.log(destinationDirectoryPath + ' created.');
+  // }
 
   // NOTE: does not handle pagination.
   blobService.listBlobsSegmented(containerName, null, function (error, result) {
     // console.log('list all files: '+JSON.stringify(result.entries, null, '\t'));
     if (error) {
-      console.log(error);
+      console.log('error listBlobsSegmented:'.red, error);
+      callback(error);
     } else {
       var blobs = result.entries;
       console.log('Total ct files in this container: '.cyan.bold+ blobs.length);
@@ -41,21 +46,23 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
       async.eachSeries(blobs, function (blob, cb) {
         fileCt++;
         var thisLocalFilePath = destinationDirectoryPath + '/' + blob.name;
-
+        console.log('checking for: '.gray+ blob.name);
         fs.exists(thisLocalFilePath, function(exists){
           if(exists){
             fs.stat(thisLocalFilePath, function(e, stats){
-              if(stats.size > 1000){//if it's more than 1000 bytes big
+              if(stats.size > (100*1000)){//if it's more than 100kb bytes big
                 console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
                 return cb();
               } else {
                 //delete this broken ass file.
-                rimraf(thisLocalFilePath, function(e){
-                  return cb();
+                rimraf(thisLocalFilePath, function(_e){
+                  if(_e) cb('rimraf error: '+ _e);
+                  return cb('had to delete a bad file, restarting');
                 });
               }
             });
           } else {
+            console.log('attempt dl new file: '.gray, blob.name);
             blobService.getBlobToLocalFile(containerName, blob.name, thisLocalFilePath, function (error2) {
               if (error2) {
                 console.log('error on blob download:'.red, error2);
@@ -63,6 +70,8 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
               } else {
                 console.log('Finished downloading file '.green, fileCt+'/'.gray+blobs.length,':',blob.name);
                 localImgs.push(blob.name);
+                clearTimeout(global.DL_WATCHDOG);
+                global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);
                 cb();
               }
             });
@@ -79,6 +88,7 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
           if(e) return callback(e);
           else {
             console.log(' ALL FILES DOWNLOADED '.green.bold.inverse, containerName);
+            clearTimeout(global.DL_WATCHDOG);
             callback(null, localImgs);
           }
       });

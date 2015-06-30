@@ -25,6 +25,7 @@ var Process = {
 	processRawImage: function(rawImg, frameCt, camProcessFolder, cb){
 
 		var processImgPath = path.join(camProcessFolder, 'frame-'+frameCt.toString()+'.jpg');
+		console.log('cropping image: '.gray+processImgPath);
 		gm(rawImg)
 		  .crop(1920, 1080, 0, 100)
 		  .write(processImgPath, function(err){
@@ -56,7 +57,7 @@ var Process = {
 				// .outputOptions([
 				// 	'-framerate 10'
 				// ])
-				.fps(30)
+				// .fps(30)
 				.on('error', function(err) {
 					console.log('An error occurred: ' + err.message);
 					callb(err.message);
@@ -64,11 +65,11 @@ var Process = {
 				.on('progress', function(progress) {
 					//console.log(progress);
 					//console.log(JSON.stringify(progress));
-					var currProgress = progress.percent ? Math.round(progress.percent) : Math.round((progress.frames/imgs.length)*100);
-					if(currProgress != progressCt){
-						console.log('Processing '.gray,' camera-'+camId+'_'+date+'.mp4 ',': '.gray + currProgress + '% done');
-						progressCt = currProgress;
-					}
+					if(progress.hasOwnProperty('percent'))
+						console.log('Processing camera'.gray, camId, 'video'.gray, path.basename(videoOutputFilePath),':'.gray, Math.round(progress.percent)+'% done');
+					else
+						console.log('Processing camera'.gray, camId, 'video'.gray, path.basename(videoOutputFilePath),', frame'.gray, progress.frames);
+					
 				})
 				.on('end', function() {
 				    console.log('single camera video finished !'.green);
@@ -80,8 +81,8 @@ var Process = {
 
 	makeFinalVideo: function(vids, date, callback){
 
-		/* RENDER THE FINAL COMBINED VIDEO */
-		var outFile = 'combinedFinal_'+date+'.mp4';
+		/* RENDER THE COMBINED VIDEO */
+		var outFile = 'combined_'+date+'.mp4';
 		var outpath = path.join(path.dirname(vids[0]), outFile); //same dir as cam vids
 		console.log('Rendering final combined video: '.cyan+outpath);
 
@@ -110,8 +111,10 @@ var Process = {
 		      	Process.addIntroOutro(outpath, date, callback);
 		    })
 			.on('progress', function(progress) {
-				if(progress.percent>0) console.log('Processing'.gray, outFile,':'.gray, Math.round(progress.percent)+'% done');
-				else console.log('Processing'.gray, outFile,', frame: '.gray, progress.frames);
+				if(progress.hasOwnProperty('percent'))
+					console.log('Processing combined video'.gray, outFile,':'.gray, Math.round(progress.percent)+'% done');
+				else 
+					console.log('Processing combined video'.gray, outFile,', frame: '.gray, progress.frames);
 			})
 		    .on('error', function(err) {
 		      console.log('an error happened: ' + err.message);
@@ -122,21 +125,23 @@ var Process = {
 
 	addIntroOutro: function(vid, date, callback){
 
-		console.log('adding intro and outro clips');
+		console.log('RENDERING FINAL VIDEO'.cyan, 'Adding intro and outro clips...');
 		var outFile = path.join(path.dirname(vid),'FINAL_'+date+'.mp4');
 		var proc = ffmpeg()
 		  .input(global.INTRO_OUTRO_VID)
 		  .input(vid)
 		  .input(global.INTRO_OUTRO_VID)
 		  .on('end', function() {
-		      	callback(null,outFile);
+		      	callback(null, outFile);
 		    })
 			.on('progress', function(progress) {
-				if(progress.percent > 0) console.log('Processing'.gray, outFile,':'.gray, Math.round(progress.percent)+'% done');
-				else console.log('Processing'.gray, outFile,', frame: '.gray, progress.frames);
+				if(progress.hasOwnProperty('percent'))
+					console.log('Processing adding intro-outro'.gray, path.basename(outFile),':'.gray, Math.round(progress.percent)+'% done');
+				else 
+					console.log('Processing adding intro-outro'.gray, path.basename(outFile),', frame: '.gray, progress.frames);
 			})
 		    .on('error', function(err) {
-		      console.log('an error happened: ' + err.message);
+		      console.log('an error happened adding intro-outro: ' + err.message);
 		      callback(err.message);
 		    })
 		.mergeToFile(outFile, path.dirname(vid));
