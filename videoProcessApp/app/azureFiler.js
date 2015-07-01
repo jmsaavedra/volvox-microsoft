@@ -46,13 +46,13 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
             console.log('raw file exists: '.gray.bold+blob.name);
             return cb();  
           } else {
-            console.log('attempt dl new file: '.yellow, blob.name);
+            console.log('container:'.gray,containerName,'attempt DL file:'.yellow, blob.name.gray);
             blobService.getBlobToLocalFile(containerName, blob.name, thisLocalFilePath, function (error2) {
               if (error2) {
                 console.log('error on blob download:'.red, error2);
                 cb(error2);
               } else {
-                console.log('Finished downloading file '.green, fileCt+'/'.gray+blobs.length,':',blob.name);
+                console.log(fileCt+'/'.gray+blobs.length,' Success downloading new file:'.green,blob.name);
                 localImgs.push(blob.name);
                 clearTimeout(global.DL_WATCHDOG);
                 global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);

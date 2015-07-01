@@ -18,18 +18,19 @@ var port        = '8080'; //select a port for this server to run on
 //GLOBAL CREDENTIALS
 global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
 
-//FOLDER GLOBALS
-global.UPLOAD_FLAG      = true;   // true to upload to Vimeo + elBulli server, false for dev only.
+//GLOBALS
+global.UPLOAD_FLAG      = false;   // true to upload to Vimeo + elBulli server, false for dev only.
 global.CLEANUP_FLAG     = false;  // true to delete all process files after finished, false for dev only.
-global.INTRO_OUTRO_VID  = path.join(__dirname,'assets','intro-outro.mp4');
+global.VID_INTRO_OUTRO  = path.join(__dirname,'assets','intro-outro.mp4');
+global.VID_WATERMARK    = path.join(__dirname,'assets','watermark2.png');
 global.PROCESS_FOLDER   = path.join(__dirname,'_process-files');  // folder where we'll store stuff as it's created
 global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');   // ONLY IF NEEDED (unused normally)
 
 
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
-global.IN_PROCESS = false; /* so we don't process more than once at a time */
-global.DATE_TODAY = '2015-06-30'; /* for testing */
+global.IN_PROCESS = false; /* so we don't process more than one day at a time */
+global.DATE_TODAY = '2015-06-28'; /* for testing */
 
 //custom modules
 var vimeo          = require('./app/vimeo');
@@ -107,7 +108,7 @@ function initScheduler(){
 function executeVideoProcess(src){
 
   console.log('\n Executing daily video process for date: '.magenta.bold.inverse, global.DATE_TODAY);
-  console.log('\t started by:'.gray,src,'at:'.gray,new Date());
+  console.log(' started by:'.gray,src,'at:'.gray,new Date());
 
   global.DL_PROCESS = function(){
     global.PROCESS_ATTEMPTS++;
@@ -116,7 +117,7 @@ function executeVideoProcess(src){
     processManager.beginDailyProcess(global.DATE_TODAY, function(e){
       if(e){
         console.log('FAILED DAILY VIDEO PROCESS:'.red.inverse, e);
-        if(global.PROCESS_ATTEMPTS < 5){
+        if(global.PROCESS_ATTEMPTS < 5 &&  src !== 'GET /start route'){ //quit trying if we initiated this from /start
           console.log('Failed on attempt'.red.bold,global.PROCESS_ATTEMPTS,'.  retrying in a few seconds...'.yellow);
           clearTimeout(global.DL_WATCHDOG);
           global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);
@@ -149,7 +150,8 @@ function processFailed(errMsg){
   if(errMsg)  body += '\nreturned error: '+errMsg;
   else  body+=', attempted and failed image download multiple times.';
   body += '\n\ndate: '+global.DATE_TODAY+'\n\nnumber of attempts: '+global.PROCESS_ATTEMPTS;
-  
+  if(!global.UPLOAD_FLAG)
+    return console.log('not sending email: UPLOAD_FLAG is false'.red);
   nodemailer.sendEmail('Daily Video Process Failed', body.toString(), function(e, info){
     if(e) return console.log('error sending email: '.red, e);
     console.log('E-mail sent: ', info.response);

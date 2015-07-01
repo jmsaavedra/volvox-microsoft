@@ -48,7 +48,7 @@ var Manager = {
 	},
 
 	downloadImages: function(date, callback){
-		var saveToFolder = path.join(global.PROCESS_FOLDER, date, 'raw');
+		var saveToFolder = path.join(global.PROCESS_FOLDER, date, '_raw');
 		azure.downloadImages(date, saveToFolder, function(e, localImgs){
 			callback(e, localImgs);
 		});
@@ -60,7 +60,7 @@ var Manager = {
 		- will hold: [ [cam0imgs], [cam1imgs],.. ]*/
 		var images = [ [], [], [], [] ]; 
 
-		var todayRawImgPath = path.join(global.PROCESS_FOLDER, date, 'raw');
+		var todayRawImgPath = path.join(global.PROCESS_FOLDER, date, '_raw');
 		var todayProcessImgPath = path.join(global.PROCESS_FOLDER, date);
 		
 		fs.readdir(todayRawImgPath, function(e, files){
@@ -105,16 +105,17 @@ var Manager = {
 				
 				//quickly check if this camera video has been made before:
 				var thisVid = path.join(processFolder, 'camera-'+cameraCt.toString()+'_'+date+'.mp4');
+				cameraCt++; //increment once here
+
 				fs.stat(thisVid, function(_e, stats){
 					if(!_e && stats.size > 10000000){ // if file exists AND is over 1MB
 						console.log('Video has been processed previously:'.yellow.bold, thisVid);
 						console.log('Did not re-upload.'.yellow.bold);
 						return _cb(_e, thisVid);
 					}
-					/** BEGIN the processing of this camera's video! **/
-					vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, processedVid){
+					/** BEGIN the processing of this camera's video! **/ 
+					vidRenderer.makeSingleCameraVideo(date, cameraCt-1, imgs, function(err, processedVid){ //we already incremented for this run, so subtract 1.
 						if(err) return _cb(err);
-						cameraCt++;
 
 						/** UPLOAD to vimeo, update server/db with http post **/
 						Manager.uploadVideo(processedVid, function(_e, file){
@@ -128,24 +129,29 @@ var Manager = {
 		});
 	},
 
-	processFinalVideo: function(date, cameraVideos, callback){
-		var thisVid = path.join(global.PROCESS_FOLDER,date,'FINAL_'+date+'.mp4');
-		fs.stat(thisVid, function(_e, stats){
+	processFinalVideo: function(date, allVideos, callback){
+		var thisVid = path.join(global.PROCESS_FOLDER, date,'vid4-final_'+date+'.mp4');
+		fs.stat(thisVid, function(_e, stats){ // check if we've got a final video
 			if(!_e && stats.size > 10000000){ // if file exists AND is over 10MB
 				console.log('Video has been processed previously:'.yellow.bold, thisVid);
 				console.log('Did not re-upload.'.yellow.bold);
 				return callback(_e, thisVid);
 			}
 		
-			/* process final composite video */
-		    vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
-		  		console.log('Finished Final Render:'.green, finalVidPath);
-		  		if(e) return callback(e);
+			
+			vidRenderer.generateDate(date, function(e, dateVidPath){
+				allVideos.push(dateVidPath); 
 
-		  		/* now upload this vid! */
-		  		Manager.uploadVideo(finalVidPath, function(_e, file){
-		  			callback(_e, finalVidPath);
-		  		});
+				/* process final composite video */
+			    vidRenderer.makeCompositeVideo(allVideos, date, function(e, finalVidPath){
+			  		console.log('Finished Final Render:'.green, finalVidPath);
+			  		if(e) return callback(e);
+
+			  		/* now upload this vid! */
+			  		Manager.uploadVideo(finalVidPath, function(_e, file){
+			  			callback(_e, finalVidPath);
+			  		});
+			  	});
 			});
 		});
 	},
