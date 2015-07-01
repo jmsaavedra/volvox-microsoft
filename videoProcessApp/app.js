@@ -30,7 +30,7 @@ global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');   // ONLY IF NEE
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
 global.IN_PROCESS = false; /* so we don't process more than one day at a time */
-global.DATE_TODAY = '2015-06-27'; /* for testing */
+global.DATE_TODAY = '2015-06-28'; /* for testing */
 
 //custom modules
 var vimeo          = require('./app/vimeo');
@@ -85,11 +85,11 @@ http.createServer(app).listen(port, function(){
 */
 function initScheduler(){
 
-  later.date.localTime(); // use local time
+//  later.date.localTime(); // use local time
   console.log('local time: '.gray.bold+new Date());
 
   // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday(); /* SHOWTIME */
-  var processSched = later.parse.recur().on('23:05:00').time(); /* DEVTIME */
+  var processSched = later.parse.recur().on('13:05:00').time(); /* DEVTIME */
   var processTimeout = later.setTimeout(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
@@ -117,8 +117,9 @@ function executeVideoProcess(src){
     processManager.beginDailyProcess(global.DATE_TODAY, function(e){
       if(e){
         console.log('FAILED DAILY VIDEO PROCESS:'.red.inverse, e);
-        if(global.PROCESS_ATTEMPTS < 5 &&  src !== 'GET /start route'){ //quit trying if we initiated this from /start
-          console.log('Failed on attempt'.red.bold,global.PROCESS_ATTEMPTS,'.  retrying in a few seconds...'.yellow);
+        //if(global.PROCESS_ATTEMPTS < 5 &&  src !== 'GET /start route'){ //quit trying if we initiated this from /start
+        if(global.PROCESS_ATTEMPTS < 5){
+	  console.log('Failed on attempt'.red.bold,global.PROCESS_ATTEMPTS,'.  retrying in a few seconds...'.yellow);
           clearTimeout(global.DL_WATCHDOG);
           global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);
         }
