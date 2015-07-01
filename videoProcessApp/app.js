@@ -27,7 +27,7 @@ global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');     // ONLY IF N
 
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
-global.DATE_TODAY = '2015-06-28'; /* for testing */
+global.DATE_TODAY = '2015-06-29'; /* for testing */
 
 //custom modules
 var vimeo          = require('./app/vimeo');

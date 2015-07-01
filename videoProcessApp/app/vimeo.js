@@ -4,23 +4,23 @@
 *
 */
 
-var path = require('path');
-var moment    = require('moment');
-var Vimeo = require('vimeo').Vimeo;
-// https://github.com/vimeo/vimeo.js
+var path    = require('path'),
+    moment  = require('moment'),
+    Vimeo   = require('vimeo').Vimeo; // https://github.com/vimeo/vimeo.js
 
 var lib = new Vimeo(global.KEYS.VIMEO_CLIENT_ID, 
                     global.KEYS.VIMEO_CLIENT_SECRET, 
                     global.KEYS.VIMEO_ACCESS_TOKEN );
 
-// Export
+
+/* VIMEO API METHOD EXPORTS */
 var vimeoApi = {
 
 	uploadVideo: function(URI, cb){
-    console.log('Start uploading file to Vimeo. '.cyan.bold);
+    console.log('\nStart uploading file to Vimeo. '.cyan.bold);
+    console.log('\tfile URI:'.gray, URI);
 
     var fname = path.basename(URI, '.mp4');
-    console.log('\tfile URI:'.gray, URI);
     var rawDate = fname.split('_')[1].toString();
     var date = moment(rawDate).format('MMMM DD, YYYY');
 
@@ -31,15 +31,14 @@ var vimeoApi = {
 		lib.streamingUpload(URI,  function (error, body, status_code, headers) {
 	    console.log('vimeo.streamingUpload status_code '.yellow, status_code);
       if (error) {
-        console.log('vimeo.streamingUpload error'.red,error);
-        console.log('vimeo.streamingUpload body'.red,JSON.stringify(body,null,'\t'));
-        console.log('vimeo.streamingUpload headers'.red,JSON.stringify(headers,null,'\t'));
+        console.log('vimeo.streamingUpload error:\n'.red,error);
+        console.log('vimeo.streamingUpload body:\n'.red,JSON.stringify(body,null,'\t'));
+        console.log('vimeo.streamingUpload headers:\n'.red,JSON.stringify(headers,null,'\t'));
 	      return cb(error);
 	    }
       
 	    lib.request(headers.location, function (_error, _body, _status_code, _headers) {
     		console.log('vimeo.request status_code: '.yellow + _status_code);
-        
         if(_error){
           console.log('vimeo lib.request fail _error: \n'.red+JSON.stringify(_error));
           console.log('vimeo lib.request fail _body: \n'.red+JSON.stringify(_body,null,'\t'));
@@ -58,32 +57,10 @@ var vimeoApi = {
           else if (camNum === 1) postData.cam1 = { vimeo_video_id: videoId };
           else if (camNum === 2) postData.cam2 = { vimeo_video_id: videoId };
           else if (camNum === 3) postData.cam3 = { vimeo_video_id: videoId };
-          else console.log('camNum not found: '+camNum);
+          else console.log('camNum not found: '.red.bold+camNum); //something went wrong with the file name
         } else //it's the final video (not individual camera)
             postData.vimeo_final = { vimeo_video_id: videoId };
-        //   switch(camNum){
-        //     case 0:
-        //       postData.cam0 = { vimeo_video_id: videoId };
-        //       break;
-        //     case 1:
-        //       postData.cam1 = { vimeo_video_id: videoId };
-        //       break;
-        //     case 2:
-        //       postData.cam2 = { vimeo_video_id: videoId };
-        //       break;
-        //     case 3:
-        //       postData.cam3 = { vimeo_video_id: videoId };
-        //       break;
-        //     default:
-        //       console.log('camNum not found: '+camNum);
-        //       break;
-        //   }
-        // } else {
-        //   postData.vimeo_final = {
-        //     vimeo_video_id: videoId
-        //   };
-        // }
-    		
+ 
         var newMetadata = {
           name: title,
           description: 'elBulliLab Timelapse, captured on '+date+'.  Read more at http://elbulli.com',
