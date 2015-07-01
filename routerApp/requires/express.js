@@ -30,6 +30,19 @@ module.exports = function(db, Model, vimeo) {
 
   // Routes
   app
+    .post('/photo/info', function(req, res) {
+      Model.Photo.findOne({
+        date: req.body.date
+      }, function(err, obj) {
+        if(err) {
+          console.log.warn(err);
+        } else {
+          res.json({
+            today: obj
+          });
+        }
+      });
+    })
     .post('/photo/new', function(req, res) {
       console.log(req.body);
       // Save to Mongo
@@ -45,7 +58,7 @@ module.exports = function(db, Model, vimeo) {
         updated_at: new Date().getTime()
       }, {
         upsert: true
-      }, function(err) {
+      }, function(err, obj) {
         if (err) {
           console.log(chalk.red(err));
           res.json({
@@ -58,7 +71,6 @@ module.exports = function(db, Model, vimeo) {
           });
           // Sending Success Email
         }
-
       });
     })
     .post('/timelapse/new', function(req, res) {
