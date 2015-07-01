@@ -56,6 +56,12 @@ app.use(express.static(__dirname+ '/_process-files'));
 *
 */
 app.get('/start', function(req, res){
+  console.log('got start GET: '.green,req.query);
+  if(!req.query.date){
+    console.log('/start GET is missing date query.'.red);
+    return res.send('ERROR. To execute a date, format your query as such: <br><br><strong> /start?date=2015-MM-DD</strong>');
+  }
+  global.DATE_TODAY = req.query.date;
   if(!global.IN_PROCESS){
     global.IN_PROCESS = true;
     executeVideoProcess('GET /start route');
