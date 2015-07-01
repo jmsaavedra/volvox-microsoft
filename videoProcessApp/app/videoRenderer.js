@@ -192,7 +192,7 @@ var Process = {
 				/* Final callback! */
 			  	callback(null, outFile);
 			})
-			.on('progress', function(progress
+			.on('progress', function(progress){
 				console.log('Processing vid3 intro-outro'.gray, path.basename(outFile),'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
 			})
 			.on('error', function(err) {
