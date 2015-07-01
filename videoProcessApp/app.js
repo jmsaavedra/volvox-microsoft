@@ -19,7 +19,7 @@ var port        = '8080'; //select a port for this server to run on
 global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
 
 //GLOBALS
-global.UPLOAD_FLAG      = false;   // true to upload to Vimeo + elBulli server, false for dev only.
+global.UPLOAD_FLAG      = true;   // true to upload to Vimeo + elBulli server, false for dev only.
 global.CLEANUP_FLAG     = false;  // true to delete all process files after finished, false for dev only.
 global.VID_INTRO_OUTRO  = path.join(__dirname,'assets','intro-outro.mp4');
 global.VID_WATERMARK    = path.join(__dirname,'assets','watermark2.png');
@@ -30,7 +30,7 @@ global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');   // ONLY IF NEE
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
 global.IN_PROCESS = false; /* so we don't process more than one day at a time */
-global.DATE_TODAY = '2015-06-28'; /* for testing */
+global.DATE_TODAY = '2015-06-27'; /* for testing */
 
 //custom modules
 var vimeo          = require('./app/vimeo');

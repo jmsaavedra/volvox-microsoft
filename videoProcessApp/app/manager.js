@@ -108,7 +108,7 @@ var Manager = {
 				cameraCt++; //increment once here
 
 				fs.stat(thisVid, function(_e, stats){
-					if(!_e && stats.size > 10000000){ // if file exists AND is over 1MB
+					if(!_e && stats.size > 5000000){ // if file exists AND is over 5MB
 						console.log('Video has been processed previously:'.yellow.bold, thisVid);
 						console.log('Did not re-upload.'.yellow.bold);
 						return _cb(_e, thisVid);
@@ -138,8 +138,9 @@ var Manager = {
 				return callback(_e, thisVid);
 			}
 		
-			
+			/* generate the date clip */
 			vidRenderer.generateDate(date, function(e, dateVidPath){
+				if(e) return callback(e);
 				allVideos.push(dateVidPath); 
 
 				/* process final composite video */
@@ -209,6 +210,16 @@ function copyFile(oldPath, newPath, _cb){
 			});
 		} else _cb(null, newPath);
 	});
+}
+
+/***
+* MOVE FILE to a new path
+*/
+function cutPasteFile(oldPath, newPath, _cb){
+  fs.rename(oldPath, newPath, function(e, stats){
+    if(e) console.log('error fs.rename: '.red + e);
+    _cb(e);
+  });
 }
 
 

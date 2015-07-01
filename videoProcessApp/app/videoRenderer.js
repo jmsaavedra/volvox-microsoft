@@ -80,9 +80,42 @@ var Process = {
 		});
 	},
 
+	generateDate: function(date, callback){
+		console.log('\nRendering date-frame.png'.cyan.bold);
+		var datePng = path.join(global.PROCESS_FOLDER, date, 'vid3-date.png'); 
+		var dateVid = path.join(global.PROCESS_FOLDER, date, 'vid3-date.mp4');
+		
+		//generate single image of date
+		gm(1920, 1080, '#000000')
+			.font('Roboto-Regular')
+			.fontSize(80)
+			.stroke('#efe', 2)
+			.fill('#FFFFFF')
+			.drawText(0, 0, moment(date).format('MMMM DD, YYYY'), 'Center')
+			.write(datePng, function(err){
+				if(err) return callback(err);
+
+				//generate 5 second video of date with fade in and out
+				console.log('\nRendering vid3-date.mp4'.cyan.bold);
+				ffmpeg(datePng)
+					.loop(3) //5 seconds
+					.fps(30) //30 fps
+					.videoFilters('fade=in:0:30', 'fade=out:30:30')
+					.on('end', function() {
+						console.log('file has been converted succesfully');
+						callback(null, dateVid);
+					})
+					.on('error', function(err) {
+						callback(err.message)
+					})
+					.save(dateVid);
+			});
+	},
+
+
 	makeCompositeVideo: function(vids, date, callback){
 
-		/* RENDER THE COMBINED VIDEO */
+		/* RENDER THE COMBINED VIDEO, all individual camera vids in quadrants */
 		var outFile = 'vid1-composite_'+date+'.mp4';
 		var outpath = path.join(path.dirname(vids[0]), outFile); //same dir as cam vids
 		console.log('\nRendering vid1-composite video: '.cyan+outpath);
@@ -159,7 +192,7 @@ var Process = {
 				/* Final callback! */
 			  	callback(null, outFile);
 			})
-			.on('progress', function(progress) {
+			.on('progress', function(progress
 				console.log('Processing vid3 intro-outro'.gray, path.basename(outFile),'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
 			})
 			.on('error', function(err) {
@@ -167,50 +200,10 @@ var Process = {
 				callback(err.message);
 			})
 		.mergeToFile(outFile, path.dirname(vid));
-	},
-
-
-	generateDate: function(date, callback){
-		console.log('\nRendering date-frame.png'.cyan.bold);
-		var datePng = path.join(global.PROCESS_FOLDER, date, 'vid3-date.png'); 
-		var dateVid = path.join(global.PROCESS_FOLDER, date, 'vid3-date.mp4');
-		
-		//generate single image of date
-		gm(1920, 1080, '#000000')
-			.font('Roboto-Regular')
-			.fontSize(80)
-			.stroke('#efe', 2)
-			.fill('#FFFFFF')
-			.drawText(0, 0, moment(date).format('MMMM DD, YYYY'), 'Center')
-			.write(datePng, function(err){
-				if(err) return callback(err);
-
-				//generate 5 second video of date with fade in and out
-				console.log('\nRendering vid3-date.mp4'.cyan.bold);
-				ffmpeg(datePng)
-					.loop(3) //5 seconds
-					.fps(30) //30 fps
-					.videoFilters('fade=in:0:30', 'fade=out:30:30')
-					.on('end', function() {
-						console.log('file has been converted succesfully');
-						callback(null, dateVid);
-					})
-					.on('error', function(err) {
-						callback(err.message)
-					})
-					.save(dateVid);
-			});
 	}
+
 };
 
 
-
-function cutPasteFile(oldPath, newPath, _cb){
-  fs.rename(oldPath, newPath, function(e, stats){
-    if(e) console.log('error fs.rename: '.red + e);
-    _cb(e);
-  });
-}
-
-
 module.exports = Process;
+
