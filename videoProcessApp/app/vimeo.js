@@ -6,6 +6,7 @@
 
 var path    = require('path'),
     moment  = require('moment'),
+    rimraf  = require('rimraf'),
     Vimeo   = require('vimeo').Vimeo; // https://github.com/vimeo/vimeo.js
 
 var lib = new Vimeo(global.KEYS.VIMEO_CLIENT_ID, 
@@ -18,7 +19,7 @@ var vimeoApi = {
 
 	uploadVideo: function(URI, cb){
     console.log('\nStart uploading file to Vimeo. '.cyan.bold);
-    console.log('\tfile URI:'.gray, URI);
+    console.log(' file URI:'.gray, URI);
 
     var fname = path.basename(URI, '.mp4');
     var rawDate = fname.split('_')[1].toString();
@@ -34,7 +35,11 @@ var vimeoApi = {
         console.log('vimeo.streamingUpload error:\n'.red,error);
         console.log('vimeo.streamingUpload body:\n'.red,JSON.stringify(body,null,'\t'));
         console.log('vimeo.streamingUpload headers:\n'.red,JSON.stringify(headers,null,'\t'));
-	      return cb(error);
+        rimraf(URI, function(_er){
+          if(_er) console.log('error rimraf video: '.red+_er);
+          console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.'.red);
+	        return cb('vimeo upload ERR: '+error);
+        });
 	    }
       
 	    lib.request(headers.location, function (_error, _body, _status_code, _headers) {
@@ -43,7 +48,11 @@ var vimeoApi = {
           console.log('vimeo lib.request fail _error: \n'.red+JSON.stringify(_error));
           console.log('vimeo lib.request fail _body: \n'.red+JSON.stringify(_body,null,'\t'));
           console.log('vimeo lib.request fail _headers: \n'.red+JSON.stringify(_headers,null,'\t'));
-          return cb(_error);
+          rimraf(URI, function(_er){
+          if(_er) console.log('error rimraf video: '.red+_er);
+            console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.'.red);
+            return cb('vimeo request ERR: '+_error);
+          });
         } 
 
     		var vimData = JSON.parse(JSON.stringify(_body));
@@ -70,7 +79,7 @@ var vimeoApi = {
         };
 
     		vimeoApi.updateVideoMetadataFromId(videoId, newMetadata, function(e, data){
-
+          if(e) return cb('vimeo update metadata: '+_error);
           postData.date= rawDate;
           postData.type= 'video';
           postData.complete= true;
