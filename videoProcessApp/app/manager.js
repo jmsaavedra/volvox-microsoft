@@ -101,36 +101,52 @@ var Manager = {
 					frameCt++;
 					cb(e, processedImagePath);
 				});
+			}, function(e, imgs){ /* finished cropping this camera's images */
 				
-			}, function(e, imgs){
+				//quickly check if this camera video has been made before:
+				var thisVid = path.join(processFolder, 'camera-'+cameraCt.toString()+'_'+date+'.mp4');
+				fs.stat(thisVid, function(_e, stats){
+					if(!_e && stats.size > 10000000){ // if file exists AND is over 1MB
+						console.log('Video has been processed previously:'.yellow.bold, thisVid);
+						console.log('Did not re-upload.'.yellow.bold);
+						return _cb(_e, thisVid);
+					}
+					/** BEGIN the processing of this camera's video! **/
+					vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, processedVid){
+						if(err) return _cb(err);
+						cameraCt++;
 
-				/** BEGIN the processing of this camera's video! **/
-				vidRenderer.makeSingleCameraVideo(date, cameraCt, imgs, function(err, processedVid){
-					if(err) return _cb(err);
-					cameraCt++;
-
-					/** UPLOAD to vimeo, update server/db with http post **/
-					Manager.uploadVideo(processedVid, function(_e, file){
-						_cb(_e, processedVid);
+						/** UPLOAD to vimeo, update server/db with http post **/
+						Manager.uploadVideo(processedVid, function(_e, file){
+							_cb(_e, processedVid);
+						});
 					});
 				});
 			});
-		}, function(_err, allCamVideos){
+		}, function(_err, allCamVideos){ /* processing all camera's videos */
 			callback(_err, allCamVideos);
 		});
 	},
 
 	processFinalVideo: function(date, cameraVideos, callback){
+		var thisVid = path.join(global.PROCESS_FOLDER,date,'FINAL_'+date+'.mp4');
+		fs.stat(thisVid, function(_e, stats){
+			if(!_e && stats.size > 10000000){ // if file exists AND is over 10MB
+				console.log('Video has been processed previously:'.yellow.bold, thisVid);
+				console.log('Did not re-upload.'.yellow.bold);
+				return callback(_e, thisVid);
+			}
+		
+			/* process final composite video */
+		    vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
+		  		console.log('Finished Final Render:'.green, finalVidPath);
+		  		if(e) return callback(e);
 
-		/* process final composite video */
-	    vidRenderer.makeFinalVideo(cameraVideos, date, function(e, finalVidPath){
-	  		console.log('Finished Final Render:'.green, finalVidPath);
-	  		if(e) return callback(e);
-
-	  		/* now upload this vid! */
-	  		Manager.uploadVideo(finalVidPath, function(_e, file){
-	  			callback(_e, finalVidPath);
-	  		});
+		  		/* now upload this vid! */
+		  		Manager.uploadVideo(finalVidPath, function(_e, file){
+		  			callback(_e, finalVidPath);
+		  		});
+			});
 		});
 	},
 
@@ -158,8 +174,8 @@ var Manager = {
 	},
 
 	cleanup: function(date, callback){
-		if(!global.UPLOAD_FLAG){ // not in dev mode
-			console.log('global.UPLOAD_FLAG set to false, not deleting process files'.red.bold);
+		if(!global.CLEANUP_FLAG){ // not in dev mode
+			console.log('global.CLEANUP_FLAG set to false, not deleting process files'.red.bold);
 			return callback(null);
 		}
 		

@@ -19,15 +19,17 @@ var port        = '8080'; //select a port for this server to run on
 global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
 
 //FOLDER GLOBALS
-global.UPLOAD_FLAG      = true; // true to upload to Vimeo + elBulli server, false for dev only.
+global.UPLOAD_FLAG      = true;   // true to upload to Vimeo + elBulli server, false for dev only.
+global.CLEANUP_FLAG     = false;  // true to delete all process files after finished, false for dev only.
 global.INTRO_OUTRO_VID  = path.join(__dirname,'assets','intro-outro.mp4');
 global.PROCESS_FOLDER   = path.join(__dirname,'_process-files');  // folder where we'll store stuff as it's created
-global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');     // ONLY IF NEEDED (unused normally)
+global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');   // ONLY IF NEEDED (unused normally)
 
 
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
-global.DATE_TODAY = '2015-06-29'; /* for testing */
+global.IN_PROCESS = false; /* so we don't process more than once at a time */
+global.DATE_TODAY = '2015-06-30'; /* for testing */
 
 //custom modules
 var vimeo          = require('./app/vimeo');
@@ -45,7 +47,7 @@ var watcher        = require('./app/watcher').init(); /* TO USE ONLY IF NEEDED *
 //instantiate object of express as app
 var app = express();
 app.use(express.static(__dirname+ '/public'));
-
+app.use(express.static(__dirname+ '/_process-files'));
 
 /****
 * ROUTES
@@ -53,8 +55,11 @@ app.use(express.static(__dirname+ '/public'));
 *
 */
 app.get('/start', function(req, res){
-  executeVideoProcess();
-  res.send('Start daily process for: <br><strong>'+global.DATE_TODAY+'</strong>');
+  if(!global.IN_PROCESS){
+    global.IN_PROCESS = true;
+    executeVideoProcess('GET /start route');
+    res.send('<br>Start daily process for: <br><br><strong>'+global.DATE_TODAY+'</strong>');
+  } else res.send('<br>Video Renderer currently in process for: <br><br><strong>'+global.DATE_TODAY+'</strong>');
 });
 
 
@@ -87,7 +92,7 @@ function initScheduler(){
   var processTimeout = later.setTimeout(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
-      executeVideoProcess();
+      executeVideoProcess('scheduler');
     }, processSched);
   var nextProcessTime = later.schedule(processSched).nextRange(1, new Date())[0];
   console.log('\n>>> next video process will happen'.cyan.bold, moment(nextProcessTime).from(new Date()),'>>>'.gray,nextProcessTime);
@@ -99,9 +104,10 @@ function initScheduler(){
 * ==============================================
 *
 */
-function executeVideoProcess(){
+function executeVideoProcess(src){
 
   console.log('\n Executing daily video process for date: '.magenta.bold.inverse, global.DATE_TODAY);
+  console.log('\t started by:'.gray,src,'at:'.gray,new Date());
 
   global.DL_PROCESS = function(){
     global.PROCESS_ATTEMPTS++;
@@ -120,6 +126,7 @@ function executeVideoProcess(){
       else{
         console.log('COMPLETED PROCESSING OF TODAY\'S VIDEOS. '.green.bold.inverse, '\nTOOK'.green.bold, global.PROCESS_ATTEMPTS,'ATTEMPTS.\n'.green.bold, '\n========================================================================\n\n'.gray.bold);
         global.PROCESS_ATTEMPTS = 0;
+        global.IN_PROCESS = false;
       } 
     });
   }
