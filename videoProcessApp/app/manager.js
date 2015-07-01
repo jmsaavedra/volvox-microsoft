@@ -29,7 +29,7 @@ var Manager = {
 	    	if(e) return callback(e); //console.log('received images: '+JSON.stringify(imgs));
 		    	
 	    	/* make individual camera movies */
-	    	Manager.beginCameraVideos(date, function(er, cameraVideos){
+	    	Manager.prepareCameraImages(date, function(er, cameraVideos){
 	        	if(er) return callback(er);
 	        	console.log('finished procesing individual videos: '.green);
 	        	console.log(JSON.stringify(cameraVideos, null, '\t'));
@@ -54,7 +54,7 @@ var Manager = {
 		});
 	},
 
-	beginCameraVideos: function(date, callback){
+	prepareCameraImages: function(date, callback){
 
 		/* 2D array of ALL CAMERA RAW IMAGE FILEPATHS
 		- will hold: [ [cam0imgs], [cam1imgs],.. ]*/
@@ -63,9 +63,6 @@ var Manager = {
 		var todayRawImgPath = path.join(global.PROCESS_FOLDER, date, 'raw');
 		var todayProcessImgPath = path.join(global.PROCESS_FOLDER, date);
 		
-		mkdirp.sync(todayProcessImgPath) ? console.log('created today\'s process folder:'.yellow, todayProcessImgPath)
-										 : console.log('re-processing today in folder:'.yellow, todayProcessImgPath);
-
 		fs.readdir(todayRawImgPath, function(e, files){
 			if(e) console.log('error read rawImgPath dir: '.red+e);
 			async.each(files, function(file, cb){
@@ -79,7 +76,7 @@ var Manager = {
 				cb();
 			}, function(err){
 				if(err) return callback(err);
-				images = _.sortBy(images, function(name){return name;});
+				images = _.sortBy(images, function(name){return name;}); //sort by date/time
 				// console.log('completed all camera images 2D array: '+JSON.stringify(images, null, '\t'));
 				Manager.processCameraVideos(date, images, todayProcessImgPath, function(_e, camVideos){
 					callback(_e, camVideos);
@@ -89,7 +86,7 @@ var Manager = {
 	},
 
 	processCameraVideos: function(date, allCameraImgs, processFolder, callback){
-		console.log('copying to processFolder: '.cyan+processFolder);
+		console.log('Begin process images in folder: '.cyan.bold+processFolder);
 		
 		var cameraCt = 0;
 		async.mapSeries(allCameraImgs, function(thisCamImgs, _cb){ //go through each cam's raw images
@@ -105,12 +102,6 @@ var Manager = {
 					cb(e, processedImagePath);
 				});
 				
-
-				/***** HERE INSERT IMAGE CROP AND SAVE, REMOVE COPY ******/
-				// copyFile(img, processImgPath, function(e, path){ // copy to the process folder
-				// 	frameCt++;
-				// 	cb(e, path);
-				// });
 			}, function(e, imgs){
 
 				/** BEGIN the processing of this camera's video! **/
@@ -118,7 +109,7 @@ var Manager = {
 					if(err) return _cb(err);
 					cameraCt++;
 
-					/* UPLOAD to vimeo, update server/db with http post */
+					/** UPLOAD to vimeo, update server/db with http post **/
 					Manager.uploadVideo(processedVid, function(_e, file){
 						_cb(_e, processedVid);
 					});

@@ -11,29 +11,37 @@ var gm 		= require('gm'),
 	ffmpeg 	= require('fluent-ffmpeg'),
 	path 	= require('path'),
 	http 	= require('http'),
-	fs 		= require('graceful-fs'),
+	fs 		= require('fs'),
 	_ 		= require('underscore'),
 	gm 		= require('gm'),
 	async 	= require('async');
 		
 /***
-/* INIT Folder Watcher 
+/* Process Method Exports
 */
 
 var Process = {
 
 	processRawImage: function(rawImg, frameCt, camProcessFolder, cb){
-
+		
 		var processImgPath = path.join(camProcessFolder, 'frame-'+frameCt.toString()+'.jpg');
-		console.log('cropping image: '.gray+processImgPath);
-		gm(rawImg)
-		  .crop(1920, 1080, 0, 100)
-		  .write(processImgPath, function(err){
-		    if (err) return cb(arguments);
-		    //console.log(this.outname + " created  ::  " + arguments[3]);
-		    cb(null, processImgPath);
-		  }
-		);
+
+		fs.stat(processImgPath, function(e, stats){ //https://nodejs.org/api/fs.html#fs_class_fs_stats
+			if(!e && stats.size > 50000){ // if file exists AND is over 50kb
+				console.log('cropped image exists,'.gray.bold,'camera:'.gray, camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1],'file:'.gray,path.basename(processImgPath));
+				return cb(null, processImgPath);	
+			} else {
+				console.log('cropping image: '.yellow+path.basename(processImgPath), ' camera:'.gray, camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1]);
+				gm(rawImg)
+					.crop(1920, 1080, 0, 100)
+					.write(processImgPath, function(err){
+				    	if (err) return cb(arguments);
+				    	//console.log(this.outname + " created  ::  " + arguments[3]);
+				    	cb(null, processImgPath);
+				  	}
+				);
+			}
+		});
 	},
 
 	makeSingleCameraVideo: function(date, camId, imgs, callb){

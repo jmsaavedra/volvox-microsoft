@@ -23,9 +23,7 @@ global.UPLOAD_FLAG      = true; // true to upload to Vimeo + elBulli server, fal
 global.INTRO_OUTRO_VID  = path.join(__dirname,'assets','intro-outro.mp4');
 global.PROCESS_FOLDER   = path.join(__dirname,'_process-files');  // folder where we'll store stuff as it's created
 global.FOLDER_TO_WATCH  = path.join(__dirname,'_watch-upload');     // ONLY IF NEEDED (unused normally)
-// global.BULLI_SERVER     = { host: 'http://elbulliweb.cloudapp.net', // our server to update the DB with data, video links, etc
-//                             path: '/timelapse/new',
-//                             port: '8080' };
+
 
 //number of daily process attempts
 global.PROCESS_ATTEMPTS = 0;
@@ -55,9 +53,8 @@ app.use(express.static(__dirname+ '/public'));
 *
 */
 app.get('/start', function(req, res){
-  global.DATE_TODAY = '2015-06-28'; /* for testing */
   executeVideoProcess();
-  res.send('started daily process.');
+  res.send('Start daily process for: <br><strong>'+global.DATE_TODAY+'</strong>');
 });
 
 
@@ -86,7 +83,7 @@ function initScheduler(){
   console.log('local time: '.gray.bold+new Date());
 
   // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday(); /* SHOWTIME */
-  var processSched = later.parse.recur().on('01:53:40').time(); /* DEVTIME */
+  var processSched = later.parse.recur().on('23:05:00').time(); /* DEVTIME */
   var processTimeout = later.setTimeout(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
@@ -104,7 +101,7 @@ function initScheduler(){
 */
 function executeVideoProcess(){
 
-  console.log('\nexecuting daily video process for date: '.magenta.bold.inverse, global.DATE_TODAY);
+  console.log('\n Executing daily video process for date: '.magenta.bold.inverse, global.DATE_TODAY);
 
   global.DL_PROCESS = function(){
     global.PROCESS_ATTEMPTS++;

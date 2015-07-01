@@ -17,9 +17,10 @@ var lib = new Vimeo(global.KEYS.VIMEO_CLIENT_ID,
 var vimeoApi = {
 
 	uploadVideo: function(URI, cb){
-    console.log('Start uploading file to Vimeo. '.yellow);
+    console.log('Start uploading file to Vimeo. '.cyan.bold);
 
     var fname = path.basename(URI, '.mp4');
+    console.log('\tfile URI:'.gray, URI);
     var rawDate = fname.split('_')[1].toString();
     var date = moment(rawDate).format('MMMM DD, YYYY');
 
@@ -27,38 +28,39 @@ var vimeoApi = {
 
     var postData = {}; //holds object to update elbulli web server with.
 
-    if(fname.indexOf('camera') === 0){
-      
-    } else {
-      
-    }
-
 		lib.streamingUpload(URI,  function (error, body, status_code, headers) {
-	    if (error) {
-	        return cb(error);
+	    console.log('vimeo.streamingUpload status_code '.yellow, status_code);
+      if (error) {
+        console.log('vimeo.streamingUpload error'.red,error);
+        console.log('vimeo.streamingUpload body'.red,JSON.stringify(body,null,'\t'));
+        console.log('vimeo.streamingUpload headers'.red,JSON.stringify(headers,null,'\t'));
+	      return cb(error);
 	    }
-
-	    lib.request(headers.location, function (error, _body, status_code, headers) {
-    		console.log('vimeo upload status_code: '.cyan + status_code);
+      
+	    lib.request(headers.location, function (_error, _body, _status_code, _headers) {
+    		console.log('vimeo.request status_code: '.yellow + _status_code);
         
-        if(error || status_code !== 200){
-          console.log('vimeo upload fail _body: '.red+JSON.stringify(_body));
-          console.log('vimeo upload fail headers: '.red+JSON.stringify(headers));
-          return cb(error);
+        if(_error){
+          console.log('vimeo lib.request fail _error: \n'.red+JSON.stringify(_error));
+          console.log('vimeo lib.request fail _body: \n'.red+JSON.stringify(_body,null,'\t'));
+          console.log('vimeo lib.request fail _headers: \n'.red+JSON.stringify(_headers,null,'\t'));
+          return cb(_error);
         } 
 
     		var vimData = JSON.parse(JSON.stringify(_body));
     		var videoId = path.basename(vimData.uri);
         if(fname.indexOf('camera') > -1){
-          var cam = fname.split('_')[0].replace(/-/, ' ');
-          title += ' - '+cam;
-          var camNum = parseInt(fname[7]);
+          // var cam = fname.split('_')[0].replace(/-/, ' ');
+          var camNum = parseInt(fname[7]); // always index 7 of "camera-1_2015-XX-XX.mp4"
+          title += ' - Camera '+((camNum+1).toString());
+          
           if      (camNum === 0) postData.cam0 = { vimeo_video_id: videoId };
           else if (camNum === 1) postData.cam1 = { vimeo_video_id: videoId };
           else if (camNum === 2) postData.cam2 = { vimeo_video_id: videoId };
           else if (camNum === 3) postData.cam3 = { vimeo_video_id: videoId };
           else console.log('camNum not found: '+camNum);
-        } else postData.vimeo_final = { vimeo_video_id: videoId };
+        } else //it's the final video (not individual camera)
+            postData.vimeo_final = { vimeo_video_id: videoId };
         //   switch(camNum){
         //     case 0:
         //       postData.cam0 = { vimeo_video_id: videoId };
@@ -114,7 +116,7 @@ var vimeoApi = {
       },
       function(err, body, status_code, headers){
 		    if(err) console.log('vimeo metadata err: '.red+err);
-        console.log('vimeo metadata status_code: '.cyan+status_code);
+        console.log('vimeo metadata status_code: '.yellow+status_code);
         _cb(err, body);
       });
 	},

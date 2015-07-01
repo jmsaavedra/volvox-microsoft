@@ -24,14 +24,7 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
   var localImgs = [];
 
   // Validate directory
-  mkdirp.sync(destinationDirectoryPath) ? console.log('created today\'s process folder:'.yellow, destinationDirectoryPath)
-                     : console.log('re-processing today in folder:'.yellow, destinationDirectoryPath);
-
-  // if (!fs.existsSync(destinationDirectoryPath)) {
-  //   console.log(destinationDirectoryPath + ' does not exist. Attempting to create this directory...');
-  //   fs.mkdirSync(destinationDirectoryPath);
-  //   console.log(destinationDirectoryPath + ' created.');
-  // }
+  mkdirp.sync(destinationDirectoryPath) ? console.log('created today\'s process folder:'.yellow.bold, destinationDirectoryPath) : console.log();
 
   // NOTE: does not handle pagination.
   blobService.listBlobsSegmented(containerName, null, function (error, result) {
@@ -46,23 +39,14 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
       async.eachSeries(blobs, function (blob, cb) {
         fileCt++;
         var thisLocalFilePath = destinationDirectoryPath + '/' + blob.name;
-        console.log('checking for: '.gray+ blob.name);
-        fs.exists(thisLocalFilePath, function(exists){
-          if(exists){
-            fs.stat(thisLocalFilePath, function(e, stats){
-              if(stats.size > (100*1000)){//if it's more than 100kb bytes big
-                console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
-                return cb();
-              } else {
-                //delete this broken ass file.
-                rimraf(thisLocalFilePath, function(_e){
-                  if(_e) cb('rimraf error: '+ _e);
-                  return cb('had to delete a bad file, restarting');
-                });
-              }
-            });
+        //console.log('checking for raw file: '.gray+ blob.name);
+
+        fs.stat(thisLocalFilePath, function(e, stats){
+          if(!e && stats.size > 50000){ // if file exists AND is over 50kb
+            console.log('raw file exists: '.gray.bold+blob.name);
+            return cb();  
           } else {
-            console.log('attempt dl new file: '.gray, blob.name);
+            console.log('attempt dl new file: '.yellow, blob.name);
             blobService.getBlobToLocalFile(containerName, blob.name, thisLocalFilePath, function (error2) {
               if (error2) {
                 console.log('error on blob download:'.red, error2);
@@ -77,20 +61,13 @@ module.exports.downloadImages = function (containerName, destinationDirectoryPat
             });
           }
         });
-        // if(fs.existsSync(thisLocalFilePath)){
-        //   if(fs.statSync(thisLocalFilePath).size > 1000){ //if it's more than 1000 bytes big
-        //     console.log('File Already Exists: '.yellow, fileCt+'/'.gray+blobs.length,':',blob.name);
-        //     return cb();
-        //   }
-        // }
-
       }, function(e){
-          if(e) return callback(e);
-          else {
-            console.log(' ALL FILES DOWNLOADED '.green.bold.inverse, containerName);
-            clearTimeout(global.DL_WATCHDOG);
-            callback(null, localImgs);
-          }
+        if(e) return callback(e);
+        else {
+          console.log('  ALL RAW FILES DOWNLOADED  '.green.bold.inverse, 'for Date:',containerName);
+          clearTimeout(global.DL_WATCHDOG);
+          callback(null, localImgs);
+        }
       });
     }
   });
@@ -110,11 +87,8 @@ module.exports.uploadImage = function(filePath, fileName, cb){
     if (!error) {
       
       if(result) console.log('new container created: '.green+today);
-      // : console.log('container already exists: '.gray+today);
-      //console.log('container created result: '.green + result);
-      //console.log('container created FULL response: '.green + JSON.stringify(response,null,'\t'));
-      
-      /* created/checked container, now upload this file to it */
+
+      /* now UPLOAD this file to it */
       uploadFile(today, filePath, fileName, cb);
 
     } else {
