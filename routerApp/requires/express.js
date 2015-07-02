@@ -136,8 +136,8 @@ module.exports = function(db, Model, vimeo) {
       }, function(err, obj) {
         if(err || !obj) {
           console.log(chalk.red('err:'),err);
-          console.log('today:',obj.today);
-          res.send('<strong>error:</strong>',err,'when looking up date: <strong>',req.query.date,'</strong>');
+          console.log('today:',obj);
+          res.send('<strong>error:</strong>',err,'<strong>today:</strong>',obj,'when looking up date: <strong>',req.query.date,'</strong>');
         } else {
           var sendObj = JSON.parse(JSON.stringify(obj));
           sendObj.image_count = obj.images.length;
