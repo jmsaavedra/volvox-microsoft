@@ -27,6 +27,7 @@ textarea:hover, input:hover, textarea:active, input:active, textarea:focus, inpu
 [ui-view] {
 	width: 100%;
 	overflow-x: hidden;
+	// overflow-y: hidden;
 	&.has-padding {
 		padding-bottom: 0px;
 	}
@@ -78,6 +79,20 @@ body {
 	position: relative;
 }
 // Navbar
+// 
+.navbar-default .navbar-nav {
+	li {
+		a, a:hover {
+			color: $elwhite;
+		}
+	}
+}
+
+.navbar-default {
+	background: $elblack;
+	border: none;
+}
+
 #nav-main {
 	position: fixed;
 	top: 0;
@@ -95,13 +110,6 @@ body {
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
-}
-@media screen and (max-width:995px) {
-	.v-centered {
-		top: 15% !important;
-		padding-bottom: 100px;
-		transform: translateY(0%) !important;
-	}
 }
 
 .btn-nav-info {
@@ -125,6 +133,25 @@ body {
 }
 
 // Gallery
+.share-icons-holder {
+	text-align: right;
+	margin-bottom: 15px;
+	a {
+		margin: 0px 5px;
+		svg {
+			width: 35px;
+			height: 35px;
+			fill: #fff;
+			opacity: 0.5;
+			transition: 0.25s;
+			&:hover {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+
 .gallery-grid {
 	div {
 		padding: 3px;
@@ -193,6 +220,36 @@ body {
 	background: $elwhite;
 	padding-top: 10px;
 }
+
+// media Queries
+// 
+@media screen and (max-width:995px) {
+	.share-icons-holder {
+		text-align: left;
+		margin-bottom: 15px;
+	}
+	.v-centered {
+		top: 8% !important;
+		padding-bottom: 100px;
+		transform: translateY(0%) !important;
+	}
+	.single-item {
+		div {
+			width: 100%;
+			height: 300px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: center center;
+		}
+	}
+}
+
+@media screen and (max-width: 700px) {
+	.slick-prev, .slick-next {
+		display: none !important;
+	}
+}
+
 // Misc
 .text-black {
 	color: $elblack;
