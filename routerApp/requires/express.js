@@ -129,6 +129,25 @@ module.exports = function(db, Model, vimeo) {
       });
 
     })
+
+    .get('/photo/info', function(req, res) {
+      Model.Photo.findOne({
+        date: req.query.date
+      }, function(err, obj) {
+        if(err || obj.today === 'undefined') {
+          console.log(chalk.red('err:'),err);
+          console.log('today:',obj.today);
+          res.send('<strong>error:</strong>',err,'when looking up date: <strong>',req.query.date,'</strong>');
+        } else {
+          var sendObj = JSON.parse(JSON.stringify(obj));
+          sendObj.image_count = obj.images.length;
+          res.json({
+            today: sendObj
+          });
+        }
+      });
+    })
+
     // For getting the video and scans back to user
     .get('/timelapse/month/:month', function(req, res) {
       var month = req.params.month; // 01-12
