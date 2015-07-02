@@ -134,7 +134,7 @@ module.exports = function(db, Model, vimeo) {
       Model.Photo.findOne({
         date: req.query.date
       }, function(err, obj) {
-        if(err || obj.today === 'undefined') {
+        if(err || !obj) {
           console.log(chalk.red('err:'),err);
           console.log('today:',obj.today);
           res.send('<strong>error:</strong>',err,'when looking up date: <strong>',req.query.date,'</strong>');
