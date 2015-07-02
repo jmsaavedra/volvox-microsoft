@@ -9,9 +9,7 @@ Volvox Labs + Microsoft Timelapse Project
 * Clone repo
   * `$ git clone https://github.com/jmsaavedra/volvox-microsoft.git`
 
-* Install ffmpeg
-  * OSX: `brew install ffmpeg`
-  * Windows:
+
  
 ##Camera App Machine Setup
 * Install Node v0.10.39
@@ -29,21 +27,42 @@ Volvox Labs + Microsoft Timelapse Project
     * ?????
   
 
-##Linux Local Box Setup
+##Linux Box Setup
+For Video Processor (Azure) as well as Camera Controller (local) machines.
 
-* Install Node v0.10.39
-  * `sudo apt-get update`
-  * `sudo apt-get install build-essential libssl-dev`
-  * `curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
-  * `source ~/.profile`
-  * `nvm install 0.10.39`
-  * `nvm use 0.10.39`
-  * `node -v`  // check that install worked
-  * `nvm alias default 0.10.39`
-  * `nvm use default`
+* Install Node *`v0.10.39`* via [NVM](https://github.com/creationix/nvm)
+  * `$ sudo apt-get update`
+  * `$ sudo apt-get install build-essential libssl-dev`
+  * `$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
+  * `$ source ~/.profile`
+  * `$ nvm install 0.10.39`
+  * `$ nvm use 0.10.39`
+  * `$ node -v`  // check that install worked
+  * `$ nvm alias default 0.10.39`
+  * `$ nvm use default`
 * Install github
   * `$ sudo apt-get git`
 * [Install ffmpeg](https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/wiki/Installing-ffmpeg-on-Debian)
 * Clone repo
   * `$ git clone https://github.com/jmsaavedra/volvox-microsoft.git`
+* Set local time zone
+  * Linux ([ref](http://www.christopherirish.com/2012/03/21/how-to-set-the-timezone-on-ubuntu-server/)):
+  * `$ date`  // show date
+  * `$ more /etc/timezone` // show timezone file
+  * `$ sudo dpkg-reconfigure tzdata` // run timezone config
+  * if using cron, restart it:
+    * `$ /etc/init.d/cron stop`
+    * `$ /etc/init.d/cron start`
+
+* Install ffmpeg
+  * OSX: `$ brew install ffmpeg`
+  * Linux: wget and unpack manually: [see my gist here](https://gist.github.com/jmsaavedra/62bbcd20d40bcddf27ac).
+* Install image/graphicsmagick
+  * OSX: 
+    * `$ brew install gs graphicsmagick` (both gm + ghostscript)
+    * `$ brew install imagemagick`
+  * Linux: 
+    * `$ sudo apt-get install graphicsmagick`
+    * `$ sudo apt-get install ghostscript`
+
   
