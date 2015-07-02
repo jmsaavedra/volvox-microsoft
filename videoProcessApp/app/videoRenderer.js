@@ -181,7 +181,7 @@ var Process = {
 
 
 	addIntroOutro: function(vid, allVids, date, callback){
-		console.log('\nRendering vid3-final video'.cyan.bold, 'Adding intro and outro clips...');
+		console.log('\nRendering vid4-final video'.cyan.bold, 'Adding intro and outro clips...');
 		var outFile = path.join(path.dirname(vid), 'vid4-final_'+date+'.mp4');
 		var proc = ffmpeg()
 			.input(global.VID_INTRO_OUTRO)
