@@ -17,7 +17,7 @@ var handler = ImageHandler.prototype;
 function ImageHandler(imgPath, cb){
 
 	/* new File Handler instantiated after a file is added to watched folder */
-	console.log('BEGIN UPLOAD IMAGE: '.cyan+imgPath);
+	console.log('BEGIN UPLOAD IMAGE: '+imgPath);
  
 	handler.uploadToAzure(imgPath, cb);
 }
@@ -29,8 +29,8 @@ function ImageHandler(imgPath, cb){
 handler.uploadToAzure = function(img, callb){
 
 	AzureFiler.uploadImage(img, path.basename(img), function(e, data){
-		if(e) return callb('error uploading to Azure: '.red.bold+e);
-		if(!data) return callb('NO DATA RETURNED when uploading to Azure: '.red.bold+e);
+		if(e) return callb('error uploading to Azure: '+e);
+		if(!data) return callb('NO DATA RETURNED when uploading to Azure: '+e);
 
 		console.log('POSTing to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 		//*** send this data to the routing server to save to DB: ***//
@@ -68,14 +68,14 @@ handler.postDataToElBulli = function(data, callback){
 	var post_req = http.request(post_options, function(res) {
 		res.setEncoding('utf8');
 		res.on('data', function (chunk) {
-			console.log('Server Response: '.yellow + chunk);
+			console.log('Server Response: ' + chunk);
 			if(JSON.parse(chunk).data !== true){
-				console.log('ERROR ON POST TO EL BULLI SERVER: '.red.bold+chunk);
+				console.log('ERROR ON POST TO EL BULLI SERVER: '+chunk);
 				return callback('ERROR ON POST: ',chunk);
 			}
 
-			console.log('SUCCESS HTTP POST to El Bulli Server.'.green); 
-			console.log('=========================================================='.gray);
+			console.log('SUCCESS HTTP POST to El Bulli Server.'); 
+			console.log('==========================================================');
 			callback(null, chunk);
 		});
 	});

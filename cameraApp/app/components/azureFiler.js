@@ -28,7 +28,7 @@ module.exports.uploadImage = function(filePath, fileName, cb){
     }, function(error, result, response) {
     if (!error) {
       
-      if(result) console.log('new container created: '.green+today);
+      if(result) console.log('new container created: '+today);
       // : console.log('container already exists: '.gray+today);
       //console.log('container created result: '.green + result);
       //console.log('container created FULL response: '.green + JSON.stringify(response,null,'\t'));
@@ -52,13 +52,13 @@ function uploadFile (container, fpath, name, callback){
       //*** file uploaded ***
       //console.log('blockblob created result: '+JSON.stringify(result,null,'\t'));
       //console.log('Azure Blob create response: '.yellow + JSON.stringify(response));
-      console.log('SUCCESS Azure Blob upload: '.green + result.container + '/' + result.blob);
+      console.log('SUCCESS Azure Blob upload: ' + result.container + '/' + result.blob);
 
       moveFile(container, fpath, name, function(e){
-        if(e) console.log('error on moveFile: '.red + e);
-        else console.log('SUCCESS copy image to: '.yellow,fpath);
+        if(e) console.log('error on moveFile: ' + e);
+        else console.log('SUCCESS copy image to: ',fpath);
         var fileUrl = global.AZURE_BLOB_ADDR+'/'+result.container+'/'+result.blob;
-        console.log('BLOB URL: '.cyan.bold + fileUrl);
+        console.log('BLOB URL: ' + fileUrl);
         var data = {date: container, file: fileUrl, type: 'photo'};
         callback(null, data);
       });
@@ -88,7 +88,7 @@ function moveFile(container, fpath, name, cb){
 
 function cutPasteFile(oldPath, newPath, _cb){
   fs.rename(oldPath, newPath, function(e, stats){
-    if(e) console.log('error fs.rename: '.red + e);
+    if(e) console.log('error fs.rename: ' + e);
     _cb(e);
   })
 }

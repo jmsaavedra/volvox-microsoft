@@ -27,7 +27,7 @@ var SNAP_INTERVAL = 30; // number of seconds between each snap
 
 var fs        = require('graceful-fs'),
   path        = require('path'),
-  colors      = require('colors'),
+  chalk       = require('chalk'),
   async       = require('async'),
   express     = require('express'),
   http        = require('http'),
@@ -62,14 +62,15 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
   });
 }, 2);
 
+console.log(chalk.green('Hello this is chalk'));
 // assign a callback
 imageProcessQueue.drain = function() {
     
-    console.log('\nAll images have been uploaded and databased for take #'.green.bold+takeNumber);
-    console.log('__________________________________________________________'.gray.bold);
-    console.log('__________________________________________________________\n'.gray.bold);
+    console.log('\nAll images have been uploaded and databased for take #'+takeNumber);
+    console.log('__________________________________________________________');
+    console.log('__________________________________________________________\n');
     Scheduler.getTimeTilNextSnap(function(timeTilNextSnap, timeOfNextSnap){
-      console.log('>>> Time until next snap:'.cyan.bold, timeTilNextSnap,'>>>'.gray, timeOfNextSnap );
+      console.log('>>> Time until next snap:', timeTilNextSnap,'>>>', timeOfNextSnap );
       io.sockets.emit('finished', latestImages);
     });  
 };
@@ -81,17 +82,17 @@ watchr.watch({
     
     if(changeType === 'create'){ 
       imgCt++;
-      console.log('New File Added, imgCt:'.green,imgCt,': ',filePath);
+      console.log('New File Added, imgCt:',imgCt,': ',filePath);
       var today = moment().format('YYYY-MM-DD');
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
    
       /* add this image to the processing queue */
       imageProcessQueue.push(filePath, function (err) {
-        if(err) console.log('ERROR processImage: '.red, err); //console.log('finished processing image.'.green);
+        if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
       });
    
       if (imgCt >= cameras.cameras_.length){
-        console.log("\n  RECEIVED 4 IMAGES  \n".bold);
+        console.log(chalk.bold("\n  RECEIVED 4 IMAGES  \n"));
         //imgCt = 0; //reset for next take
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
       }
@@ -110,11 +111,11 @@ function snap(){
     latestImages=[];
     takeNumber++;
     imgCt = 0;
-    console.log('\n------------------\n'.gray+'  Snap Photo!  '.green.bold.inverse + '  ||  '.gray.bold+'Take #'.cyan.bold+takeNumber);
+    console.log('\n------------------\n'+'  Snap Photo!  ' + '  ||  '+'Take #'+takeNumber);
     io.sockets.emit('loading',null);
     cameras.takePhotos(function(e){
       if(!e) return true
-      console.log('ERROR takePhotos:'.red,e);
+      console.log('ERROR takePhotos:',e);
       return false;
     });
 }
@@ -123,14 +124,14 @@ function snap(){
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    if(e) console.log('camera setup failed:'.red, e);
+    if(e) console.log('camera setup failed:', e);
       //console.log("camera setup failed, restarting app.");
       // setTimeout(function(){
       //   process.exit(1);  
       // }, 3000);
     //}
     //else {      
-      console.log("camera setup complete".gray);
+      console.log("camera setup complete");
       setupComplete = true;
       setupSockets();
       server.listen(port);
@@ -138,15 +139,15 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
       /*** START THE HTTP SERVER ***/
       // http.createServer(app).listen(port, function(){
         console.log();
-        console.log('  CAMERA APP   Server Running!  '.white.inverse);
-        console.log('  HTTP Express Server Running!  '.gray.inverse);
+        console.log('  CAMERA APP   Server Running!  ');
+        console.log('  HTTP Express Server Running!  ');
         var listeningString = ' Magic happening on port: '+ port +"  ";
-        console.log(listeningString.cyan.inverse);
+        console.log(listeningString);
 
         // var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
         Scheduler.init(snap, function(timeTilNextSnap, timeOfNextSnap){
 
-          console.log('\n>>> Time until next snap:'.cyan.bold, timeTilNextSnap, '>>>'.gray, timeOfNextSnap )
+          console.log('\n>>> Time until next snap:', timeTilNextSnap, '>>>', timeOfNextSnap )
         });
       // }); 
     //}
@@ -157,7 +158,7 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
 var setupSockets = function(){
   //console.log(cameras);
   io.on('connection', function(socket){
-    console.log('socket connection created.'.yellow);
+    console.log('socket connection created.');
     //if(!setupComplete) 
       // socket.broadcast.emit('loading', null);
       io.sockets.emit('finished',latestImages);
@@ -176,7 +177,7 @@ var setupSockets = function(){
     socket.on('snap',function(data){
       // if(!processingTake){
         // processingTake = true;
-        console.log('Snap Photo! '.green+JSON.stringify(data));
+        console.log('Snap Photo! '+JSON.stringify(data));
         snap();
         //*****NEW****
         

@@ -1,6 +1,5 @@
 
-var colors  = require('colors'),
-  _         = require('lodash'),
+var _         = require('lodash'),
   async     = require('async'),
   fs        = require('fs'),
   moment    = require('moment'),
@@ -20,7 +19,7 @@ function Cameras(_cb){
 
   GPhoto.list(function (list) {
     if (list.length === 0){
-      console.log(" >>> NO CAMERAS FOUND <<< ".red.inverse);
+      console.log(" >>> NO CAMERAS FOUND <<< ");
       return _cb("no cameras found");
     }
     // var camera = list[0];
@@ -31,7 +30,7 @@ function Cameras(_cb){
       var thisCam = _thisCam;
       thisCam.id=id;
       self.cameras_[id] = thisCam;
-      console.log('Found Camera '.cyan+id, 'model'.gray, thisCam.model, 'on port'.gray, thisCam.port);
+      console.log('Found Camera '+id, 'model', thisCam.model, 'on port', thisCam.port);
       id++;
       cb();
     }, function(_e){
@@ -69,7 +68,7 @@ Cameras.prototype.takePhotos = takePhotos = function(_cb){
         if(!data){
           //var _thisCamIdx = _.findIndex(self.cameras_, { 'id': cam.id });
           //self.cameras_.splice(_thisCamIdx, 1);
-          return cb("snap error: no image returned, camera: ".red + cam.id);
+          return cb("snap error: no image returned, camera: " + cam.id);
         }
         var filePath = global.RAW_IMG_FOLDER+'/'+now+'_cam'+'_'+cam.id+'.jpg';
         //TODO: async!
@@ -77,7 +76,7 @@ Cameras.prototype.takePhotos = takePhotos = function(_cb){
         cb(er);
       });
     }, function(e){
-    if(e) console.log("error taking snap: ".red + e);
+    if(e) console.log("error taking snap: " + e);
     _cb(e);
   });
 };

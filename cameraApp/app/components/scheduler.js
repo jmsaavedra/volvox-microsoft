@@ -1,6 +1,5 @@
 
-var colors  = require('colors'),
-  _         = require('lodash'),
+var _         = require('lodash'),
   async     = require('async'),
   fs        = require('graceful-fs'),
   later     = require('later'),
@@ -34,7 +33,7 @@ module.exports.init = function(snapFunc, cb){
   // startRule.hour = 9;
   // startRule.minute = 0;
   // var start = schedule.scheduleJob(startRule, function(){
-  //     console.log('>>> STARTING CAMERA INTERVAL <<<'.green.inverse);
+  //     console.log('>>> STARTING CAMERA INTERVAL <<<'));
   //     cameraSnapInterval = setInterval(snapFunc, 30000);
   // });
 
@@ -43,7 +42,7 @@ module.exports.init = function(snapFunc, cb){
   // endRule.hour = 15;
   // endRule.minute = 0;
   // var end = schedule.scheduleJob(endRule, function(){
-  //     console.log('>>> ENDING CAMERA INTERVAL UNTIL TOMORROW <<<'.gray.inverse);
+  //     console.log('>>> ENDING CAMERA INTERVAL UNTIL TOMORROW <<<');
   //     clearInterval(cameraSnapInterval);
   // });
 };
