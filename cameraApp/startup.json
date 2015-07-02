@@ -1,0 +1,16 @@
+{
+
+	"name" : "cameras",
+	"script" : "app.js",
+	"env" : {
+		"FORCE_COLOR":"true"
+	},
+	"error_file" : "./pm2_logs/camera-app.stderr.log",
+	"out_file" : "./pm2_logs/camera-app.stdout.log",
+	"instances" : 1,
+	"min_uptime" : "20s",
+	"max_restarts" : 99999,
+	"merge_logs" : true,
+	"exec_interpreter" : "node",
+	"exec_mode" : "fork"
+}

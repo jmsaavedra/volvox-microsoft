@@ -1,6 +1,5 @@
 
-var colors  = require('colors'),
-  _         = require('lodash'),
+var  _         = require('lodash'),
   async     = require('async'),
   fs        = require('graceful-fs'),
   later     = require('later'),
@@ -17,7 +16,7 @@ module.exports.init = function(snapFunc, cb){
 
 
 
-  var snapRecurring = later.parse.recur().after('04:30').time().before('23:30').time().every(90).second().onWeekday();
+  var snapRecurring = later.parse.recur().after('04:30').time().before('12:30').time().every(60).second().onWeekday();
   // var snapRecurring   = later.parse.recur().after('05:00').time().before('06:45').time().every(30).second();
   var snapInterval    = later.setInterval(snapFunc, snapRecurring);
   snapSchedule        = later.schedule(snapRecurring);

@@ -1,5 +1,6 @@
 process.env.UV_THREADPOOL_SIZE = 72;
-
+console.log('\n\n---------------------------------------\n')
+console.log('___________ Booting CAMERA APP __________')
 /****
 *
 * VOLVOX x MICROSOFT
@@ -23,11 +24,10 @@ global.BULLI_SERVER = {
   port: '8080'
 };
 
-var SNAP_INTERVAL = 30; // number of seconds between each snap
+global.chalk= require('chalk');
 
 var fs        = require('graceful-fs'),
   path        = require('path'),
-  colors      = require('colors'),
   async       = require('async'),
   express     = require('express'),
   http        = require('http'),
@@ -60,15 +60,16 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
     if(e) console.log('ERROR processing new image:'.red, e);
     callback(e);
   });
-}, 1);
+}, 2);
+
 
 // assign a callback
 imageProcessQueue.drain = function() {
-    console.log('__________________________________________________________\n'.gray.bold);
-    console.log('All images have been uploaded and databased for take #'.green.bold+takeNumber);
-    console.log('__________________________________________________________\n'.gray.bold);
+    console.log(chalk.gray.bold('__________________________________________________________\n'));
+    console.log(chalk.green.bold('All images have been uploaded and databased for take #')+takeNumber);
+    console.log(chalk.gray.bold('__________________________________________________________\n'));
     Scheduler.getTimeTilNextSnap(function(time){
-      console.log('>>> Time until next snap:'.cyan.bold, moment(time).from(new Date()),'>>>'.gray, time );
+      console.log(chalk.cyan.bold('>>> Time until next snap:'), moment(time).from(new Date()),chalk.gray('>>>'), time );
       io.sockets.emit('finished', latestImages);
 
     });  
@@ -81,17 +82,17 @@ watchr.watch({
     
     if(changeType === 'create'){ 
       imgCt++;
-      console.log('New File Added, imgCt:'.green,imgCt,': ',filePath);
+      console.log(chalk.green('New File Added, imgCt:'),imgCt,': ',filePath);
       var today = moment().format('YYYY-MM-DD');
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
-        console.log("\n  RECEIVED 4 IMAGES  \n".cyan.bold);
+        console.log(chalk.bold("\n  RECEIVED 4 IMAGES  \n"));
         //imgCt = 0; //reset for next take
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
       }
       imageProcessQueue.push(filePath, function (err) {
-        if(err) console.log('ERROR processImage: '.red, err); //console.log('finished processing image.'.green);
+        if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
       });
     } //else console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
   }
@@ -107,11 +108,11 @@ function snap(){
     latestImages=[];
     takeNumber++;
     imgCt = 0;
-    console.log('\n------------------\n'.gray+'  Snap Photo!  '.green.bold.inverse + '  ||  '.gray.bold+'Take #'.cyan.bold+takeNumber);
+    console.log('\n------------------\n\n',chalk.green.bold.inverse('  Snap Photo!  ') + chalk.gray.bold('  ||  ')+chalk.cyan.bold('Take #')+takeNumber);
     io.sockets.emit('loading',null);
     cameras.takePhotos(function(e){
       if(!e) return true
-      console.log('ERROR takePhotos:'.red,e);
+      console.log(chalk.red('ERROR takePhotos:'),e);
       return false;
     });
 }
@@ -120,14 +121,14 @@ function snap(){
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    if(e) console.log('camera setup failed:'.red, e);
+    if(e) console.log(chalk.red('camera setup failed:'), e);
       //console.log("camera setup failed, restarting app.");
       // setTimeout(function(){
       //   process.exit(1);  
       // }, 3000);
     //}
     //else {      
-      console.log("camera setup complete".gray);
+      console.log(chalk.gray("camera setup complete"));
       setupComplete = true;
       setupSockets();
       server.listen(port);
@@ -135,16 +136,16 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
       /*** START THE HTTP SERVER ***/
       // http.createServer(app).listen(port, function(){
         console.log();
-        console.log('  CAMERA APP   Server Running!  '.white.inverse);
-        console.log('  HTTP Express Server Running!  '.gray.inverse);
+        console.log(chalk.white.inverse('  CAMERA APP   Server Running!  '));
+        console.log(chalk.gray.inverse('  HTTP Express Server Running!  '));
         var listeningString = ' Magic happening on port: '+ port +"  ";
-        console.log(listeningString.cyan.inverse);
+        console.log(chalk.cyan.inverse(listeningString));
 
         // var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
         Scheduler.init(snap, function(timeOfNextSnap){
           moment.relativeTimeThreshold('s', 55);
           moment.relativeTimeThreshold('m', 55);
-          console.log('>>> Time until next snap:'.cyan.bold, moment(timeOfNextSnap).from(new Date()),'>>>'.gray, timeOfNextSnap )
+          console.log(chalk.cyan.bold('>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
         });
       // }); 
     //}
@@ -155,7 +156,7 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
 var setupSockets = function(){
   //console.log(cameras);
   io.on('connection', function(socket){
-    console.log('socket connection created.'.yellow);
+    console.log(chalk.yellow('socket connection created.'));
     //if(!setupComplete) 
       // socket.broadcast.emit('loading', null);
       io.sockets.emit('finished',latestImages);
@@ -174,7 +175,7 @@ var setupSockets = function(){
     socket.on('snap',function(data){
       // if(!processingTake){
         // processingTake = true;
-        console.log('Snap Photo! '.green+JSON.stringify(data));
+        console.log(chalk.green('Snap Photo! ')+JSON.stringify(data));
         snap();
         //*****NEW****
         
