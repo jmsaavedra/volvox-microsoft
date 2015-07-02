@@ -6,6 +6,7 @@
  *
  */
 
+var AuthKey = require('./requires/AuthKey.js');
 var config = require('./requires/config');
 var mongoose = require('mongoose');
 // Load Mongoose Schema Models
@@ -33,7 +34,7 @@ var vimeo = require('./requires/vimeo');
  */
 
 // Init the express application
-var app = require('./requires/express')(db, Model, vimeo);
+var app = require('./requires/express')(db, Model, vimeo, keys);
 
 /****
  * START THE HTTP SERVER

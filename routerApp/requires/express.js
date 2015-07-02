@@ -1,6 +1,7 @@
 // Express App
 
 // Module dependencies
+var keys = require('./AuthKey.js');
 var util = require('util');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -12,7 +13,7 @@ var moment = require('moment');
 
 // Export Module
 
-module.exports = function(db, Model, vimeo) {
+module.exports = function(db, Model, vimeo, keys) {
   var app = express();
   app.use(cors());
 
@@ -43,7 +44,7 @@ module.exports = function(db, Model, vimeo) {
         }
       });
     })
-    .post('/photo/new', function(req, res) {
+    .post(keys.BULLI_SERVER.PATH.photo, function(req, res) {
       console.log(req.body);
       // Save to Mongo
       /*
@@ -67,13 +68,14 @@ module.exports = function(db, Model, vimeo) {
           // Sending Fail Email
         } else {
           res.json({
-            data: true
+            data: true,
+	    img_count: obj.images.length
           });
           // Sending Success Email
         }
       });
     })
-    .post('/timelapse/new', function(req, res) {
+    .post(keys.BULLI_SERVER.PATH.video, function(req, res) {
       console.log(req.body);
       /*
         Upsert the new video object
@@ -97,7 +99,7 @@ module.exports = function(db, Model, vimeo) {
         }
       });
     })
-    .post('/scanner/new', function(req, res) {
+    .post(keys.BULLI_SERVER.PATH.scan, function(req, res) {
       console.log(req.body);
       // Save to Mongo
       /*

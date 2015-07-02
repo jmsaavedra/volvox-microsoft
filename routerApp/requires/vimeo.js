@@ -1,10 +1,11 @@
 // Vimeo API
 
+var keys = require('./AuthKey.js');
 var Vimeo = require('vimeo').Vimeo;
 // https://github.com/vimeo/vimeo.js
-var CLIENT_ID = '703165f789ba78ad4e2566dcd65113df4e0e4b70';
-var CLIENT_SECRET = 'S7CherScJPSuuC4Z3fFBCbvBM5/BUuJ3UQvsgIa3DmNXbCY9Qw4qb9dOSMJsfXJCmEtOthny+m8eNGzbzUEhRpNue8VDCmGfKs8fAJEhPvcLkkjUeJPjBYu9/PnzVkN4';
-var ACCESS_TOKEN = '6cf2299aa4717c3d6886ea93cdea0446';
+var CLIENT_ID = keys.VIMEO_CLIENT_ID;
+var CLIENT_SECRET = keys.VIMEO_CLIENT_SECRET;
+var ACCESS_TOKEN = keys.VIMEO_ACCESS_TOKEN;
 var lib = new Vimeo(CLIENT_ID, CLIENT_SECRET, ACCESS_TOKEN);
 
 // Export
