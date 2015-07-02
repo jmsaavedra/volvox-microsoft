@@ -64,5 +64,12 @@ For Video Processor (Azure) as well as Camera Controller (local) machines.
   * Linux: 
     * `$ sudo apt-get install graphicsmagick`
     * `$ sudo apt-get install ghostscript`
+ *
+* Install PM2
+  * $ `$ npm install pm2 -g`    #follow directions if there is a reply from pm2!
+  * $ `$ pm2 startup`           #follow directions if there is a reply from pm2!
+  * $ `$ pm2 start myapp.js`    #run your app with pm2
+  * $ `$ pm2 save`              #save this process to the startup scripts
+  * $ `$ pm2 logs`              #tail console logs
 
   

@@ -44,7 +44,11 @@ angular
         MONTH: 'Monthly Digest',
         DAY: 'Daily Digest'
       },
-      CAMERA: 'Camera'
+      CAMERA: 'Camera',
+      VANTAGE: 'See More Vintage Points',
+      BACK_MONTH: 'Back to Monthly Digest',
+      BACK_DAY: 'Back to Daily Digest',
+      BACK: 'Back'
     });
     // Spanish
     $translateProvider.translations('es', {
@@ -65,10 +69,14 @@ angular
         SCAN: 'SCAN GALERÍA'
       },
       DIGEST: {
-        MONTH: 'Recopilación mensual',
+        MONTH: 'Recopilación Mensual',
         DAY: 'Resumen diario'
       },
-      CAMERA: 'Cámara'
+      CAMERA: 'Cámara',
+      VANTAGE: 'Ver Puntos Más Vintage',
+      BACK_MONTH: 'Volver a la Mensual Digesto',
+      BACK_DAY: 'Volver a Resumen Diario',
+      BACK: 'Atrás'
     });
     ///////////
     $translateProvider.preferredLanguage('es');
