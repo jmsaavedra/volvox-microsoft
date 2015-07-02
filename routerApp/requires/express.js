@@ -62,7 +62,8 @@ module.exports = function(db, Model, vimeo) {
         if (err) {
           console.log(chalk.red(err));
           res.json({
-            data: false
+            data: false,
+            imgCt: obj.images.length
           });
           // Sending Fail Email
         } else {
