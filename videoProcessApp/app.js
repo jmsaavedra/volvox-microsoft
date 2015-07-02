@@ -95,7 +95,7 @@ function initScheduler(){
   console.log('local time: '.gray.bold+new Date());
 
   // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday(); /* SHOWTIME */
-  var processSched = later.parse.recur().on('13:05:00').time(); /* DEVTIME */
+  var processSched = later.parse.recur().on('23:00:00').time().onWeekday(); /* DEVTIME */
   var processTimeout = later.setTimeout(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
