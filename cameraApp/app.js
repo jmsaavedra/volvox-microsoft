@@ -12,7 +12,7 @@ process.env.UV_THREADPOOL_SIZE = 72;
 */
 
 /* GLOBALS */
-global.RAW_IMG_FOLDER   = __dirname+'/images-to-upload';
+global.RAW_IMG_FOLDER   = __dirname+'/_images-to-upload';
 global.SAVE_IMG_FOLDER   = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/';// 
 global.AZURE_BLOB_ADDR  = 'https://elbulliphoto.blob.core.windows.net';
 global.STORAGE_ACCOUNT  = 'elbulliphoto';
@@ -60,17 +60,17 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
     if(e) console.log('ERROR processing new image:'.red, e);
     callback(e);
   });
-}, 1);
+}, 2);
 
 // assign a callback
 imageProcessQueue.drain = function() {
+    
+    console.log('\nAll images have been uploaded and databased for take #'.green.bold+takeNumber);
+    console.log('__________________________________________________________'.gray.bold);
     console.log('__________________________________________________________\n'.gray.bold);
-    console.log('All images have been uploaded and databased for take #'.green.bold+takeNumber);
-    console.log('__________________________________________________________\n'.gray.bold);
-    Scheduler.getTimeTilNextSnap(function(time){
-      console.log('>>> Time until next snap:'.cyan.bold, moment(time).from(new Date()),'>>>'.gray, time );
+    Scheduler.getTimeTilNextSnap(function(timeTilNextSnap, timeOfNextSnap){
+      console.log('>>> Time until next snap:'.cyan.bold, timeTilNextSnap,'>>>'.gray, timeOfNextSnap );
       io.sockets.emit('finished', latestImages);
-
     });  
 };
 
@@ -84,15 +84,18 @@ watchr.watch({
       console.log('New File Added, imgCt:'.green,imgCt,': ',filePath);
       var today = moment().format('YYYY-MM-DD');
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
+   
       /* add this image to the processing queue */
-      if (imgCt >= cameras.cameras_.length){
-        console.log("\n  RECEIVED 4 IMAGES  \n".cyan.bold);
-        //imgCt = 0; //reset for next take
-        // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
-      }
       imageProcessQueue.push(filePath, function (err) {
         if(err) console.log('ERROR processImage: '.red, err); //console.log('finished processing image.'.green);
       });
+   
+      if (imgCt >= cameras.cameras_.length){
+        console.log("\n  RECEIVED 4 IMAGES  \n".bold);
+        //imgCt = 0; //reset for next take
+        // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
+      }
+
     } //else console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
   }
 });
@@ -141,10 +144,9 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
         console.log(listeningString.cyan.inverse);
 
         // var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
-        Scheduler.init(snap, function(timeOfNextSnap){
-          moment.relativeTimeThreshold('s', 55);
-          moment.relativeTimeThreshold('m', 55);
-          console.log('>>> Time until next snap:'.cyan.bold, moment(timeOfNextSnap).from(new Date()),'>>>'.gray, timeOfNextSnap )
+        Scheduler.init(snap, function(timeTilNextSnap, timeOfNextSnap){
+
+          console.log('\n>>> Time until next snap:'.cyan.bold, timeTilNextSnap, '>>>'.gray, timeOfNextSnap )
         });
       // }); 
     //}

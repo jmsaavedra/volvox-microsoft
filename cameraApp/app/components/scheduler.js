@@ -16,14 +16,17 @@ module.exports.init = function(snapFunc, cb){
   later.date.localTime();
 
 
-
-  var snapRecurring = later.parse.recur().after('04:30').time().before('23:30').time().every(90).second().onWeekday();
-  // var snapRecurring   = later.parse.recur().after('05:00').time().before('06:45').time().every(30).second();
+  /* SHOWTIME */
+  //var snapRecurring = later.parse.recur().after('09:00').time().before('21:00').time().every(60).second().onWeekday(); 
+  
+  /* DEV */
+  var snapRecurring = later.parse.recur().after('04:00').time().before('22:00').time().every(2).minute().onWeekday();
+  //var snapRecurring = later.parse.recur().after('15:00').time().before('21:15').time().every(60).second();
   var snapInterval    = later.setInterval(snapFunc, snapRecurring);
   snapSchedule        = later.schedule(snapRecurring);
 
 
-  cb( snapSchedule.nextRange(1, new Date())[0] );
+  return cb( formattedTimeTilNextSnap(), getTimeOfNextSnap() );
 
   /*** strategy using node-schedule ***/
   // var startRule = new schedule.RecurrenceRule();
@@ -46,6 +49,17 @@ module.exports.init = function(snapFunc, cb){
 };
 
 module.exports.getTimeTilNextSnap = function(cb){
+  return cb( formattedTimeTilNextSnap(), getTimeOfNextSnap() ); 
+}
 
-  return cb(snapSchedule.nextRange(1, new Date())[0]);
+var getTimeOfNextSnap = function(){
+  return snapSchedule.nextRange(1, new Date())[0];
+}
+
+
+var formattedTimeTilNextSnap = function(){
+
+  timeTil = Math.round( ( getTimeOfNextSnap() - new Date().getTime() ) / 1000);
+  timeTil > 60 ? timeTil = moment(getTimeOfNextSnap()).from(new Date()) : timeTil = timeTil+' seconds'; 
+  return timeTil;
 }
