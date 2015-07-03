@@ -16,7 +16,8 @@ angular.module('elbulliApp')
     // console.log('Video month');
     // console.log($stateParams.month + ' 01 ' + $stateParams.year);
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
-
+    $scope.isInProgress = ($stateParams.month === moment().format('MM')) ? true : false;
+    // console.log($scope.isInProgress);
     // Get Videos for this month
     Server.getMonthlyAsset(
       $scope.thisMonth,
@@ -64,7 +65,7 @@ angular.module('elbulliApp')
       // Success
       $scope.video_content = result.data;
       $scope.description = result.description;
-      console.log($scope.video_content);
+      // console.log($scope.video_content);
       // DOM Ready fix
       $timeout(function() {
         $scope.getVimeoHeight();
