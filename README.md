@@ -3,7 +3,7 @@ Volvox Labs + Microsoft Timelapse Project
 
 Below are instructions for setting up project machines from scratch.
 
-##Camera App Machine Setup
+##Camera Controller - Local Machine Setup
 On-site Linux machine, connected to 4 Canon DSLRs over USB-Ethernet extenders.
 * __Install Ubuntu 14.04__
   * via mountable ISO disk image
@@ -12,11 +12,11 @@ On-site Linux machine, connected to 4 Canon DSLRs over USB-Ethernet extenders.
   * `$ sudo apt-get upgrade`
 * __Install Git__
   * `$ sudo apt-get git`
-* __Install Node__ `v0.10.39`* via [NVM](https://github.com/creationix/nvm)
+* __Install Node__ `v0.10.39` via [nvm](https://github.com/creationix/nvm)
   * `$ sudo apt-get install build-essential libssl-dev`
   * `$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
   * `$ source ~/.profile`
-  * `$ nvm install 0.10.39`
+  * `$ nvm install 0.10.39`    #crucial for gphoto2
   * `$ nvm use 0.10.39`
   * `$ nvm alias default 0.10.39`
   * `$ nvm use default`
@@ -64,7 +64,7 @@ This is an Ubunutu 14.04 Linux Virtual Machine, that processes all uploaded vide
   * `$ git clone https://github.com/jmsaavedra/volvox-microsoft.git`
   * `$ npm install`
 * __AuthKeys.js__
-  * manually copy `AuthKeys.js` into the root folder (this is shared privately)
+  * manually copy `AuthKeys.js` into the root folder of repo (this is shared privately)
 * __Set local time zone of server__
   * Linux ([ref](http://www.christopherirish.com/2012/03/21/how-to-set-the-timezone-on-ubuntu-server/)):
   * `$ date`  // show date
