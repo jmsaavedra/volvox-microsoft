@@ -5,7 +5,8 @@
  *
  *
  */
-
+var path = require('path');   //cross-platform compatibility
+global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
 var config = require('./requires/config');
 var mongoose = require('mongoose');
 // Load Mongoose Schema Models

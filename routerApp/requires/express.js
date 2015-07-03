@@ -30,7 +30,7 @@ module.exports = function(db, Model, vimeo) {
 
   // Routes
   app
-    .post('/photo/info', function(req, res) {
+    .post(global.KEYS.BULLI_SERVER.PATH.photo_info, function(req, res) {
       Model.Photo.findOne({
         date: req.body.date
       }, function(err, obj) {
@@ -43,7 +43,7 @@ module.exports = function(db, Model, vimeo) {
         }
       });
     })
-    .post('/photo/new', function(req, res) {
+    .post(global.KEYS.BULLI_SERVER.PATH.photo, function(req, res) {
       console.log(req.body);
       // Save to Mongo
       /*
@@ -74,7 +74,7 @@ module.exports = function(db, Model, vimeo) {
         }
       });
     })
-    .post('/timelapse/new', function(req, res) {
+    .post(global.KEYS.BULLI_SERVER.PATH.video, function(req, res) {
       console.log(req.body);
       /*
         Upsert the new video object
@@ -98,7 +98,7 @@ module.exports = function(db, Model, vimeo) {
         }
       });
     })
-    .post('/scanner/new', function(req, res) {
+    .post(global.KEYS.BULLI_SERVER.PATH.scan, function(req, res) {
       console.log(req.body);
       // Save to Mongo
       /*
@@ -131,7 +131,7 @@ module.exports = function(db, Model, vimeo) {
 
     })
 
-    .get('/photo/info', function(req, res) {
+    .get(global.KEYS.BULLI_SERVER.PATH.photo_info, function(req, res) {
       Model.Photo.findOne({
         date: req.query.date
       }, function(err, obj) {
