@@ -28,10 +28,10 @@ var Process = {
 
 		fs.stat(processImgPath, function(e, stats){ //https://nodejs.org/api/fs.html#fs_class_fs_stats
 			if(!e && stats.size > 50000){ // if file exists AND is over 50kb
-				console.log('cropped image exists,'.gray.bold,'camera:'.gray, camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1],'file:'.gray,path.basename(processImgPath));
+				console.log(chalk.gray.bold('cropped image exists,'),chalk.gray('camera:'), camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1],chalk.gray('file:'),path.basename(processImgPath));
 				return cb(null, processImgPath);	
 			} else {
-				console.log('cropping image: '.yellow+path.basename(processImgPath), ' camera:'.gray, camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1]);
+				console.log(chalk.yellow('cropping image: ')+path.basename(processImgPath), chalk.gray(' camera:'), camProcessFolder[camProcessFolder.lastIndexOf(path.sep)+1]);
 				gm(rawImg)
 					.crop(1920, 1080, 0, 100)
 					.write(processImgPath, function(err){
@@ -52,9 +52,9 @@ var Process = {
 		var videoOutputFilePath = path.join(todaysProcessFolder, 'camera-'+camId.toString()+'_'+date+'.mp4');
 		
 		var imgsToUse = [];
-		console.log('making video camID: '.cyan+camId);
-		console.log('making video with '.cyan+imgs.length+' images');
-		console.log('video file path: '.cyan+videoOutputFilePath);
+		console.log(chalk.cyan('making video camID: ')+camId);
+		console.log(chalk.cyan('making video with ')+imgs.length+' images');
+		console.log(chalk.cyan('video file path: ')+videoOutputFilePath);
 		
 		fs.exists(videoOutputFilePath, function(exists){
 			if(exists) //TODO: || hard-redo setting
@@ -70,10 +70,10 @@ var Process = {
 					callb(err.message);
 				})
 				.on('progress', function(progress) {
-					console.log('Processing camera'.gray, camId, 'video'.gray, path.basename(videoOutputFilePath),'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
+					console.log(chalk.gray('Processing camera'), camId, chalk.gray('video'), path.basename(videoOutputFilePath), chalk.gray('frame:'), progress.frames,chalk.gray('timemark:'), progress.timemark);
 				})
 				.on('end', function() {
-				    console.log('single camera video finished !'.green);
+				    console.log(chalk.green('single camera video finished !'));
 				    callb(null, videoOutputFilePath);
 				})
 			.save(videoOutputFilePath);
@@ -81,7 +81,7 @@ var Process = {
 	},
 
 	generateDate: function(date, callback){
-		console.log('\nRendering date-frame.png'.cyan.bold);
+		console.log(chalk.cyan.bold('\nRendering date-frame.png'));
 		var datePng = path.join(global.PROCESS_FOLDER, date, 'vid3-date.png'); 
 		var dateVid = path.join(global.PROCESS_FOLDER, date, 'vid3-date.mp4');
 		
@@ -96,7 +96,7 @@ var Process = {
 				if(err) return callback(err);
 
 				//generate 5 second video of date with fade in and out
-				console.log('\nRendering vid3-date.mp4'.cyan.bold);
+				console.log(chalk.cyan.bold('\nRendering vid3-date.mp4'));
 				ffmpeg(datePng)
 					.loop(3) //5 seconds
 					.fps(30) //30 fps
@@ -106,7 +106,7 @@ var Process = {
 						callback(null, dateVid);
 					})
 					.on('error', function(err) {
-						callback(err.message)
+						callback(err.message);
 					})
 					.save(dateVid);
 			});
@@ -118,7 +118,7 @@ var Process = {
 		/* RENDER THE COMBINED VIDEO, all individual camera vids in quadrants */
 		var outFile = 'vid1-composite_'+date+'.mp4';
 		var outpath = path.join(path.dirname(vids[0]), outFile); //same dir as cam vids
-		console.log('\nRendering vid1-composite video: '.cyan+outpath);
+		console.log(chalk.cyan('\nRendering vid1-composite video: ')+outpath);
 
 		var progressCt = -1;
 		var proc = ffmpeg(vids[0])
@@ -146,7 +146,7 @@ var Process = {
 		      	Process.addOverlay(outpath, vids, date, callback);
 		    })
 			.on('progress', function(progress) {
-				console.log('Processing vid1 combined video'.gray, outFile,'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
+				console.log(chalk.gray('Processing vid1 combined video'), outFile,chalk.gray('frame:'), progress.frames,chalk.gray('timemark:'), progress.timemark);
 			})
 		    .on('error', function(err) {
 		    	console.log('an error happened: ' + err.message);
@@ -156,7 +156,7 @@ var Process = {
 	},
 
 	addOverlay: function(compositeVid, allVids, date, callback){
-		console.log('\nRendering vid2-overlay video'.cyan.bold, 'Adding watermark to composite video');
+		console.log(chalk.cyan.bold('\nRendering vid2-overlay video'), 'Adding watermark to composite video');
 		var outFile = path.join(path.dirname(compositeVid), 'vid2-overlay_'+date+'.mp4');
 		var proc = ffmpeg()
 			.input(compositeVid)
@@ -169,7 +169,7 @@ var Process = {
 		      	
 		    })
 			.on('progress', function(progress) {
-				console.log('Processing vid2 overlay video'.gray, path.basename(outFile),'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
+				console.log(chalk.gray('Processing vid2 overlay video'), path.basename(outFile), chalk.gray('frame:'), progress.frames,chalk.gray('timemark:'), progress.timemark);
 			})
 		    .on('error', function(err) {
 		    	console.log('an error happened: ' + err.message);
@@ -181,7 +181,7 @@ var Process = {
 
 
 	addIntroOutro: function(vid, allVids, date, callback){
-		console.log('\nRendering vid4-final video'.cyan.bold, 'Adding intro and outro clips...');
+		console.log(chalk.cyan.bold('\nRendering vid4-final video'), 'Adding intro and outro clips...');
 		var outFile = path.join(path.dirname(vid), 'vid4-final_'+date+'.mp4');
 		var proc = ffmpeg()
 			.input(global.VID_INTRO_OUTRO)
@@ -193,7 +193,7 @@ var Process = {
 			  	callback(null, outFile);
 			})
 			.on('progress', function(progress){
-				console.log('Processing vid3 intro-outro'.gray, path.basename(outFile),'frame:'.gray, progress.frames,'timemark:'.gray, progress.timemark);
+				console.log(chalk.gray('Processing vid3 intro-outro'), path.basename(outFile),chalk.gray('frame:'), progress.frames,chalk.gray('timemark:'), progress.timemark);
 			})
 			.on('error', function(err) {
 				console.log('an error happened adding intro-outro: ' + err.message);

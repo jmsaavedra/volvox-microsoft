@@ -32,7 +32,7 @@ var Mailer = {
 			cb(e, info);
 		});
 	}
-}
+};
 
 module.exports = Mailer;
 

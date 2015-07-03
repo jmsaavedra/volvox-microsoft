@@ -18,8 +18,8 @@ var lib = new Vimeo(global.KEYS.VIMEO_CLIENT_ID,
 var vimeoApi = {
 
 	uploadVideo: function(URI, cb){
-    console.log('\nStart uploading file to Vimeo. '.cyan.bold);
-    console.log(' file URI:'.gray, URI);
+    console.log(chalk.cyan.bold('\nStart uploading file to Vimeo. '));
+    console.log(chalk.gray(' file URI:'), URI);
 
     var fname = path.basename(URI, '.mp4');
     var rawDate = fname.split('_')[1].toString();
@@ -30,28 +30,28 @@ var vimeoApi = {
     var postData = {}; //holds object to update elbulli web server with.
 
 		lib.streamingUpload(URI,  function (error, body, status_code, headers) {
-	    console.log('vimeo.streamingUpload status_code '.yellow, status_code);
+	    console.log(chalk.yellow('vimeo.streamingUpload status_code '), status_code);
       if (error) {
-        console.log('vimeo.streamingUpload error:\n'.red,error);
-        console.log('vimeo.streamingUpload body:\n'.red,JSON.stringify(body,null,'\t'));
-        console.log('vimeo.streamingUpload headers:\n'.red,JSON.stringify(headers,null,'\t'));
+        console.log('vimeo.streamingUpload error:\n',error);
+        console.log('vimeo.streamingUpload body:\n',JSON.stringify(body,null,'\t'));
+        console.log('vimeo.streamingUpload headers:\n',JSON.stringify(headers,null,'\t'));
         rimraf(URI, function(_er){
-          if(_er) console.log('error rimraf video: '.red+_er);
-          console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.'.red);
+          if(_er) console.log('error rimraf video: '+_er);
+          console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.');
 	        return cb('vimeo upload ERR: '+error);
         });
 	    }
       
 	    lib.request(headers.location, function (_error, _body, _status_code, _headers) {
-    		console.log('vimeo.request status_code: '.yellow + _status_code);
+    		console.log(chalk.yellow('vimeo.request status_code: ') + _status_code);
         if(_error){
-          console.log('vimeo lib.request fail _error: \n'.red+JSON.stringify(_error));
-          console.log('vimeo lib.request fail _body: \n'.red+JSON.stringify(_body,null,'\t'));
-          console.log('vimeo lib.request fail _headers: \n'.red+JSON.stringify(_headers,null,'\t'));
+          console.log(chalk.red('vimeo lib.request fail _error: \n'),JSON.stringify(_error));
+          console.log(chalk.red('vimeo lib.request fail _body: \n'),JSON.stringify(_body,null,'\t'));
+          console.log(chalk.red('vimeo lib.request fail _headers: \n'),JSON.stringify(_headers,null,'\t'));
           rimraf(URI, function(_er){
-          if(_er) console.log('error rimraf video: '.red+_er);
-            console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.'.red);
-            return cb('vimeo request ERR: '+_error);
+          if(_er) console.log(chalk.red('error rimraf video: '),_er);
+            console.log('SUCCESS deleted this failed uploaded file so that it gets re-rendered + re-uploaded next try.');
+            return cb(chalk.red('vimeo request ERR: '),_error);
           });
         } 
 
@@ -66,7 +66,7 @@ var vimeoApi = {
           else if (camNum === 1) postData.cam1 = { vimeo_video_id: videoId };
           else if (camNum === 2) postData.cam2 = { vimeo_video_id: videoId };
           else if (camNum === 3) postData.cam3 = { vimeo_video_id: videoId };
-          else console.log('camNum not found: '.red.bold+camNum); //something went wrong with the file name
+          else console.log(chalk.red.bold('camNum not found: '),camNum); //something went wrong with the file name
         } else //it's the final video (not individual camera)
             postData.vimeo_final = { vimeo_video_id: videoId };
  
@@ -101,8 +101,8 @@ var vimeoApi = {
   			query: metadata
       },
       function(err, body, status_code, headers){
-		    if(err) console.log('vimeo metadata err: '.red+err);
-        console.log('vimeo metadata status_code: '.yellow+status_code);
+		    if(err) console.log(chalk.red('vimeo metadata err: ')+err);
+        console.log(chalk.yellow('vimeo metadata status_code: ')+status_code);
         _cb(err, body);
       });
 	},
@@ -115,8 +115,8 @@ var vimeoApi = {
       path: '/videos/' + id
     }, function(error, body, status_code, headers) {
       if (error) {
-        console.log('error: '.red+error);
-        cb(error)
+        console.log(chalk.red('error: ')+error);
+        cb(error);
       } else {
         // console.log('body');
         if (cb) cb(null, body);

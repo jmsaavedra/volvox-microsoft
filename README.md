@@ -68,8 +68,8 @@ This is an Ubunutu 14.04 Linux Virtual Machine, that processes all uploaded vide
 * __Set local time zone of server__
   * Linux ([ref](http://www.christopherirish.com/2012/03/21/how-to-set-the-timezone-on-ubuntu-server/)):
   * `$ date`  // show date
-  * `$ more /etc/timezone` // show timezone file
-  * `$ sudo dpkg-reconfigure tzdata` // run timezone config
+  * `$ more /etc/timezone` #show timezone file
+  * `$ sudo dpkg-reconfigure tzdata` #run timezone config
   * if using cron, restart it:
     * `$ /etc/init.d/cron stop`
     * `$ /etc/init.d/cron start`

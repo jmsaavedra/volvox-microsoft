@@ -31,37 +31,37 @@ module.exports.init = function(){
 	            //console.log('a log message occured:', arguments);
 	        },
 	        error: function(err){
-	            console.log('File watch error ocurred: '.red.bold, err);
+	            console.log(chalk.red.bold('File watch error ocurred: '), err);
 	        },
 	        watching: function(err,watcherInstance,isWatching){
 	        	
-	            if (err) console.log("ERROR watching the path ".red.bold + watcherInstance.path + " failed, err: ".red.bold, err);
-	            //else console.log("INIT watching the path: ".green.bold + watcherInstance.path + " SUCCESS".green.bold);
+	            if (err) console.log(chalk.red.bold("ERROR watching the path ") + watcherInstance.path + chalk.red.bold(" failed, err: "), err);
+	            //else console.log("INIT watching the path: "chalk.green.bold + watcherInstance.path + " SUCCESS"chalk.green.bold);
 	        },
 	        change: function(changeType,filePath,fileCurrentStat,filePreviousStat){
-	        	console.log('\n-------------- WATCH-UPLOAD FOLDER CHANGED ----------------'.cyan.bold);
+	        	console.log(chalk.cyan.bold('\n-------------- WATCH-UPLOAD FOLDER CHANGED ----------------'));
 	            // console.log('verbose change event info: '+arguments);
 	            if (arguments[0] === 'create'){
 	            	
 	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER */
-	            	console.log('>> new local file created: '.cyan);
+	            	console.log(chalk.cyan('>> new local file created: '));
 	            	console.log('\t'+arguments[1]);
 
 	            	if(!global.UPLOAD_FLAG) //in case of dev
 						return console.log('global.UPLOAD_FLAG set to false, not uploading.');
 
 					vimeo.uploadVideo(arguments[1], function(e, data){
-						if(e) return console.log('ERROR uploading to Vimeo: '.red.bold+e);
-						// if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
-						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
+						if(e) return console.log(chalk.red.bold('ERROR uploading to Vimeo: ')+e);
+						// if(!data) return console.log('NO DATA RETURNED when uploading Scan: 'chalk.red.bold+e);
+						console.log(chalk.yellow('About to POST to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
 
 						// send this data to the routing server to save to DB:
 						postData(data, function(_e, filename){
-							if(_e) console.log('error posting to our server: '.red+_e);
+							if(_e) console.log(chalk.red('error posting to our server: ')+_e);
 
 							rimraf(path.join(global.FOLDER_TO_WATCH,filename), function(_er){
-								if(_er) console.log('error removing uploaded video: '.red+_er);
-								console.log('Finished Vimeo Upload via Watcher.'.green, 'Deleted: '.gray+filename);
+								if(_er) console.log(chalk.red('error removing uploaded video: ')+_er);
+								console.log(chalk.green('Finished Vimeo Upload via Watcher.'), chalk.gray('Deleted: ')+filename);
 							});
 						});
 					});
@@ -69,7 +69,7 @@ module.exports.init = function(){
 	            } else if (arguments[0] === 'delete'){
 
 	            	/* FILE HAS BEEN DELETED */	            	
-	            	console.log('>> file removed: '.yellow+filePath);
+	            	console.log(chalk.yellow('>> file removed: ')+filePath);
 	            }
 	        }
 	    },
@@ -78,9 +78,9 @@ module.exports.init = function(){
 	        if (err) {
 	            return console.log("watching everything failed with error", err);
 	        } else if (watchers.length<1){
-            	console.log("Watching the path ".red.bold + global.FOLDER_TO_WATCH + " FAILED.".red.bold, " Check folder exists?");
+            	console.log(chalk.red.bold("Watching the path ")+ global.FOLDER_TO_WATCH + chalk.red.bold(" FAILED."), " Check folder exists?");
             } else {
-	            //console.log('File Watcher inited: '.green.bold+ global.FOLDER_TO_WATCH );
+	            //console.log('File Watcher inited: 'chalk.green.bold+ global.FOLDER_TO_WATCH );
 	        }
 	 
 	        // Close watchers after 60 seconds 
@@ -106,7 +106,7 @@ var postData = function(data, cb){
 	function(err,httpResponse,body){
 		if(err) console.log('postData err: '+err);
 		// console.log('httpResponse: '+JSON.stringify(httpResponse, null, '\t'));
-		console.log('server response body: '.cyan+JSON.stringify(body, null, '\t'));
+		console.log(chalk.cyan('server response body: ')+JSON.stringify(body, null, '\t'));
 		cb(err, body.data);
 	});
 };

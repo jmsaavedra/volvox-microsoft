@@ -31,7 +31,7 @@ var Manager = {
 	    	/* make individual camera movies */
 	    	Manager.prepareCameraImages(date, function(er, cameraVideos){
 	        	if(er) return callback(er);
-	        	console.log('finished procesing individual videos: '.green);
+	        	console.log(chalk.green('finished procesing individual videos: '));
 	        	console.log(JSON.stringify(cameraVideos, null, '\t'));
 
 	        	/* make the final video */
@@ -64,7 +64,7 @@ var Manager = {
 		var todayProcessImgPath = path.join(global.PROCESS_FOLDER, date);
 		
 		fs.readdir(todayRawImgPath, function(e, files){
-			if(e) console.log('error read rawImgPath dir: '.red+e);
+			if(e) console.log(chalk.red('error read rawImgPath dir: ')+e);
 			async.each(files, function(file, cb){
 				var filename = path.basename(file, '.jpg');
 				
@@ -86,7 +86,7 @@ var Manager = {
 	},
 
 	processCameraVideos: function(date, allCameraImgs, processFolder, callback){
-		console.log('Begin process images in folder: '.cyan.bold+processFolder);
+		console.log(chalk.cyan.bold('Begin process images in folder: ')+processFolder);
 		
 		var cameraCt = 0;
 		async.mapSeries(allCameraImgs, function(thisCamImgs, _cb){ //go through each cam's raw images
@@ -109,8 +109,8 @@ var Manager = {
 
 				fs.stat(thisVid, function(_e, stats){
 					if(!_e && stats.size > 5000000){ // if file exists AND is over 5MB
-						console.log('Video has been processed previously:'.yellow.bold, thisVid);
-						console.log('Did not re-upload.'.yellow.bold);
+						console.log(chalk.yellow.bold('Video has been processed previously:'), thisVid);
+						console.log(chalk.yellow.bold('Did not re-upload.'));
 						return _cb(_e, thisVid);
 					}
 					/** BEGIN the processing of this camera's video! **/ 
@@ -133,8 +133,8 @@ var Manager = {
 		var thisVid = path.join(global.PROCESS_FOLDER, date,'vid4-final_'+date+'.mp4');
 		fs.stat(thisVid, function(_e, stats){ // check if we've got a final video
 			if(!_e && stats.size > 10000000){ // if file exists AND is over 10MB
-				console.log('Video has been processed previously:'.yellow.bold, thisVid);
-				console.log('Did not re-upload.'.yellow.bold);
+				console.log(chalk.yellow.bold('Video has been processed previously:'), thisVid);
+				console.log(chalk.yellow.bold('Did not re-upload.'));
 				return callback(_e, thisVid);
 			}
 		
@@ -145,7 +145,7 @@ var Manager = {
 
 				/* process final composite video */
 			    vidRenderer.makeCompositeVideo(allVideos, date, function(e, finalVidPath){
-			  		console.log('Finished Final Render:'.green, finalVidPath);
+			  		console.log(chalk.green('Finished Final Render:'), finalVidPath);
 			  		if(e) return callback(e);
 
 			  		/* now upload this vid! */
@@ -160,21 +160,21 @@ var Manager = {
 	uploadVideo: function(filePath, callback){
 
 		if(!global.UPLOAD_FLAG){ //in case of dev
-			console.log('global.UPLOAD_FLAG set to false, not uploading'.red.bold);
+			console.log(chalk.red.bold('global.UPLOAD_FLAG set to false, not uploading'));
 			return callback(null, filePath);
 		}
 
 		vimeo.uploadVideo(filePath, function(e, data){
 			if(e){
-				console.log('ERROR uploading to Vimeo: '.red.bold+e);	
+				console.log(chalk.red.bold('ERROR uploading to Vimeo: '+e));	
 				return callback(e);
 			} 
-			// if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
-			console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
+			// if(!data) return console.log('NO DATA RETURNED when uploading Scan: 'chalk.red.bold+e);
+			console.log(chalk.yellow('About to POST to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
 
 			// send this data to the routing server to save to DB:
 			postData(data, function(_e, filename){
-				if(_e) console.log('error posting to our server: '.red+_e);
+				if(_e) console.log(chalk.red('error posting to our server: ')+_e);
 				callback(_e, filename);
 			});
 		});
@@ -182,13 +182,13 @@ var Manager = {
 
 	cleanup: function(date, callback){
 		if(!global.CLEANUP_FLAG){ // not in dev mode
-			console.log('global.CLEANUP_FLAG set to false, not deleting process files'.red.bold);
+			console.log(chalk.red.bold('global.CLEANUP_FLAG set to false, not deleting process files'));
 			return callback(null);
 		}
 		
 		/* delete all the process files */
 		rimraf(path.join(global.PROCESS_FOLDER,date), function(_e){
-			if(!_e)console.log('SUCCESS removed all process files.'.gray);
+			if(!_e)console.log(chalk.gray('SUCCESS removed all process files.'));
 			callback(_e);
 		});
 	}
@@ -201,11 +201,11 @@ module.exports = Manager;
 * COPY FILE to a new path
 */
 function copyFile(oldPath, newPath, _cb){
-	//console.log('copying file from'.gray, '\n', oldPath, '\n>>> to'.gray, newPath);
+	//console.log('copying file from'chalk.gray, '\n', oldPath, '\n>>> to'chalk.gray, newPath);
 	fs.exists(newPath, function(exists){
 		if(!exists){
 			fs.link(oldPath, newPath, function(e, stats){
-				if(e) console.log('error fs.link: '.red + e);
+				if(e) console.log(chalk.red('error fs.link: ') + e);
 				_cb(e, newPath);
 			});
 		} else _cb(null, newPath);
@@ -217,7 +217,7 @@ function copyFile(oldPath, newPath, _cb){
 */
 function cutPasteFile(oldPath, newPath, _cb){
   fs.rename(oldPath, newPath, function(e, stats){
-    if(e) console.log('error fs.rename: '.red + e);
+    if(e) console.log(chalk.red('error fs.rename: ') + e);
     _cb(e);
   });
 }
@@ -240,7 +240,7 @@ var postData = function(data, cb){
 			return cb('postData err: '+err);	
 		} 
 		
-		console.log('server response body: '.cyan+JSON.stringify(body, null, '\t'));
+		console.log(chalk.cyan('server response body: ')+JSON.stringify(body, null, '\t'));
 		cb(err, body.data);
 	});
 };
