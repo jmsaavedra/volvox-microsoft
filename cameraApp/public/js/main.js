@@ -1,95 +1,84 @@
 
+/* session vars */
+var pageSize = 4; //how many images per page to show
+var totalPages;
+var currentPage;
+var allImages = [];
+var IMAGE_TAKER = false;
+var image_count = 0;
+var countdownInterval;
 
 
 var socket = io.connect(window.location.hostname+':8080');
 
-socket.on('init', function(images){
-  console.log(">> socket.on: init");
-  allImages = images;
-  console.log("allImages length: "+allImages.length);
-  IMAGE_TAKER = true;
-  setupPages(null, function(imgIdx){
-    loadImages(imgIdx, function(){ });
-  });
+socket.on('image_count', function(count){
+  console.log('got image count: '+count);
+  image_count = count;
+  $('.img-ct').html('<strong>Num Images Captured Today</strong>: &emsp;'+count);
 });
-
-
-socket.on('approved', function(image){
-  console.log('approved: \n %s',JSON.stringify(image));
-  var thisImgIdx = _.findIndex(allImages, {'_id':image._id});
-  allImages[thisImgIdx].approved = true;
-
-  var imageElm = document.getElementsByClassName(image._id)[0];
-  if(imageElm){ //we are on the page of this newly approved item
-    //console.log(imageElm);
-    var button = imageElm.getElementsByClassName('approve')[0];
-    button.className = "btn btn-primary approve active";
-  }
-});
-
-
-socket.on('hearted', function(image){
-  console.log('hearted: \n %s',JSON.stringify(image));
-  var thisImgIdx = _.findIndex(allImages, {'_id':image._id});
-  allImages[thisImgIdx].hearted = true;
-
-  var imageElm = document.getElementsByClassName(image._id)[0];
-  if(imageElm){
-    //console.log(imageElm);
-    var button = imageElm.getElementsByClassName('heart')[0];
-    button.className = "btn btn-danger heart active";
-  }
-});
-
 
 socket.on('new-image', function(image){
   allImages.push(image);
   console.log(">> socket.on: new-image, allImages length: "+allImages.length);
 });
 
+// socket.on('next-snap', function(nextSnapTime){
+//   initCountdown(nextSnapTime);
+  
+// })
 
-socket.on('finished', function(latestImages){
+socket.on('finished', function(latestImages, date, nextSnapTime){
   console.log("socket: finished");
   console.log('recieved images:',JSON.stringify(latestImages));
+  console.log('nextSnapTime: ',nextSnapTime)
   allImages = latestImages;
   loadImages(0, function(){});
-  // for(var i; i< latestImages.length; i++){ //partial page (if last page has less than full pageSize)
-  //   //console.log('allImages['+j+']');
-  //   var thisImage = new ImageElement(latestImages[i]);
-  //   imagesHolder.insertBefore(thisImage, imagesHolder.firstChild);
-  // }
+  initCountdown(nextSnapTime);
+
+  $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
   $('#processingDialog').modal('hide');
   $('#loadingDialog').modal('hide');
-
-  //location.reload();
-  // if(!IMAGE_TAKER) IMAGE_TAKER = (currentPage == totalPages-1)? true : false; //if we're on the last page, then update
-  // if(IMAGE_TAKER){
-  //   setupPages(null, function(imgIdx){
-  //     loadImages(imgIdx, function(){
-  //       $('#processingDialog').modal('hide');
-  //       $('#loadingDialog').modal('hide');
-  //     });
-  //   });
-  // }
 });
 
 
 socket.on('loading', function(){
   console.log('received loading...');
+  clearInterval(countdownInterval);
   $('#processingDialog').modal('show');
 });
 
 
 
+socket.on('init', function(latestImages, date, nextSnapTime){
+  console.log("socket: finished");
+  console.log('recieved images:',JSON.stringify(latestImages));
+  initCountdown(nextSnapTime);
+  allImages = latestImages;
+  loadImages(0, function(){});
+  
+  $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
+  $('#processingDialog').modal('hide');
+  $('#loadingDialog').modal('hide');
+});
 
 
+function initCountdown(eventTime){
+  moment().local();
+  clearInterval(countdownInterval);
+  console.log('init countdown to: '+eventTime);
+  console.log('moment says: '+moment(eventTime));
+  $('.next-snap').html('<strong>Next Scheduled Snap</strong>:&emsp;'+moment(eventTime).local().format('YYYY-MM-DD, hh:mm:ss'));
 
-/* session vars */
-var pageSize = 10; //how many images per page to show
-var totalPages;
-var currentPage;
-var allImages = [];
-var IMAGE_TAKER = false;
+  // var currentTime = new Date(); // Timestamp - Sun, 21 Apr 2013 12:30:00 GMT
+  var diffTime = moment(eventTime) - moment(new Date());
+  var duration = moment.duration(diffTime+500, 'milliseconds');
+  var interval = 1000;
+
+  countdownInterval = setInterval(function(){
+    duration = moment.duration(duration - interval, 'milliseconds');
+      $('.countdown').html("<strong>Snap Countdown</strong>:&emsp;"+duration.hours() + ":" + duration.minutes() + ":" + duration.seconds())
+  }, interval);
+}
 
 $(document).ready(function(){
   console.log("pageSize: "+pageSize + " imgs per page");
@@ -101,111 +90,20 @@ $(document).ready(function(){
 });
 
 
-var Pagination = function(thisPage, numPages){
-  this.pagination = document.createElement("ul");
-  this.pagination.className = "pagination pagination-lg";
-
-  this.previous = document.createElement("li");
-  this.previous.insertAdjacentHTML('afterbegin', '<a href="#" class="prev-page" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>');
-  this.pagination.appendChild(this.previous);
-  var pageStart = numPages;
-  if(numPages > 6){
-    pageStart = numPages-3;
-    //this.pagination.insertAdjacentHTML('afterbegin', '...');
-  }
-  if(thisPage !== null){ //sometimes thisPage is '0'!
-    //console.log("thisPage: "+thisPage);
-    pageStart = thisPage;
-  }
-  // var below = (pageStart>3)? 3 : 3-pageStart;
-  //console.log("-- pageStart: "+pageStart);
-  var below = ((pageStart+3)>numPages)? 2+(numPages-pageStart) : 3;
-  //console.log("-- below: "+below);
-  //var above = ((pageStart-3)<=0) ? pageStart : 3;
-  var above = (pageStart < 3)? (3+(3-pageStart)) : 3;
-  //console.log("-- above: "+above);
-  for(var i=pageStart-below; i<pageStart+above; i++){
-    if(i<numPages && i>=0){
-      this.page = document.createElement("li");
-      this.pageLink = document.createElement("a");
-      this.pageLink.className = "pagenum";
-      this.pageLink.setAttribute("value", i);
-
-      attachPageLinkListener(this.pageLink, i);
-
-      this.pageNumber = document.createTextNode(i);
-      this.pageLink.appendChild(this.pageNumber);
-      this.page.appendChild(this.pageLink);
-      this.pagination.appendChild(this.page);
-    }
-  }
-  //if(pageStart+5 <numPages) this.pagination.insertAdjacentHTML('afterend','...');
-  function attachPageLinkListener(_pageLink, pageNum){
-    _pageLink.addEventListener("click",function(e){
-      console.log("page click: "+pageNum);
-      goToPage(pageNum);
-    });
-  }
-
-  this.next = document.createElement("li");
-  this.next.insertAdjacentHTML('afterbegin', '<a href="#" class="next-page" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>');
-  this.pagination.appendChild(this.next);
-
-  this.previous.addEventListener("click", function(e){
-    if(currentPage>0) goToPage(currentPage-1);
-  });
-  this.next.addEventListener("click", function(e){
-    if(currentPage<totalPages-1) goToPage(currentPage+1);
-  });
-
-  return this.pagination;
-};
-
-
-
-var setupPages = function(pageNum, cb){
-  totalPages = Math.ceil(allImages.length / pageSize);
-  console.log("setupPages, totalPages: "+totalPages);
-  var navPageList = document.getElementById("page-list");
-  navPageList.removeChild(navPageList.firstChild); //get rid of entire <ul>
-  navPageList.appendChild(new Pagination(pageNum, totalPages));
-
-  if(IMAGE_TAKER) currentPage = totalPages-1;
-  else currentPage = pageNum;
-
-  $("a.pagenum[value='"+currentPage+"']").parent().addClass("active");
-  var imgIdx = (currentPage*pageSize);
-  cb(imgIdx);
-};
-
-
 var loadImages = function(idx, cb){
   console.log("loadImages, idx: "+idx);
 
   var imagesHolder = document.getElementsByClassName("images")[0];
   clearHolder(imagesHolder, function(){
-    for(var j=idx; j<idx+pageSize; j++){
+    for(var j=0; j<pageSize; j++){
       if(j < allImages.length){ //partial page (if last page has less than full pageSize)
         //console.log('allImages['+j+']');
         var thisImage = new ImageElement(allImages[j]);
-        imagesHolder.insertBefore(thisImage, imagesHolder.firstChild);
+        imagesHolder.appendChild(thisImage);//, imagesHolder.firstChild);
       }
     }
     IMAGE_TAKER = false;
     cb();
-  });
-};
-
-
-var goToPage = function(pageNum){
-  console.log("goToPage: "+pageNum);
-  $("a.pagenum").parent().removeClass("active");
-  $("a.pagenum[value='"+pageNum+"']").parent().addClass("active");
-  IMAGE_TAKER = false;
-  setupPages(pageNum,function(imgIdx){
-    loadImages(imgIdx, function(){
-      currentPage = pageNum;
-    });
   });
 };
 
@@ -227,7 +125,7 @@ var clearHolder = function(holder, cb){
 var ImageElement = function(image){
   // console.log("IMAGE : "+JSON.stringify(image,null,'\t'));
   this.imgHolder = document.createElement("div");
-  this.imgHolder.className = "image col-xs-6 col-md-3 col-lg-4 "+image.camera;
+  this.imgHolder.className = "image col-xs-12 col-sm-6 col-md-6 col-lg-6 "+image.camera;
 
   this.thumbHolder = document.createElement("div");
   this.thumbHolder.className = "thumbnail";
@@ -257,19 +155,23 @@ var _ButtonToolbar = function(image){
 
   this.btngroup = document.createElement("div");
   this.btngroup.className = "btn-group";
-  this.btngroup.setAttribute("role", "group");
+  // this.btngroup.setAttribute("role", "group");
 
+  var camNumLabel = 'Camera '+ (parseInt(image.path[image.path.length-5])+1);
+  this.btngroup.appendChild(document.createTextNode(camNumLabel));
   // this.btngroup.appendChild(new _Button(image,'details', 'search',false));
-  this.btngroup.appendChild(new _Button(image,'approve', 'ok', image.approved));
-  this.btngroup.appendChild(new _Button(image,'heart', 'heart', image.hearted));
+  // this.btngroup.appendChild(new _Button(image,'approve', 'ok', image.approved));
+  // this.btngroup.appendChild(new _Button(image,'heart', 'heart', image.hearted));
 
   this.imagePath = document.createTextNode(image.path);
   this.imgLabel = document.createElement("p");
+
   this.imgLabel.appendChild(this.imagePath);
-  this.imgLabel.className = "label inverse image-path";
+
+  this.imgLabel.className = "inverse image-path";
 
   this.btntoolbar.appendChild(this.btngroup);
-  this.btngroup.appendChild(this.imgLabel);
+  this.btntoolbar.appendChild(this.imgLabel);
 
   return this.btntoolbar;
 };

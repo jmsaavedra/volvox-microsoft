@@ -12,7 +12,7 @@ var moment    = require('moment');
 var azure     = require('azure-storage');
 var fs        = require('graceful-fs');
 var path      = require('path');
-var blobService = azure.createBlobService(global.STORAGE_ACCOUNT, global.STORAGE_KEY);
+var blobService = azure.createBlobService(global.KEYS.AZURE_PHOTO_STORAGE_ACCOUNT, global.KEYS.AZURE_PHOTO_STORAGE_KEY);
 
 
 
@@ -57,7 +57,7 @@ function uploadFile (container, fpath, name, callback){
       moveFile(container, fpath, name, function(e){
         if(e) console.log(chalk.red('error on moveFile: ') + e);
         else console.log(chalk.yellow('SUCCESS copy image to: '),fpath);
-        var fileUrl = global.AZURE_BLOB_ADDR+'/'+result.container+'/'+result.blob;
+        var fileUrl = global.KEYS.AZURE_PHOTO_BLOB_ADDR+'/'+result.container+'/'+result.blob;
         console.log(chalk.cyan.bold('BLOB URL: ') + fileUrl);
         var data = {date: container, file: fileUrl, type: 'photo'};
         callback(null, data);
@@ -84,12 +84,13 @@ function moveFile(container, fpath, name, cb){
        cutPasteFile(fpath, path.join(global.SAVE_IMG_FOLDER, container, name), cb);
     }
   });
+
+  function cutPasteFile(oldPath, newPath, _cb){
+    fs.rename(oldPath, newPath, function(e, stats){
+      if(e) console.log(chalk.red('error fs.rename: ') + e);
+      _cb(e);
+    })
+  }
 }
 
-function cutPasteFile(oldPath, newPath, _cb){
-  fs.rename(oldPath, newPath, function(e, stats){
-    if(e) console.log(chalk.red('error fs.rename: ') + e);
-    _cb(e);
-  })
-}
 

@@ -17,7 +17,6 @@ function ImageHandler(imgPath, cb){
 
 	/* new File Handler instantiated after a file is added to watched folder */
 	console.log(chalk.cyan('BEGIN UPLOAD IMAGE:'),imgPath);
- 
 	handler.uploadToAzure(imgPath, cb);
 }
 
@@ -34,7 +33,7 @@ handler.uploadToAzure = function(img, callb){
 		console.log(chalk.yellow('POSTing to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
 		//*** send this data to the routing server to save to DB: ***//
 		handler.postDataToElBulli(data, function(e, data){
-			callb(e, path.basename(img));
+			callb(e, path.basename(img), JSON.parse(data));
 		});
 	});
 }
@@ -52,9 +51,9 @@ handler.postDataToElBulli = function(data, callback){
 	});
 
 	var post_options = {
-		host: global.BULLI_SERVER.host,
-		port: global.BULLI_SERVER.port,
-		path: global.BULLI_SERVER.path,
+		host: global.KEYS.BULLI_SERVER.host,
+		port: global.KEYS.BULLI_SERVER.port,
+		path: global.KEYS.BULLI_SERVER.PATH.photo,
 
 		method: 'POST',
 		headers: {

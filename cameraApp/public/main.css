@@ -10,13 +10,27 @@
   src: url('../fonts/TradeGothicLTBoldCondensedNo.20.ttf');
 }
 
+@font-face{
+  font-family: Roboto;
+    src: url('http://fonts.googleapis.com/css?family=Roboto');
+}
+
+@font-face{
+  font-family: Ubuntu;
+    src: url('http://fonts.googleapis.com/css?family=Ubuntu');
+}
+
+@font-face{
+  font-family: Oswald;
+  src: url('http://fonts.googleapis.com/css?family=Oswald');
+}
+
+
 html{
-  width: 100%;
-
-
+  max-width: 100%;
+  overflow-x: hidden;
   body{
-      width: 100%;
-      font-family: TradeGothicLTCondensed !important;
+      max-width: 100%;
       section{
         display:none;
       }
@@ -34,14 +48,21 @@ html{
 .inverse{
   background: #000;
   color: #fff;
+  font-family: Ubuntu;
 }
 .image-path{
   float: right;
   padding: 11px 11px;
   margin-left: 10px;
-  // float: right !important;
+  margin-top: 15px !important;
+  float: right !important;
   /*margin-left: 50px;*/
 }
+
+p.image-path{
+
+}
+
 
 #navbar {
   padding: 15px 40px;
@@ -54,7 +75,7 @@ html{
 
 .navbar-header{
   position: absolute;
-  top: 70%;
+  top: 40%;
   margin: 0; padding: 0;
 }
 
@@ -83,14 +104,27 @@ html{
 a.navbar-brand{
   width: 280px;
   height: 78px;
-  background: url('/imgs/zoomcitylogo.png') no-repeat center;
-  text-indent: -9999px;
   overflow:hidden;
 }
 
 .container.view{
-  padding-top: 70px;
+  padding-top: 30px;
 }
+
+.btn-group{ /* Camera Number */
+  padding-top:20px;
+  padding-left:15px;
+  font-weight: bold;
+  font-family: Ubuntu;
+  font-size: 170%;
+}
+
+.photo-info{
+  font-size:1.3em;
+  padding-left:20px;
+  font-family: Ubuntu;
+}
+
 
 /* Extra small devices (phones, less than 768px) */
 /* No media query since this is the default in Bootstrap */

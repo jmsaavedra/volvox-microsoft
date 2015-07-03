@@ -5,8 +5,8 @@
 	"env" : {
 		"FORCE_COLOR":"true"
 	},
-	"error_file" : "./pm2_logs/camera-app.stderr.log",
-	"out_file" : "./pm2_logs/camera-app.stdout.log",
+	"error_file" : "./logs/camera-app.stderr.log",
+	"out_file" : "./logs/camera-app.stdout.log",
 	"instances" : 1,
 	"min_uptime" : "20s",
 	"max_restarts" : 99999,
