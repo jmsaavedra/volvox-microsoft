@@ -27,12 +27,14 @@ On-site Linux machine, connected to 4 Canon DSLRs over USB-Ethernet extenders.
   * `$ git clone https://github.com/jmsaavedra/volvox-microsoft.git`
 * __Install package modules__
   * `$ npm install`
+* __AuthKeys.js__
+  * manually copy AuthKeys.js into the root folder (this is shared privately)
 * __Install PM2__
-  * $ `$ npm install pm2 -g`    #follow directions if there is a reply from pm2!
-  * $ `$ pm2 startup`           #follow directions if there is a reply from pm2!
+  * $ `$ npm install pm2 -g`    
+  * $ `$ pm2 startup`            #follow directions if there is a reply from pm2!
   * $ `$ pm2 start startup.json` #run the app with pm2 startup script
-  * $ `$ pm2 save`              #save this process to the startup scripts
-  * $ `$ pm2 logs`              #tail console logs
+  * $ `$ pm2 save`               #save this process to the startup scripts
+  * $ `$ pm2 logs`               #tail console logs
 
 ---------
 
@@ -47,7 +49,7 @@ This is an Ubunutu 14.04 Linux Virtual Machine, that processes all uploaded vide
   * `$ sudo apt-get install build-essential libssl-dev`
   * `$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
   * `$ source ~/.profile`
-  * `$ nvm install 0.10.39`
+  * `$ nvm install 0.10.39`   #video processor has run on 0.12.x in the past
   * `$ nvm use 0.10.39`
   * `$ nvm alias default 0.10.39`
   * `$ nvm use default`
@@ -61,6 +63,8 @@ This is an Ubunutu 14.04 Linux Virtual Machine, that processes all uploaded vide
 * __Clone repo__, install packages
   * `$ git clone https://github.com/jmsaavedra/volvox-microsoft.git`
   * `$ npm install`
+* __AuthKeys.js__
+  * manually copy `AuthKeys.js` into the root folder (this is shared privately)
 * __Set local time zone of server__
   * Linux ([ref](http://www.christopherirish.com/2012/03/21/how-to-set-the-timezone-on-ubuntu-server/)):
   * `$ date`  // show date
@@ -69,5 +73,11 @@ This is an Ubunutu 14.04 Linux Virtual Machine, that processes all uploaded vide
   * if using cron, restart it:
     * `$ /etc/init.d/cron stop`
     * `$ /etc/init.d/cron start`
-  
+* __Install PM2__
+  * $ `$ npm install pm2 -g`    
+  * $ `$ pm2 startup`            #follow directions if there is a reply from pm2!
+  * $ `$ pm2 start startup.json` #run the app with pm2 startup script
+  * $ `$ pm2 save`               #save this process to the startup scripts
+  * $ `$ pm2 logs`               #tail console logs
+
 ---------
