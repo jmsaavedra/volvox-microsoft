@@ -44,6 +44,8 @@ angular.module('elbulliApp')
   })
   .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state) {
     $scope.shareUrl = encodeURIComponent($location.absUrl());
+    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&redirect_uri=http://facebook.com&link=');
+    $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
     // After loading all vimeos
     // Get width
     $scope.getVimeoHeight = function() {
