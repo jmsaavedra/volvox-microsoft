@@ -20,7 +20,7 @@
 						<h2>{{video.date | amDateFormat: 'DD'}}</h2>
 					</button>
 				</div>
-				<div class="col-md-2 col-xs-4">
+				<div class="col-md-2 col-xs-4" ng-if="isInProgress">
 					<button class="btn grid-content-container" ng-style="{height: equalWidth + 'px'}" style="background: #BDBDBD">
 						<h5 style="color: #353535; text-decoration: none;">In Progress<br>Check back soon!</h5>
 					</button>
