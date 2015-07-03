@@ -148,7 +148,7 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
       moment.relativeTimeThreshold('s', 55);
       moment.relativeTimeThreshold('m', 55);
       io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
-      console.log(chalk.cyan.bold('>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
+      console.log(chalk.cyan.bold('\n>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
     });
   });
 });

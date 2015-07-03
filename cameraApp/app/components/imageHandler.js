@@ -16,7 +16,7 @@ var handler = ImageHandler.prototype;
 function ImageHandler(imgPath, cb){
 
 	/* new File Handler instantiated after a file is added to watched folder */
-	console.log(chalk.cyan('BEGIN UPLOAD IMAGE:'),imgPath);
+	console.log(chalk.cyan('Begin Upload Image to Azure:'), path.basename(imgPath));
 	handler.uploadToAzure(imgPath, cb);
 }
 
@@ -29,7 +29,7 @@ handler.uploadToAzure = function(img, callb){
 	AzureFiler.uploadImage(img, path.basename(img), function(e, data){
 		if(e) return callb(chalk.red.bold('error uploading to Azure: ')+e);
 		if(!data) return callb(chalk.red.bold('NO DATA RETURNED when uploading to Azure: ')+e);
-		console.log(chalk.cyan('Begin POST to elBulli Server...'));
+		console.log(chalk.gray('Begin POST to elBulli Server...'));
 		//console.log(chalk.yellow('POSTing to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
 		//*** send this data to the routing server to save to DB: ***//
 		handler.postDataToElBulli(data, function(e, data){
