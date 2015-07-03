@@ -56,7 +56,7 @@ function uploadFile (container, fpath, name, callback){
 
       moveFile(container, fpath, name, function(e){
         if(e) console.log(chalk.red('error on moveFile: ') + e);
-        else console.log(chalk.yellow('SUCCESS copy image to: '),fpath);
+        // else console.log(chalk.yellow('SUCCESS copy image to: '),fpath);
         var fileUrl = global.KEYS.AZURE_PHOTO_BLOB_ADDR+'/'+result.container+'/'+result.blob;
         console.log(chalk.cyan.bold('BLOB URL: ') + fileUrl);
         var data = {date: container, file: fileUrl, type: 'photo'};

@@ -29,8 +29,8 @@ handler.uploadToAzure = function(img, callb){
 	AzureFiler.uploadImage(img, path.basename(img), function(e, data){
 		if(e) return callb(chalk.red.bold('error uploading to Azure: ')+e);
 		if(!data) return callb(chalk.red.bold('NO DATA RETURNED when uploading to Azure: ')+e);
-
-		console.log(chalk.yellow('POSTing to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
+		console.log(chalk.cyan('Begin POST to elBulli Server...'));
+		//console.log(chalk.yellow('POSTing to El Bulli Server: ')+JSON.stringify(data,null,'\t'));
 		//*** send this data to the routing server to save to DB: ***//
 		handler.postDataToElBulli(data, function(e, data){
 			callb(e, path.basename(img), JSON.parse(data));
@@ -72,7 +72,7 @@ handler.postDataToElBulli = function(data, callback){
 				return callback('ERROR ON POST: ',chunk);
 			}
 
-			console.log(chalk.green('SUCCESS HTTP POST to El Bulli Server.')); 
+			console.log(chalk.green('SUCCESS POST to elBulli Server and DB.')); 
 			console.log(chalk.gray('=========================================================='));
 			callback(null, chunk);
 		});

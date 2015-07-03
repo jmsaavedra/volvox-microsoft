@@ -52,7 +52,6 @@ var latestImages = []; //holds the images taken on the immediately previous Snap
 var today = moment().format('YYYY-MM-DD');
 
 
-
 var imageProcessQueue = async.queue(function (newImgPath, callback) {
   var newImg = new ImgHandler(newImgPath, function(e, savedPath, serverData){
     if(e){
@@ -79,8 +78,6 @@ else {
   }
 }
 
-
-
 /** Upload queue has FINISHED **/
 imageProcessQueue.drain = function() {
     console.log(chalk.gray.bold('__________________________________________________________\n'));
@@ -90,7 +87,6 @@ imageProcessQueue.drain = function() {
     
     console.log(chalk.cyan.bold('>>> Time until next snap:'), timeTilNext.from(new Date()),chalk.gray('>>>'), timeTilNext.format('DD MMM YYYY, hh:mm:ss') );
     io.sockets.emit('finished', getLatestImages(), today, timeTilNext);
-    // io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
 };
 
 
@@ -100,7 +96,7 @@ watchr.watch({
     
     if(changeType === 'create'){ 
       imgCt++;
-      console.log(chalk.green('New File Added, imgCt:'),imgCt,': ',filePath);
+      console.log(chalk.green('New File Added, imgCt:'),imgCt,': ',path.basename(filePath));
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
@@ -114,11 +110,9 @@ watchr.watch({
   }
 });
 
-
 /* Express config */
 app.use(express.static('./public'));
 app.use('/images',express.static(global.SAVE_IMG_FOLDER));
-
 
 function snap(){
   today = moment().format('YYYY-MM-DD');
@@ -138,89 +132,53 @@ function snap(){
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    if(e) console.log(chalk.red('camera setup failed:'), e);
-      //console.log("camera setup failed, restarting app.");
-      // setTimeout(function(){
-      //   process.exit(1);  
-      // }, 3000);
-    //}
-    //else {      
-      console.log(chalk.gray("camera setup complete"));
-      setupComplete = true;
-      setupSockets();
-      server.listen(port);
+    if(e) console.log(chalk.red('camera setup failed:'), e);   
+    console.log(chalk.gray("camera setup complete"));
+    setupComplete = true;
+    setupSockets();
+    server.listen(port);
 
-      /*** START THE HTTP SERVER ***/
-      // http.createServer(app).listen(port, function(){
-        console.log();
-        console.log(chalk.white.inverse('  CAMERA APP   Server Running!  '));
-        console.log(chalk.gray.inverse('  HTTP Express Server Running!  '));
-        var listeningString = ' Magic happening on port: '+ port +"  ";
-        console.log(chalk.cyan.inverse(listeningString));
+    console.log();
+    console.log(chalk.white.inverse('  CAMERA APP   Server Running!  '));
+    console.log(chalk.gray.inverse('  HTTP Express Server Running!  '));
+    var listeningString = ' Magic happening on port: '+ port +"  ";
+    console.log(chalk.cyan.inverse(listeningString));
 
-        // var photoInterval = setInterval(snap, SNAP_INTERVAL*1000);
-        Scheduler.init(snap, function(timeOfNextSnap){
-          moment.relativeTimeThreshold('s', 55);
-          moment.relativeTimeThreshold('m', 55);
-          io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
-          console.log(chalk.cyan.bold('>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
-        });
-      // }); 
-    //}
+    Scheduler.init(snap, function(timeOfNextSnap){
+      moment.relativeTimeThreshold('s', 55);
+      moment.relativeTimeThreshold('m', 55);
+      io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
+      console.log(chalk.cyan.bold('>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
+    });
   });
 });
 
-/*** in case of socket enabled front-end ***/
+/*** SOCKETS ***/
 var setupSockets = function(){
-  //console.log(cameras);
   io.on('connection', function(socket){
     console.log(chalk.yellow('socket connection created.'));
-    //if(!setupComplete) 
-      // socket.broadcast.emit('loading', null);
-      // Scheduler.getTimeTilNextSnap()
-      io.sockets.emit('init',getLatestImages(), today, moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:mm:ss')) ;
+    io.sockets.emit('init',getLatestImages(), today, moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:mm:ss')) ;
 
-      if(totalImgCt < 1){
-        var request = require('request');
-        request('http://'+global.KEYS.BULLI_SERVER.host+':'+global.KEYS.BULLI_SERVER.port+global.KEYS.BULLI_SERVER.PATH.photo_info+'/'+today, function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            body = JSON.parse(body).today;
-            if(body.image_count){
-              console.log(chalk.green('got server image_count: ')+body.image_count);
-              totalImgCt = body.image_count;
-              io.sockets.emit('image_count', totalImgCt);
-            } 
-            else{
-              console.log('no images today.');
-              io.sockets.emit('image_count', totalImgCt);
-            } 
-          }
-        });
-      } else io.sockets.emit('image_count', totalImgCt);
-
-      // io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
-    // fs.readdir(global.RAW_IMG_FOLDER,function(err,files){
-    //fs.readdir(global.SCALED_IMG_FOLDER,function(_err,files){
-      //socket.emit('init', null);
-      //checkout /images for all image files, (exclude DS_Store);
-      //console.log("error: ".red+_err);
-      // Images.findOrCreate(_.without(files, ".DS_Store"),function(err,_images){
-      //   if(err) return socket.emit('error',err);
-      //   return socket.emit('init',_images);
-      // });
-    //});
-
-    /* Socket API */
+    if(totalImgCt < 1){
+      var request = require('request');
+      request('http://'+global.KEYS.BULLI_SERVER.host+':'+global.KEYS.BULLI_SERVER.port+global.KEYS.BULLI_SERVER.PATH.photo_info+'/'+today, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          body = JSON.parse(body).today;
+          if(body.image_count){
+            console.log(chalk.green('got server image_count: ')+body.image_count);
+            totalImgCt = body.image_count;
+            io.sockets.emit('image_count', totalImgCt);
+          } 
+          else{
+            console.log('no images today.');
+            io.sockets.emit('image_count', totalImgCt);
+          } 
+        }
+      });
+    } else io.sockets.emit('image_count', totalImgCt);
     socket.on('snap',function(data){
-      // if(!processingTake){
-        // processingTake = true;
         console.log(chalk.green('Snap Photo! ')+JSON.stringify(data));
         snap();
-        //*****NEW****
-        
-        // processingTake = false;
-        //*******
-      // } else console.log('Snap Photo: '+'Wait for previous take to finish processing'.red);
     });
   });
 };
