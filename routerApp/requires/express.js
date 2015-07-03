@@ -30,19 +30,6 @@ module.exports = function(db, Model, vimeo) {
 
   // Routes
   app
-    .post(global.KEYS.BULLI_SERVER.PATH.photo_info, function(req, res) {
-      Model.Photo.findOne({
-        date: req.body.date
-      }, function(err, obj) {
-        if(err) {
-          console.log.warn(err);
-        } else {
-          res.json({
-            today: obj
-          });
-        }
-      });
-    })
     .post(global.KEYS.BULLI_SERVER.PATH.photo, function(req, res) {
       console.log(req.body);
       // Save to Mongo
@@ -63,12 +50,12 @@ module.exports = function(db, Model, vimeo) {
           console.log(chalk.red(err));
           res.json({
             data: false,
-            imgCt: obj.images.length
           });
           // Sending Fail Email
         } else {
           res.json({
-            data: true
+            data: true,
+            image_count: obj.images.length
           });
           // Sending Success Email
         }
@@ -131,9 +118,9 @@ module.exports = function(db, Model, vimeo) {
 
     })
 
-    .get(global.KEYS.BULLI_SERVER.PATH.photo_info, function(req, res) {
+    .get(global.KEYS.BULLI_SERVER.PATH.photo_info+'/:date', function(req, res) {
       Model.Photo.findOne({
-        date: req.query.date
+        date: req.params.date
       }, function(err, obj) {
         if(err || !obj) {
           console.log(chalk.red('err:'),err);
