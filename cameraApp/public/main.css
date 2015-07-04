@@ -42,14 +42,31 @@ html{
 }
 
 
+/* info box containing dates, countdown */
+.photo-info{
+  font-size:1.3em;
+  padding-left:20px;
+  font-family: Ubuntu;
+  background-color:#CAE2EE; 
+  margin-top:5px; 
+  padding:25px 25px 15px 40px; 
+  border-width:1px; 
+  border-style:solid;
+}
 
-/* Random Globals */
+/* subtitle */
+.subtitle{
+  color:#CAE2EE;
+}
 
+
+/* file name */
 .inverse{
-  background: #000;
+  background: #043844;
   color: #fff;
   font-family: Ubuntu;
 }
+
 .image-path{
   float: right;
   padding: 11px 11px;
@@ -57,10 +74,6 @@ html{
   margin-top: 15px !important;
   float: right !important;
   /*margin-left: 50px;*/
-}
-
-p.image-path{
-
 }
 
 
@@ -84,7 +97,7 @@ p.image-path{
   margin-right: 20px;
   text-transform: uppercase;
   font-family: TradeGothicLTBoldCondensed;
-  //float:right;
+  float:right;
 }
 .btn-takephoto.small{
   font-size: 30px !important;
@@ -94,11 +107,13 @@ p.image-path{
 }
 
 .btn.inverse{
-  border: 1px solid #fff;
+  border: 1px solid #CAE2EE;
+  color: #fff;
 }
 
-.btn.inverse:hover{
-  color: #fff;
+.btn:hover{
+  color: #CAE2EE;
+  border: 1px solid #fff;
 }
 
 a.navbar-brand{
@@ -119,11 +134,6 @@ a.navbar-brand{
   font-size: 170%;
 }
 
-.photo-info{
-  font-size:1.3em;
-  padding-left:20px;
-  font-family: Ubuntu;
-}
 
 
 /* Extra small devices (phones, less than 768px) */

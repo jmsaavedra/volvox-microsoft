@@ -33,23 +33,23 @@
     <nav class="navbar inverse navbar-fixed-top" role="navigation">
 
         <div  id="navbar">
-          <div class="navbar-header visible-lg-inline-block visible-md-inline-block visible-sm-inline-block hidden-xs">
+          <div class="navbar-header visible-lg-inline-block visible-md-inline-block visible-sm-inline-block">
             <h2><strong>Camera Controller Dashboard</strong></h2>
-            <h4><span style="color:#aaa;">elBulliLab&emsp;||&emsp;Volvox&emsp;||&emsp;Microsoft</span></h4>
+            <h4 class="subtitle"><span style="">elBulliLab&emsp;||&emsp;Volvox&emsp;||&emsp;Microsoft</span></h4>
           </div>
   
-          <div class="visible-xs-block hidden-sm hidden-md hidden-lg" id="take-photo">
+          <!-- <div class="visible-xs-block hidden-sm hidden-md hidden-lg" id="take-photo"> -->
             <!-- <a class="navbar-brand" style="margin: 10px 0 30px;" href="/">Zoom City Bank</a> -->
-            <button style="margin: 0 auto;" type="button" class="take-photo btn inverse btn-takephoto small navbar-button visible-xs-block  hidden-sm hidden-md hidden-lg">
+<!--             <button style="margin: 0 auto;" type="button" class="take-photo btn inverse btn-takephoto small navbar-button visible-xs-block  hidden-sm hidden-md hidden-lg">
               <span class="glyphicon glyphicon-camera"></span>&nbsp;&nbsp;Take Photo
             </button>
-          </div>
+          </div> -->
 
-          <button style="float:right;" type="button" class="take-photo btn inverse btn-takephoto small navbar-button visible-sm-inline-block hidden-xs hidden-md hidden-lg">
+<!--           <button style="float:right;" type="button" class="take-photo btn inverse btn-takephoto small navbar-button visible-sm-inline-block hidden-xs hidden-md hidden-lg">
             <span class="glyphicon glyphicon-camera"></span>&nbsp;&nbsp;Take Photo
           </button>
-
-            <div class="nav navbar-nav navbar-right hidden-sm hidden-xs">
+ -->
+            <div class="nav navbar-nav navbar-right">
               <button type="button" class="take-photo btn inverse btn-takephoto navbar-button" id="">
                 <span class="glyphicon glyphicon-camera"></span>&nbsp;&nbsp;Take Photo
                 </button>
@@ -57,7 +57,7 @@
         </div> <!-- end navbar -->
     </nav>
 
-    <div class="row photo-info col-12" id="photo-info" style=" background-color:#cdcdcd; margin-top:5px; padding:25px 25px 15px 40px; border-width:1px; border-style:solid;">
+    <div class="row photo-info col-12" id="photo-info" style=" ">
       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12 app-info" style="" >
         <p class="date"><!-- Date:  --></p>
         <p class="img-ct"><!-- Images Captured Today: --> </p>
@@ -72,13 +72,13 @@
 
 
     <div class="container view">
-     
+      <div class="no-images" id="no-images" style="font-size: 1.2em; margin-bottom:300px;">Waiting for first snap...</div>
       <div class="row images" id="img-holder"></div>
       <hr/>
     </div> <!-- /container -->
 
     <footer>
-      <center><p>&copy; 2015</p></center>
+      <center><p><a class="restart">restart app</a></p></center>
     </footer>
 
 
@@ -101,11 +101,11 @@
     </div>
 
     <!-- INITING APP MODAL -->
-    <div class="modal fade" id="loadingDialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal fade" id="restartDialog" data-backdrop="static" data-keyboard="false">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-              <h3>Initializing Cameras...</h3>
+              <h3>Restarting App...</h3>
           </div>
           <div class="modal-body">
             <div class="progress">

@@ -114,6 +114,7 @@ watchr.watch({
 app.use(express.static('./public'));
 app.use('/images',express.static(global.SAVE_IMG_FOLDER));
 
+
 function snap(){
   today = moment().format('YYYY-MM-DD');
   latestImages=[];
@@ -159,27 +160,32 @@ var setupSockets = function(){
     console.log(chalk.yellow('socket connection created.'));
     io.sockets.emit('init',getLatestImages(), today, moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:mm:ss')) ;
 
-    if(totalImgCt < 1){
+    //if(totalImgCt < 1){
       var request = require('request');
       request('http://'+global.KEYS.BULLI_SERVER.host+':'+global.KEYS.BULLI_SERVER.port+global.KEYS.BULLI_SERVER.PATH.photo_info+'/'+today, function (error, response, body) {
-        if (!error && response.statusCode == 200) {
+        if (!error && response.statusCode == 200 && isJson(body)) { //stupid logic bc of weird server reply when 0 images are found.
           body = JSON.parse(body).today;
           if(body.image_count){
             console.log(chalk.green('got server image_count: ')+body.image_count);
             totalImgCt = body.image_count;
             io.sockets.emit('image_count', totalImgCt);
-          } 
-          else{
+          } else io.sockets.emit('image_count', totalImgCt);
+        } else{
             console.log('no images today.');
             io.sockets.emit('image_count', totalImgCt);
           } 
-        }
       });
-    } else io.sockets.emit('image_count', totalImgCt);
+    //} else io.sockets.emit('image_count', totalImgCt);
     socket.on('snap',function(data){
         console.log(chalk.green('Snap Photo! ')+JSON.stringify(data));
         snap();
     });
+
+    socket.on('restart',function(data){
+        console.log(chalk.red.bold('GOT RESTART FROM BROWSER >>> EXITING NOW.'));
+        process.exit(0);
+    });
+
   });
 };
 
@@ -187,4 +193,12 @@ var setupSockets = function(){
 var getLatestImages = function(){
   var _latestImages = _.sortBy(latestImages, function(name){return name;});
   return _latestImages
+}
+
+var isJson = function(str){
+  try {
+      JSON.parse(str);
+  } catch (e) {
+      return false
+  } return true;
 }

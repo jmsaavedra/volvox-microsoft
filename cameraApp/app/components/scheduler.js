@@ -11,10 +11,8 @@ var snapRecurring;
 
 module.exports.init = function(snapFunc, cb){
 
-  snapRecurring = later.parse.recur().after('04:30').time().before('10:30').time().every(60).second().onWeekday();
-  // snapRecurring = later.parse.text('every 40 secs');
-  // snapRecurring   = later.parse.recur().after('05:00').time().before('06:45').time().every(30).second();
-
+  snapRecurring = later.parse.recur().after('09:00').time().before('21:00').time().every(60).second().onWeekday();
+  // snapRecurring = later.parse.recur().after('00:01').time().before('23:59').time().every(60).second();
   var snapInterval    = later.setInterval(snapFunc, snapRecurring);
   var snapSchedule    = later.schedule(snapRecurring);
 

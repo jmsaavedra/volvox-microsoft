@@ -22,11 +22,6 @@ socket.on('new-image', function(image){
   console.log(">> socket.on: new-image, allImages length: "+allImages.length);
 });
 
-// socket.on('next-snap', function(nextSnapTime){
-//   initCountdown(nextSnapTime);
-  
-// })
-
 socket.on('finished', function(latestImages, date, nextSnapTime){
   console.log("socket: finished");
   console.log('recieved images:',JSON.stringify(latestImages));
@@ -37,7 +32,7 @@ socket.on('finished', function(latestImages, date, nextSnapTime){
 
   $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
   $('#processingDialog').modal('hide');
-  $('#loadingDialog').modal('hide');
+  $('#restartDialog').modal('hide');
 });
 
 
@@ -58,7 +53,7 @@ socket.on('init', function(latestImages, date, nextSnapTime){
   
   $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
   $('#processingDialog').modal('hide');
-  $('#loadingDialog').modal('hide');
+  $('#restartDialog').modal('hide');
 });
 
 
@@ -73,26 +68,40 @@ function initCountdown(eventTime){
   var diffTime = moment(eventTime) - moment(new Date());
   var duration = moment.duration(diffTime+500, 'milliseconds');
   var interval = 1000;
+  
 
   countdownInterval = setInterval(function(){
     duration = moment.duration(duration - interval, 'milliseconds');
-      $('.countdown').html("<strong>Snap Countdown</strong>:&emsp;"+duration.hours() + ":" + duration.minutes() + ":" + duration.seconds())
+    var timeString = "<strong>Snap Countdown</strong>:&emsp;";
+      if(duration.days() >= 1) timeString += duration.days()+' days ';
+      if(duration.hours() >= 1) timeString += duration.hours()+' hours ';
+      if(duration.minutes() >= 1) timeString += duration.minutes()+' minutes ';
+      timeString += duration.seconds()+' secs';
+      $('.countdown').html(timeString);
   }, interval);
 }
 
 $(document).ready(function(){
   console.log("pageSize: "+pageSize + " imgs per page");
+  
   $('.take-photo').click(function(e){
     IMAGE_TAKER = true;
     $('#processingDialog').modal('show');
     socket.emit('snap',{snap: 0});
   });
+
+  $('.restart').click(function(e){
+    $('#restartDialog').modal('show');
+    socket.emit('restart',{restart: 1});
+    $('.no-images').show();
+  });
+
 });
 
 
 var loadImages = function(idx, cb){
   console.log("loadImages, idx: "+idx);
-
+  if (allImages.length > 1) $('.no-images').hide();
   var imagesHolder = document.getElementsByClassName("images")[0];
   clearHolder(imagesHolder, function(){
     for(var j=0; j<pageSize; j++){
@@ -101,8 +110,9 @@ var loadImages = function(idx, cb){
         var thisImage = new ImageElement(allImages[j]);
         imagesHolder.appendChild(thisImage);//, imagesHolder.firstChild);
       }
-    }
+    } 
     IMAGE_TAKER = false;
+
     cb();
   });
 };
