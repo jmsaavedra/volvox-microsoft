@@ -67,7 +67,6 @@ angular.module('elbulliApp')
         ngDialog.open({
           plain: true,
           template: '<p>&nbsp;</p><iframe class="vimeo_cam_popup" src="'+url+'" width="100%" height="355" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
-          // className: 'video-popup',
           scope: $scope
         });
       }, 100);
