@@ -13,66 +13,7 @@ angular.module('elbulliApp')
   .controller('PhotoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $state) {
     // console.log('Photo month');
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
-
-    // Dummy Data
-    // $scope.photos = [{
-    //   date: '2015-08-01',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '01'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-02',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '02'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-03',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '03'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-04',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '04'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-05',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '05'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-06',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '06'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }, {
-    //   date: '2015-08-07',
-    //   ymd: {
-    //     y: '2015',
-    //     m: '08',
-    //     d: '07'
-    //   },
-    //   img: 'https://i.vimeocdn.com/video/522186194_640.jpg'
-    // }];
-
+    $scope.isInProgress = ($stateParams.month === moment().format('MM')) ? true : false;
     // Get Videos for this month
     Server.getMonthlyAsset(
       $scope.thisMonth,

@@ -16,7 +16,8 @@ angular.module('elbulliApp')
     // console.log('Video month');
     // console.log($stateParams.month + ' 01 ' + $stateParams.year);
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
-
+    $scope.isInProgress = ($stateParams.month === moment().format('MM')) ? true : false;
+    // console.log($scope.isInProgress);
     // Get Videos for this month
     Server.getMonthlyAsset(
       $scope.thisMonth,
@@ -43,6 +44,8 @@ angular.module('elbulliApp')
   })
   .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state) {
     $scope.shareUrl = encodeURIComponent($location.absUrl());
+    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&redirect_uri=http://facebook.com&link=');
+    $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
     // After loading all vimeos
     // Get width
     $scope.getVimeoHeight = function() {
@@ -64,7 +67,7 @@ angular.module('elbulliApp')
       // Success
       $scope.video_content = result.data;
       $scope.description = result.description;
-      console.log($scope.video_content);
+      // console.log($scope.video_content);
       // DOM Ready fix
       $timeout(function() {
         $scope.getVimeoHeight();
