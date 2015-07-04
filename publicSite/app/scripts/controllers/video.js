@@ -35,14 +35,12 @@ angular.module('elbulliApp')
         }
       },
       function(error) {
-        // if (error) alert(error);
-        // alert(error);
         $state.go('video', {
           lang: $rootScope.lang
         });
       });
   })
-  .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state) {
+  .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state, ngDialog) {
     $scope.shareUrl = encodeURIComponent($location.absUrl());
     var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&redirect_uri=http://facebook.com&link=');
     $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
@@ -60,6 +58,21 @@ angular.module('elbulliApp')
     $(window).on('resize', function() {
       $scope.getVimeoHeight();
     });
+
+    // pop up video
+    $scope.popupVideo = function(url) {
+      // $scope.popupVimeoUrl = url;
+      console.log(url);
+      $timeout(function() {
+        ngDialog.open({
+          plain: true,
+          template: '<p>&nbsp;</p><iframe class="vimeo_cam_popup" src="'+url+'" width="100%" height="355" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+          // className: 'video-popup',
+          scope: $scope
+        });
+      }, 100);
+
+    };
 
     $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
     // Get video from vimeo

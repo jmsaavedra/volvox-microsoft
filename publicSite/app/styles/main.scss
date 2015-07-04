@@ -135,9 +135,26 @@ body {
 // Gallery
 // 
 // 
+// 
+
+.videoMask {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	background: $elblack;
+	opacity: 0.01;
+	cursor: pointer;
+}
 
 #vimeo_final, .vimeo_cam {
 	border: 1px solid $elwhite;
+	// height: auto;
+}
+
+.vimeo_cam_popup {
+	
 }
 
 .grey-bg {
@@ -229,11 +246,11 @@ body {
 .sticky-footer {
 	position: fixed;
 	bottom: 0;
-	height: 50px;
+	height: 40px;
 	width: 100%;
 	z-index: 9;
 	background: $elwhite;
-	padding-top: 10px;
+	padding-top: 8px;
 }
 
 // media Queries

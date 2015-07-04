@@ -9,7 +9,7 @@
 		</div>
 	</div>
 	<!-- Video Description and Links -->
-	<div class="row" style="padding-top:30px;">
+	<div class="row" style="padding-top:10px;">
 		<div class="col-xs-12 col-md-8">
 			<h2 style="margin-top: 0px;">{{video_content.date | amDateFormat: 'MMMM, DD'}}</h2>
 			<p class="lead">{{description}}</p>
@@ -68,7 +68,7 @@
 						c0.3,0.8,1.1,1.2,1.9,1c1.9-0.6,3.7-1.1,5.2-1.4c-0.1,0.1-0.1,0.2-0.2,0.3C-172.3,354.3-173,355.4-174.1,356.5z"/>
 					</svg>
 			</a>
-			<a href="#">
+			<a ng-click="shareLink()" style="cursor: pointer;">
 					<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 						 viewBox="-248.5 353 87 87" style="enable-background:new -248.5 353 87 87;" xml:space="preserve">
 					<path d="M-182.1,405.9c-4.5,0-8.6,2.3-10.9,5.9l-22.9-11.4c0.5-1.4,0.8-2.9,0.8-4.4c0-1.5-0.3-3-0.8-4.4l22.9-11.4
@@ -83,11 +83,11 @@
 	</div>
 	<!-- Main Video -->
 	<div class="row">
-		<div class="col-xs-0 col-sm-1"></div>
-		<div class="col-xs-12 col-sm-10">
+		<div class="col-xs-0 col-sm-1 col-md-2"></div>
+		<div class="col-xs-12 col-sm-10 col-md-8">
 			<iframe id="vimeo_final" ng-src="{{vimeo_final_url}}" width="100%" height="{{vimeo_final_height}}" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 		</div>
-		<div class="col-xs-0 col-sm-1"></div>
+		<div class="col-xs-0 col-sm-1 col-md-2"></div>
 	</div>
 	<div class="row">
 		<div class="col-xs-12">
@@ -105,21 +105,25 @@
 	<!-- Four Individual Videos -->
 	<div class="container">
 		<div class="row" style="margin-top: 20px;">
-			<div class="col-xs-12 col-md-3 no-h-padding" style="padding-bottom: 20px;">
+			<div class="col-xs-12 col-md-3 no-h-padding" style="margin-bottom: 20px;">
 				<h5><span translate="CAMERA"></span> 1</h5>
 				<iframe class="vimeo_cam" id="vimeo_cam" ng-src="{{vimeo_cam0_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				<div class="videoMask hidden-xs hidden-sm" ng-click="popupVideo(vimeo_cam0_url)"></div>
 			</div>
-			<div class="col-xs-12 col-md-3 no-h-padding" style="padding-bottom: 20px;">
+			<div class="col-xs-12 col-md-3 no-h-padding" style="margin-bottom: 20px;">
 				<h5><span translate="CAMERA"></span> 2</h5>
 				<iframe class="vimeo_cam" id="vimeo_cam" ng-src="{{vimeo_cam1_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				<div class="videoMask hidden-xs hidden-sm" ng-click="popupVideo(vimeo_cam1_url)"></div>
 			</div>
-			<div class="col-xs-12 col-md-3 no-h-padding" style="padding-bottom: 20px;">
+			<div class="col-xs-12 col-md-3 no-h-padding" style="margin-bottom: 20px;">
 				<h5><span translate="CAMERA"></span> 3</h5>
 				<iframe class="vimeo_cam" id="vimeo_cam" ng-src="{{vimeo_cam2_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				<div class="videoMask hidden-xs hidden-sm" ng-click="popupVideo(vimeo_cam2_url)"></div>
 			</div>
-			<div class="col-xs-12 col-md-3 no-h-padding" style="padding-bottom: 100px;">
+			<div class="col-xs-12 col-md-3 no-h-padding" style="margin-bottom: 100px;">
 				<h5><span translate="CAMERA"></span> 4</h5>
 				<iframe class="vimeo_cam" id="vimeo_cam" ng-src="{{vimeo_cam3_url}}" width="100%" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+				<div class="videoMask hidden-xs hidden-sm" ng-click="popupVideo(vimeo_cam3_url)"></div>
 			</div>
 		</div>
 	</div>

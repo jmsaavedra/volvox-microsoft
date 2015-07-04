@@ -18,13 +18,14 @@ angular
     'angularMoment',
     'pascalprecht.translate',
     'slick',
+    'ngDialog',
     'app.data',
     'app.router',
     'app.configs',
     'app.services',
     'app.filters'
   ])
-  .run(function($rootScope, $translate, $state, $stateParams, $timeout, amMoment) {
+  .run(function($rootScope, $translate, $state, $stateParams, $timeout, $location, amMoment, ngDialog) {
     ////////////////
     // Run global functions
     $rootScope.allowSlide = true;
@@ -59,6 +60,21 @@ angular
     window.addEventListener('resize', function() {
       $rootScope.heightMinusNavs = window.innerHeight - 140;
     });
+
+    // Share
+    // 
+    $rootScope.shareLink = function() {
+      ngDialog.open({
+        template: '<p>Share This Link</p><input id="shareDialog" type="text" value="' + $location.absUrl() + '" class="form-control">',
+        scope: $rootScope,
+        plain: true
+      });
+      $setTimeout(function() {
+        $('#shareDialog').focus();
+      }, 1000);
+
+    };
+
   }).constant('angularMomentConfig', {
     timezone: 'Europe/Madrid' // optional
   });
