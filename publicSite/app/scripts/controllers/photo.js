@@ -38,8 +38,10 @@ angular.module('elbulliApp')
         });
       });
   })
-  .controller('PhotoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout) {
-
+  .controller('PhotoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location) {
+    $scope.shareUrl = encodeURIComponent($location.absUrl());
+    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&redirect_uri=http://facebook.com&link=');
+    $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
     $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
     // Get video from vimeo
     Server.getAssetsFromDate($scope.queryDate, false, function(result) {
