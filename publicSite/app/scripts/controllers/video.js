@@ -46,7 +46,7 @@ angular.module('elbulliApp')
     $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
     $rootScope.title = 'elBulliLab Video Gallery ' + $scope.queryDate;
     $scope.shareUrl = encodeURIComponent($location.absUrl());
-    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&caption=' + moment($scope.queryDate, 'YYYY-MM-DD').format('Do MMMM, YYYY') + '&redirect_uri=http://facebook.com&link=');
+    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&description=' + $rootScope.title + '&redirect_uri=http://facebook.com&link=');
     $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
     // After loading all vimeos
     // Get width
