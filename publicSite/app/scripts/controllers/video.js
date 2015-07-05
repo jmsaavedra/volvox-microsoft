@@ -11,11 +11,13 @@ var moment = moment || {};
 angular.module('elbulliApp')
   .controller('VideoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
     // console.log('Video year');
+    $rootScope.title = 'elBulliLab Video Gallery';
   })
   .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $state) {
     // console.log('Video month');
     // console.log($stateParams.month + ' 01 ' + $stateParams.year);
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
+    $rootScope.title = 'elBulliLab Vide Gallery ' + $scope.thisMonth;
     $scope.isInProgress = ($stateParams.month === moment().format('MM')) ? true : false;
     // console.log($scope.isInProgress);
     // Get Videos for this month
@@ -42,6 +44,7 @@ angular.module('elbulliApp')
   })
   .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state, ngDialog) {
     $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
+    $rootScope.title = 'elBulliLab Video Gallery ' + $scope.queryDate;
     $scope.shareUrl = encodeURIComponent($location.absUrl());
     var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&caption=' + moment($scope.queryDate, 'YYYY-MM-DD').format('Do MMMM, YYYY') + '&redirect_uri=http://facebook.com&link=');
     $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
