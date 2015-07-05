@@ -9,7 +9,7 @@
  */
 angular.module('elbulliApp')
   .controller('MainCtrl', function($rootScope, $scope, $timeout, $uiViewScroll) {
-
+    $rootScope.title = 'elBulliLab Timelapse';
     // Scroll to Technical Detail
     $scope.scrollToTechnical = function() {
       // $uiViewScroll(angular.element('#technical-detail'));
