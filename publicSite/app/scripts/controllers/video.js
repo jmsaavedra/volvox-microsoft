@@ -41,8 +41,9 @@ angular.module('elbulliApp')
       });
   })
   .controller('VideoDayCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $location, $state, ngDialog) {
+    $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
     $scope.shareUrl = encodeURIComponent($location.absUrl());
-    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&redirect_uri=http://facebook.com&link=');
+    var feedUrl = encodeURI('http://www.facebook.com/dialog/feed?app_id=1619939151578943&display=popup&caption=' + moment($scope.queryDate, 'YYYY-MM-DD').format('Do MMMM, YYYY') + '&redirect_uri=http://facebook.com&link=');
     $scope.fullFacebookShareUrl = (feedUrl + $scope.shareUrl);
     // After loading all vimeos
     // Get width
@@ -66,14 +67,14 @@ angular.module('elbulliApp')
       $timeout(function() {
         ngDialog.open({
           plain: true,
-          template: '<p>&nbsp;</p><iframe class="vimeo_cam_popup" src="'+url+'" width="100%" height="355" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
+          template: '<p>&nbsp;</p><iframe class="vimeo_cam_popup" src="' + url + '" width="100%" height="355" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>',
           scope: $scope
         });
       }, 100);
 
     };
 
-    $scope.queryDate = $stateParams.year + '-' + $stateParams.month + '-' + $stateParams.day;
+
     // Get video from vimeo
     Server.getAssetsFromDate($scope.queryDate, true, function(result) {
       // Success
