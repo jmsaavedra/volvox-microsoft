@@ -28,6 +28,7 @@ angular
   .run(function($rootScope, $translate, $state, $stateParams, $timeout, $location, amMoment, ngDialog) {
     ////////////////
     // Run global functions
+    $rootScope.title = 'elBulliLab Timelapse';
     $rootScope.allowSlide = true;
     // Default language
     $timeout(function() {
