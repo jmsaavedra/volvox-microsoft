@@ -63,7 +63,7 @@ var Process = {
 			ffmpeg()
 				.addInput(path.join(thisCamFolder, 'frame-%01d.jpg').toString())
 				
-				.inputFPS(50) /* framerate of images */
+				.inputFPS(18) /* framerate of images */
 				
 				.on('error', function(err) {
 					console.log('An error occurred: ' + err.message);
