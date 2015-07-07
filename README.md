@@ -11,7 +11,7 @@ On-site Linux machine, connected to 4 Canon DSLRs over USB-Ethernet extenders.
   * `$ sudo apt-get update`
   * `$ sudo apt-get upgrade`
 * __Install Git__
-  * `$ sudo apt-get git`
+  * `$ sudo apt-get install git`
 * __Install Node__ `v0.10.39` via [nvm](https://github.com/creationix/nvm)
   * `$ sudo apt-get install build-essential libssl-dev`
   * `$ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.25.4/install.sh | sh`
