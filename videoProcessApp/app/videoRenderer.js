@@ -84,14 +84,18 @@ var Process = {
 		console.log(chalk.cyan.bold('\nRendering date-frame.png'));
 		var datePng = path.join(global.PROCESS_FOLDER, date, 'vid3-date.png'); 
 		var dateVid = path.join(global.PROCESS_FOLDER, date, 'vid3-date.mp4');
+		// var dateStr = moment(date).format('DD MMMM YYYY');
+		moment.locale('es');
+		var dateStr = moment(date).format('LL');
+		moment.locale('en');
 		
 		//generate single image of date
 		gm(1920, 1080, '#000000')
 			.font('Roboto-Regular')
-			.fontSize(80)
+			.fontSize(65)
 			.stroke('#efe', 2)
 			.fill('#FFFFFF')
-			.drawText(0, 0, moment(date).format('MMMM DD, YYYY'), 'Center')
+			.drawText(0, 0, dateStr, 'Center')
 			.write(datePng, function(err){
 				if(err) return callback(err);
 
