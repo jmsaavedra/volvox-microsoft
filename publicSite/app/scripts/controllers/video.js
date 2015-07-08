@@ -51,16 +51,39 @@ angular.module('elbulliApp')
     // After loading all vimeos
     // Get width
     $scope.getVimeoHeight = function() {
+      var showArea = window.innerHeight - 300;
       $('#vimeo_final').attr({
-        height: $('#vimeo_final').width() * 9 / 16
+        // height: $('#vimeo_final').width() * 9 / 16
+        height: showArea,
+        width: showArea * 16 / 9
       });
       $('.vimeo_cam').attr({
         height: $('#vimeo_cam').width() * 9 / 16
       });
     };
 
+    $scope.getVimeoHeightMobile = function() {
+      $('#vimeo_final').attr({
+        width: '100%',
+        height: $('#vimeo_final').width() * 9 / 16
+          // height: showArea,
+          // width: showArea * 16 / 9
+      });
+      $('.vimeo_cam').attr({
+        height: $('#vimeo_cam').width() * 9 / 16
+      });
+    };
+
+    $scope.adjustVimeo = function() {
+      if (window.innerWidth >= 700) {
+        $scope.getVimeoHeight();
+      } else {
+        $scope.getVimeoHeightMobile();
+      }
+    };
+
     $(window).on('resize', function() {
-      $scope.getVimeoHeight();
+      $scope.adjustVimeo();
     });
 
     // pop up video
@@ -86,7 +109,7 @@ angular.module('elbulliApp')
       // console.log($scope.video_content);
       // DOM Ready fix
       $timeout(function() {
-        $scope.getVimeoHeight();
+        $scope.adjustVimeo();
         // Back to month view
         var vimeo_player_url = 'https://player.vimeo.com/video/';
         $scope.currentMonth = moment($scope.video_content.date).format('MM');

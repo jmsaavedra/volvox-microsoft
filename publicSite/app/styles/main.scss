@@ -162,10 +162,12 @@ body {
 }
 
 .share-icons-holder {
-	text-align: right;
-	margin-bottom: 15px;
+	position: relative;
+	top: 5px;
+	// text-align: right;
+	// margin-bottom: 15px;
 	a {
-		margin: 0px 5px;
+		margin: 0px 2px;
 		svg {
 			width: 35px;
 			height: 35px;
