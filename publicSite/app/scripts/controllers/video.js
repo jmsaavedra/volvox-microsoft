@@ -51,11 +51,23 @@ angular.module('elbulliApp')
     // After loading all vimeos
     // Get width
     $scope.getVimeoHeight = function() {
-      var showArea = window.innerHeight - 300;
+      var showArea = window.innerHeight - 350;
       $('#vimeo_final').attr({
         // height: $('#vimeo_final').width() * 9 / 16
-        height: showArea,
-        width: showArea * 16 / 9
+        height: function() {
+          if(showArea > 650) {
+            return 650;
+          } else {
+            return showArea;
+          }
+        },
+        width: function() {
+          if((showArea * 16 / 9) > $('#video_resize').width()) {
+            return '100%';
+          } else {
+            return showArea * 16 / 9;
+          }
+        }
       });
       $('.vimeo_cam').attr({
         height: $('#vimeo_cam').width() * 9 / 16
@@ -77,8 +89,10 @@ angular.module('elbulliApp')
     $scope.adjustVimeo = function() {
       if (window.innerWidth >= 700) {
         $scope.getVimeoHeight();
+        // console.log('presumably desktop');
       } else {
         $scope.getVimeoHeightMobile();
+        // console.log('presumably mobile');
       }
     };
 
