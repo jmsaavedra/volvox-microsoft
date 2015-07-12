@@ -17,7 +17,9 @@ var port        = '8081'; //select a port for this server to run on
 
 /** GLOBALS **/
 global.KEYS = require(path.join(__dirname, '..', 'AuthKeys'));
-global.FOLDER_TO_WATCH = path.join(__dirname,'_scans');
+// global.FOLDER_TO_WATCH = path.join(__dirname,'_scans');
+global.FOLDER_TO_WATCH = path.join('F:\\SCANS\\PUBLIC_SITE'); //F:\SCANS\PUBLIC_SITE
+
 
 
 /** THE WATCHER WATCHES **/
