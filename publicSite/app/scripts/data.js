@@ -11,77 +11,91 @@
 var moment = moment || {};
 angular
   .module('app.data', [])
-  .run(function($rootScope) {
+  .run(function($rootScope, Server) {
 
     $rootScope.months = [{
       year: 2015,
       month: '06',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('june 1 2015', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('06012015', false, 0),
+      isActive: (moment().unix() - moment('06012015', 'MMDDYYYY').unix() >= 0) ? true : false
     },{
       year: 2015,
       month: '07',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('july 1 2015', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('07012015', false, 1),
+      isActive: (moment().unix() - moment('07012015', 'MMDDYYYY').unix() >= 0) ? true : false
     },{
       year: 2015,
       month: '08',
-      image: 'http://placehold.it/300x300',
-      isActive: false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('08012015', false, 2),
+      isActive: (moment().unix() - moment('08012015', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2015,
       month: '09',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('september 1 2015', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('09012015', false, 3),
+      isActive: (moment().unix() - moment('09012015', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2015,
       month: '10',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('october 1 2015', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('10012015', false, 4),
+      isActive: (moment().unix() - moment('10012015', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2015,
       month: '11',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('november 1 2015', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('11012015', false, 5),
+      isActive: (moment().unix() - moment('11012015', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2015,
       month: '12',
-      image: 'http://placehold.it/300x300',
-      isActive: false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('12012015', false, 6),
+      isActive: (moment().unix() - moment('12012015', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '01',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('january 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('01012016', false, 7),
+      isActive: (moment().unix() - moment('01012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '02',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('february 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('02012016', false, 8),
+      isActive: (moment().unix() - moment('02012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '03',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('march 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('03012016', false, 9),
+      isActive: (moment().unix() - moment('03012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '04',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('april 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('04012016', false, 10),
+      isActive: (moment().unix() - moment('04012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '05',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('may 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('05012016', false, 11),
+      isActive: (moment().unix() - moment('05012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '06',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('june 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('06012016', false, 12),
+      isActive: (moment().unix() - moment('06012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }, {
       year: 2016,
       month: '07',
-      image: 'http://placehold.it/300x300',
-      isActive: (moment().unix() - moment('july 1 2016', 'MMMM DD YYYY').unix() >= 0) ? true : false
+      imageVideo: 'images/grey_bg.png',
+      image: Server.getMonthlyScanThumb('07012016', false, 13),
+      isActive: (moment().unix() - moment('07012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }];
   });

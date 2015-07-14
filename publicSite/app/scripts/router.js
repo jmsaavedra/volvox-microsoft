@@ -40,7 +40,7 @@ angular
         controller: 'VideoDayCtrl'
       })
       .state('photo', {
-        url: '/{lang:en|es}/photo/',
+        url: '/{lang:en|es}/photo',
         templateUrl: 'views/photo.html',
         controller: 'PhotoYearCtrl'
       })

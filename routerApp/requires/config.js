@@ -5,7 +5,7 @@ var uriUtil = require('mongodb-uri');
 var exports = {};
 
 // For MongoDB
-var mongodbUri = 'mongodb://elbulli:0000@ds034208.mongolab.com:34208/elbullitimelapse';
+var mongodbUri = global.KEYS.MONGOLAB.host;
 exports.db = {
   options: {
     server: {

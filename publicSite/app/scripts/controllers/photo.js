@@ -57,10 +57,24 @@ angular.module('elbulliApp')
         $scope.photo = result.data
         $scope.currentMonth = moment($scope.photo.date).format('MM');
         $scope.currentYear = moment($scope.photo.date).format('YYYY');
+        setTimeout(function() {
+          getPhotoSize();
+        }, 2000);
+
       }
 
     }, function(error) {
       // Fail
       // alert('There is no data for this date.');
+    });
+
+    var getPhotoSize = function() {
+      console.log('Change photo size')
+      var showArea = window.innerHeight - 300;
+      return $('.single-item div').css('height', showArea)
+    };
+
+    $(window).on('resize', function() {
+      getPhotoSize()
     });
   });
