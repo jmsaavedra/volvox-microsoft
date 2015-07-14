@@ -300,6 +300,14 @@ module.exports = function (grunt) {
     // concat: {
     //   dist: {}
     // },
+    // 
+    uglify: {
+      options: {
+        compress: {
+          drop_console: true
+        }
+      }
+    },
 
     imagemin: {
       dist: {
