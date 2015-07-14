@@ -51,7 +51,7 @@ angular.module('elbulliApp')
     // After loading all vimeos
     // Get width
     $scope.getVimeoHeight = function() {
-      var showArea = window.innerHeight - 350;
+      var showArea = window.innerHeight - 300;
       $('#vimeo_final').attr({
         // height: $('#vimeo_final').width() * 9 / 16
         height: function() {

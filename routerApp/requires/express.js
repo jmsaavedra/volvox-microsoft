@@ -12,7 +12,7 @@ var moment = require('moment');
 
 // Export Module
 
-module.exports = function(db, Model, vimeo) {
+module.exports = function(Model, vimeo) {
   var app = express();
   app.use(cors());
 
@@ -30,6 +30,9 @@ module.exports = function(db, Model, vimeo) {
 
   // Routes
   app
+  /**
+   * Post new photo
+   **/
     .post(global.KEYS.BULLI_SERVER.PATH.photo, function(req, res) {
       console.log(req.body);
       // Save to Mongo
@@ -48,6 +51,9 @@ module.exports = function(db, Model, vimeo) {
       }, function(err, obj) {
         if (err) {
           console.log(chalk.red(err));
+          // If error
+          // Terminate the app
+          process.exit(0)
           res.json({
             data: false,
           });
@@ -73,6 +79,9 @@ module.exports = function(db, Model, vimeo) {
       }, function(err) {
         if (err) {
           console.log(chalk.red(err));
+          // If error
+          // Terminate the app
+          process.exit(0)
           res.json({
             data: false
           });
@@ -103,6 +112,9 @@ module.exports = function(db, Model, vimeo) {
       }, function(err) {
         if (err) {
           console.log(chalk.red(err));
+          // If error
+          // Terminate the app
+          process.exit(0)
           res.json({
             data: false
           });
@@ -118,26 +130,26 @@ module.exports = function(db, Model, vimeo) {
 
     })
 
-    .get(global.KEYS.BULLI_SERVER.PATH.photo_info+'/:date', function(req, res) {
-      Model.Photo.findOne({
-        date: req.params.date
-      }, function(err, obj) {
-        if(err || !obj) {
-          console.log(chalk.red('err:'),err);
-          console.log('today:',obj);
-          res.send('<strong>error:</strong>',err,'<strong>today:</strong>',obj,'when looking up date: <strong>',req.query.date,'</strong>');
-        } else {
-          var sendObj = JSON.parse(JSON.stringify(obj));
-          sendObj.image_count = obj.images.length;
-          res.json({
-            today: sendObj
-          });
-        }
-      });
-    })
+  .get(global.KEYS.BULLI_SERVER.PATH.photo_info + '/:date', function(req, res) {
+    Model.Photo.findOne({
+      date: req.params.date
+    }, function(err, obj) {
+      if (err || !obj) {
+        console.log(chalk.red('err:'), err);
+        console.log('today:', obj);
+        res.send('<strong>error:</strong>', err, '<strong>today:</strong>', obj, 'when looking up date: <strong>', req.query.date, '</strong>');
+      } else {
+        var sendObj = JSON.parse(JSON.stringify(obj));
+        sendObj.image_count = obj.images.length;
+        res.json({
+          today: sendObj
+        });
+      }
+    });
+  })
 
-    // For getting the video and scans back to user
-    .get('/timelapse/month/:month', function(req, res) {
+  // For getting the video and scans back to user
+  .get('/timelapse/month/:month', function(req, res) {
       var month = req.params.month; // 01-12
       console.log(chalk.green.bold('Querying for'));
       console.log(month);
@@ -200,7 +212,41 @@ module.exports = function(db, Model, vimeo) {
               }
             });
           });
+
+        // Check if video is private
+        // if the video is PRIVATE, show = false
+        // if the video is PUBLIC, show = true
+        vimeo.checkVideoPrivacyFromId(final_result.vimeo_final.vimeo_video_id, function(privacy_result) {
+          /*
+           * privacy_result returns as `anybody` or `nobody`
+           */
+          var shouldShow = true;
+          if (privacy_result === 'anybody') {
+            shouldShow = true;
+          } else {
+            shouldShow = false;
+          }
+          Model.Video.findOneAndUpdate({
+            date: date
+          }, {
+            show: shouldShow,
+            updated_at: new Date().getTime()
+          }, {
+            upsert: true
+          }, function(err) {
+            if (err) {
+              console.log(err);
+              return false;
+            } else {
+              console.log('Done updating show switch');
+              return true;
+            }
+          });
+        });
+
       });
+
+
     })
     .get('/scanner/month/:month', function(req, res) {
       var month = req.params.month; // 01-12
@@ -236,6 +282,36 @@ module.exports = function(db, Model, vimeo) {
         });
       });
     })
+    /**
+     * Find Thumbnail for that month
+     */
+    .get('/scanner/thumbnail/:monthYear', function(req, res) {
+      /**
+       * [monthAndYearToFind description]
+       * comes as YYYY-MM
+       */
+      var monthAndYearToFind = req.params.monthYear;
+      console.log(monthAndYearToFind)
+      var r2 = /\-\d{2}/;
+      var r_final = new RegExp(monthAndYearToFind + r2.source);
+      Model.Scan.find({
+        date: {
+          $regex: r_final
+        }
+      }, function(err, result) {
+        if (err) console.warn(err);
+        if (result && result.length > 0) {
+          // console.log(result[0].images[0]);
+          res.json({
+            data: result[0].images[0]
+          })
+        } else {
+          res.json({
+            data: false
+          })
+        }
+      });
+    })
     // For getting VIMEO info
     .get('/vimeo/monthly', function(req, res) {
       // /vimeo/monthly?month=january
@@ -256,7 +332,6 @@ module.exports = function(db, Model, vimeo) {
     .get('/', function(req, res) {
       res.send('You just entered a restricted area. Keep out.');
     });
-
 
   // Finally return app
   return app;

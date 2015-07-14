@@ -161,6 +161,21 @@ body {
 	background: $elGrey;
 }
 
+.grid-content-container {
+	overflow: hidden;
+	.fake-thumbnail {
+		visibility: hidden;
+	}
+	.real-thumbnail {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		padding: 3px;
+		height: 100%;
+		// display: none;
+	}
+}
+
 .share-icons-holder {
 	position: relative;
 	top: 5px;
@@ -235,9 +250,10 @@ body {
 }
 
 .single-item {
+	border: 2px solid #fff;
 	div {
 		width: 100%;
-		height: 500px;
+		height: 600px;
 		background-repeat: no-repeat;
 		background-size: cover;
 		background-position: center center;
