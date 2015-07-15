@@ -13,14 +13,14 @@ angular.module('elbulliApp')
     // Scroll to Technical Detail
     $scope.scrollToTechnical = function() {
       // $uiViewScroll(angular.element('#technical-detail'));
-      $('body').animate({
+      $('html, body').animate({
         scrollTop: $('#technical-detail').offset().top
       });
     };
     // Scroll to Welcome
     $scope.scrollToWelcome = function() {
       // $uiViewScroll(angular.element('#technical-detail'));
-      $('body').animate({
+      $('html, body').animate({
         scrollTop: $('#welcome').offset().top
       });
     };
