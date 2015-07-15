@@ -62,7 +62,7 @@ angular
       TECH_STEP_3_BODY: 'Las imágenes se almacenan en el Microsoft Azure Cloud.',
       TECH_STEP_4_BODY: 'Los vídeos son compartidos con el mundo en Internet.',
       PROJECT_INFO: 'INFORMACIÓN SOBRE EL PROYECTO',
-      POWERED: 'IMPULSADO POR ',
+      POWERED: 'POWERED BY ',
       NAV: {
         ABOUT: 'ACERCA DE',
         VID: 'VIDEO GALERÍA',
