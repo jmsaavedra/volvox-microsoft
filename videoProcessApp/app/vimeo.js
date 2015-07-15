@@ -72,7 +72,7 @@ var vimeoApi = {
  
         var newMetadata = {
           name: title,
-          description: 'Timelapse videos captured at elBulliLab in Barcelona, Spain on '+date+'.  Learn more at http://elbulli.com',
+          description: 'Timelapse videos captured at elBulliLab in Barcelona, Spain on '+date+'.',
           privacy : {
             view: 'anybody'
           }

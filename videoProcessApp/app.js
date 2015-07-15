@@ -125,7 +125,7 @@ function executeVideoProcess(src){
         console.log(chalk.red.inverse('FAILED DAILY VIDEO PROCESS:'), e);
         //if(global.PROCESS_ATTEMPTS < 5 &&  src !== 'GET /start route'){ //quit trying if we initiated this from /start
         if(global.PROCESS_ATTEMPTS < 5){
-	        console.log(chalk.red.bold('Failed on attempt'),global.PROCESS_ATTEMPTS,chalk.yello('.  retrying in a few seconds...'));
+	        console.log(chalk.red.bold('Failed on attempt'),global.PROCESS_ATTEMPTS,chalk.yellow('.  retrying in a few seconds...'));
           clearTimeout(global.DL_WATCHDOG);
           global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000);
         }
