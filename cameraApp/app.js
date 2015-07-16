@@ -113,7 +113,8 @@ watchr.watch({
         console.log(chalk.bold("\n  RECEIVED ALL 4 IMAGES  \n"));
         io.sockets.emit('process_msg', 'All images received from cameras');
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
-        imageProcessQueue.push(latestImages, function (err, file) { //console.log('file: '+file);
+        var currImages = _.pluck(latestImages, 'path');
+        imageProcessQueue.push(currImages, function (err, file) { //console.log('file: '+file);
           if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
         });
       }
