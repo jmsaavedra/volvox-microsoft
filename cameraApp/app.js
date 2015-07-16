@@ -25,6 +25,7 @@ var fs        = require('fs'),
   exec        = require('child_process').exec,
   moment      = require('moment'),
   request     = require('request'),
+  pm2         = require('pm2'),
   cameras     = null,
   port        = 8080,
   processingTake = false,
@@ -34,14 +35,15 @@ var fs        = require('fs'),
 /* GLOBALS */
 global.KEYS             = require(path.join(__dirname, '..', 'AuthKeys'));
 global.RAW_IMG_FOLDER   = path.join(__dirname,'_images-to-upload');
-global.SAVE_IMG_FOLDER  = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/';// 
+global.SAVE_IMG_FOLDER  = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/'; //
 global.chalk            = require('chalk');
+global.UPLOAD_FLAG      = false;
 
 /* Custom Modules */
 var Scheduler   = require('./app/components/scheduler');
 var ImgHandler  = require('./app/components/imageHandler');
 var Cameras     = require('./app/components/cameras');
-
+var Mailer      = require('./app/components/nodemailer');
 
 /* Watcher */
 var watchr = require('watchr');
@@ -66,7 +68,7 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
 
 /* initialize local folders */
 if (!fs.existsSync(global.SAVE_IMG_FOLDER)) fs.mkdirSync(global.SAVE_IMG_FOLDER);
-if (!fs.existsSync(global.RAW_IMG_FOLDER)) fs.mkdirSync(global.RAW_IMG_FOLDER) 
+if (!fs.existsSync(global.RAW_IMG_FOLDER)) fs.mkdirSync(global.RAW_IMG_FOLDER);
 else {
   console.log(chalk.gray('initializing folders... looking for leftover images'));
   var leftoverImages = fs.readdirSync(global.RAW_IMG_FOLDER);
@@ -123,8 +125,18 @@ function snap(){
   console.log('\n------------------\n\n',chalk.green.bold.inverse('  Snap Photo!  ') + chalk.gray.bold('  ||  ')+chalk.cyan.bold('Take #')+takeNumber);
   io.sockets.emit('loading',null);
   cameras.takePhotos(function(e){
-    if(!e) return true
+    if(!e) return true;
     console.log(chalk.red('ERROR takePhotos:'),e);
+    if (takeNumber > 1){
+      Mailer.sendEmail('[elBulli cameraApp] Failed on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
+        if(er) console.log(chalk.red('error sending nodemail: '),er);
+        console.log('>>> QUITTING APP NOW.');
+        process.exit(0);
+      });
+    } else{
+      console.log('trying SNAP() again in 3 secs..');
+      setTimeout(function(){snap();}, 3000);
+    } 
     return false;
   });
 }
@@ -133,24 +145,34 @@ function snap(){
 /* Stop any PTPCamera processes -- this is an auto-launched app on OSX */
 var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) {
   cameras = Cameras(function(e){
-    if(e) console.log(chalk.red('camera setup failed:'), e);   
-    console.log(chalk.gray("camera setup complete"));
-    setupComplete = true;
-    setupSockets();
-    server.listen(port);
+    if(e){
+      console.log(chalk.red('camera setup failed:'), e);   
+      //Mailer.sendEmail('Failed on Startup', 'cameras initialize error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
+      //  if(er) console.log(chalk.red('error sending nodemail: '),er);
+      //console.log('QUITTING APP NOW.');
+      //process.exit(0);
+      console.log('QUITTING APP in 5 seconds...');
+      setTimeout( function(){ process.exit(0);}, 5000);
+      //});
+    } else {
+      console.log(chalk.gray("camera setup complete"));
+      setupComplete = true;
+      setupSockets();
+      server.listen(port);
 
-    console.log();
-    console.log(chalk.white.inverse('  CAMERA APP   Server Running!  '));
-    console.log(chalk.gray.inverse('  HTTP Express Server Running!  '));
-    var listeningString = ' Magic happening on port: '+ port +"  ";
-    console.log(chalk.cyan.inverse(listeningString));
+      console.log();
+      console.log(chalk.white.inverse('  CAMERA APP   Server Running!  '));
+      console.log(chalk.gray.inverse('  HTTP Express Server Running!  '));
+      var listeningString = ' Magic happening on port: '+ port +"  ";
+      console.log(chalk.cyan.inverse(listeningString));
 
-    Scheduler.init(snap, function(timeOfNextSnap){
-      moment.relativeTimeThreshold('s', 55);
-      moment.relativeTimeThreshold('m', 55);
-      io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
-      console.log(chalk.cyan.bold('\n>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap )
-    });
+      Scheduler.init(snap, function(timeOfNextSnap){
+        moment.relativeTimeThreshold('s', 55);
+        moment.relativeTimeThreshold('m', 55);
+        io.sockets.emit('next-snap', moment(Scheduler.getTimeTilNextSnap()).format('DD MMMM YYYY, HH:MM:ss'));
+        console.log(chalk.cyan.bold('\n>>> Time until next snap:'), moment(timeOfNextSnap).from(new Date()),chalk.gray('>>>'), timeOfNextSnap );
+      });
+    }
   });
 });
 

@@ -17,7 +17,10 @@ function ImageHandler(imgPath, cb){
 
 	/* new File Handler instantiated after a file is added to watched folder */
 	console.log(chalk.cyan('Begin Upload Image to Azure:'), path.basename(imgPath));
-	handler.uploadToAzure(imgPath, cb);
+
+	if(global.UPLOAD_FLAG)
+		handler.uploadToAzure(imgPath, cb);
+	else cb(null, path.basename(imgPath), 'UPLOAD_FLAG set to false');
 }
 
 /***
