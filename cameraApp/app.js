@@ -65,7 +65,7 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
       });
     } 
     io.sockets.emit('image_count', serverData.image_count);
-    io.sockets.emit('process_msg', 'Uploaded image #'+path.basename(filePath));
+    io.sockets.emit('process_msg', 'Uploaded image: '+path.basename(newImgPath)+' (image #'+serverData.image_count+')');
     callback(e, savedPath);
   });
 }, 2);
@@ -146,7 +146,7 @@ function snap(){
       });
     } else{
       console.log('trying SNAP() again in 10 secs...');
-      io.sockets.emit('error', e+'\n\nTrying snap again in 10 seconds...');
+      //io.sockets.emit('error', e+'\n\nTrying snap again in 10 seconds...');
       setTimeout(function(){snap();},10000);  
     }
     //}); 
