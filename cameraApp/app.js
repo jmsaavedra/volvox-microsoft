@@ -58,7 +58,11 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
   var newImg = new ImgHandler(newImgPath, function(e, savedPath, serverData){
     if(e){
       console.log(chalk.red('ERROR processing new image:'), e);
-      //TODO: some kind of image upload fail handler
+      Mailer.sendEmail('[elBulli cameraApp] Failed on Image Upload', 'imageProcessQueue error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
+        if(er) console.log(chalk.red('error sending nodemail: '),er);
+        console.log('>>> RESTARTING APP NOW.');
+        process.exit(0);
+      });
     } 
     io.sockets.emit('image_count', serverData.image_count);
     callback(e, savedPath);
@@ -104,10 +108,11 @@ watchr.watch({
       if (imgCt >= cameras.cameras_.length){
         console.log(chalk.bold("\n  RECEIVED 4 IMAGES  \n"));
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
+        imageProcessQueue.push(latestImages, function (err, file) { //console.log('file: '+file);
+          if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
+        });
       }
-      imageProcessQueue.push(filePath, function (err, file) { //console.log('file: '+file);
-        if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
-      });
+      
     } //else console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
   }
 });
@@ -135,7 +140,7 @@ function snap(){
       });
     } else{
       console.log('trying SNAP() again in 3 secs..');
-      setTimeout(function(){snap();}, 3000);
+      setTimeout(function(){snap();},15000);
     } 
     return false;
   });
