@@ -31,6 +31,7 @@ socket.on('finished', function(latestImages, date, nextSnapTime){
   initCountdown(nextSnapTime);
 
   $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
+  $('#errorDialog').modal('hide');
   $('#processingDialog').modal('hide');
   $('#restartDialog').modal('hide');
 });
@@ -43,6 +44,16 @@ socket.on('loading', function(){
 });
 
 
+socket.on('error', function(msg){
+  console.log('received error...',msg);
+  
+  $('#processingDialog').modal('hide');
+  $('#restartDialog').modal('hide');
+  $('#errorDialog').modal('show');
+  $('.error-msg').text(msg);
+});
+
+
 
 socket.on('init', function(latestImages, date, nextSnapTime){
   console.log("socket: finished");
@@ -52,6 +63,7 @@ socket.on('init', function(latestImages, date, nextSnapTime){
   loadImages(0, function(){});
   
   $('.date').html('<strong>Today\'s Date</strong>:&emsp;'+date);
+  $('#errorDialog').modal('hide');
   $('#processingDialog').modal('hide');
   $('#restartDialog').modal('hide');
 });

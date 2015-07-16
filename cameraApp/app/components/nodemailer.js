@@ -23,7 +23,7 @@ var Mailer = {
 	sendEmail: function(subject, body, cb){
 		var email = {
 			from: MAILER_KEYS.OPTIONS.fromCam,
-		    to: MAILER_KEYS.OPTIONS.to,
+		    to: 'joe.m.saavedra@gmail.com',//MAILER_KEYS.OPTIONS.to,
 		    subject: subject,
 		    text: body
 		};

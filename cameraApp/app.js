@@ -37,7 +37,7 @@ global.KEYS             = require(path.join(__dirname, '..', 'AuthKeys'));
 global.RAW_IMG_FOLDER   = path.join(__dirname,'_images-to-upload');
 global.SAVE_IMG_FOLDER  = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/'; //
 global.chalk            = require('chalk');
-global.UPLOAD_FLAG      = true;
+global.UPLOAD_FLAG      = false;
 
 /* Custom Modules */
 var Scheduler   = require('./app/components/scheduler');
@@ -134,8 +134,8 @@ function snap(){
     console.log(chalk.red('ERROR takePhotos:'),e);
     //rimraf(path.join(global.RAW_IMG_FOLDER, '*.jpg'), function(_e){
     //  if(_e) console.log('error deleting worthless images: '+_e);
-    if (takeNumber > 1){
-      Mailer.sendEmail('[elBulli cameraApp] Failed on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
+    if (takeNumber > 3){
+      Mailer.sendEmail('[elBulli cameraApp] Failing on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
         console.log('>>> QUITTING APP in 10 secs...');
         setTimeout(function(){
@@ -144,6 +144,7 @@ function snap(){
       });
     } else{
       console.log('trying SNAP() again in 10 secs...');
+      io.sockets.emit('error', e+'\n\nTrying snap again in 10 seconds...');
       setTimeout(function(){snap();},10000);  
     }
     //}); 
