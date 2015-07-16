@@ -147,13 +147,11 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
   cameras = Cameras(function(e){
     if(e){
       console.log(chalk.red('camera setup failed:'), e);   
-      //Mailer.sendEmail('Failed on Startup', 'cameras initialize error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
-      //  if(er) console.log(chalk.red('error sending nodemail: '),er);
-      //console.log('QUITTING APP NOW.');
-      //process.exit(0);
-      console.log('QUITTING APP in 5 seconds...');
-      setTimeout( function(){ process.exit(0);}, 5000);
-      //});
+      Mailer.sendEmail('Failed on Startup', 'cameras initialize error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
+        if(er) console.log(chalk.red('error sending nodemail: '),er);
+        console.log('QUITTING APP in 5 seconds...');
+        setTimeout( function(){ process.exit(0);}, 5000);
+      });
     } else {
       console.log(chalk.gray("camera setup complete"));
       setupComplete = true;
