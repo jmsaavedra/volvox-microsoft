@@ -62,20 +62,24 @@ angular
      * @param  {[String]} dateString [MMDDYYYY]
      * @return {[String]}            [description]
      **/
-    service.getMonthlyScanThumb = function(dateString, isVideo, scopeIndex) {
-      var url = (isVideo) ? host + ':8080/timelapse/thumbnail/' : host + ':8080/scanner/thumbnail/';
-      $http.get(url + moment(dateString, 'MMDDYYYY').format('YYYY-MM'))
-        .success(function(result) {
-          // console.log(result.data);
-          if(result.data === false) {
-            $rootScope.months[scopeIndex].image = 'images/grey_bg.png'
-          } else {
-            $rootScope.months[scopeIndex].image = result.data
-          }
-        })
-        .error(function(err) {
-          return 'images/grey_bg.png'
-        });
+    service.getMonthlyThumb = function(dateString, isVideo, scopeIndex) {
+      if (moment().unix() - moment(dateString, 'MMDDYYYY').unix() >= 0) {
+        var suffix = (isVideo) ? 'imageVideo' : 'imageScan';
+        var url = (isVideo) ? host + ':8080/timelapse/thumbnail/' : host + ':8080/scanner/thumbnail/';
+        $http.get(url + moment(dateString, 'MMDDYYYY').format('YYYY-MM'))
+          .success(function(result) {
+            // console.log(result.data);
+            if (result.data === false) {
+              $rootScope.months[scopeIndex][suffix] = 'images/grey_bg.png';
+            } else {
+              $rootScope.months[scopeIndex][suffix] = result.data;
+            }
+          })
+          .error(function(err) {
+            return 'images/grey_bg.png';
+          });
+      }
+
     };
 
     return service;

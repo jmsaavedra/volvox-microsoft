@@ -61,6 +61,7 @@ var videoSchema = new Schema({
     }
   },
   thumbnail: String,
+  quad_thumbnail: String,
   date: {
     type: String,
     default: moment().format('YYYY-MM-DD')

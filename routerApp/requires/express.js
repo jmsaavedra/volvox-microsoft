@@ -184,6 +184,24 @@ module.exports = function(Model, vimeo) {
             // console.log(chalk.green('Vimeo result'));
             // console.log(vimeo_result);
             var description = vimeo_result.description;
+            var img = vimeo_result.pictures.sizes[2].link || '';
+            // Update video quad_thumbnail
+            // if it's not yet inserted
+            if (!final_result.quad_thumbnail) {
+              Model.Video.findOneAndUpdate({
+                date: date
+              }, {
+                quad_thumbnail: img
+              }, {
+                upsert: true
+              }, function(err) {
+                if (err) {
+                  console.log(err);
+                } else {
+                  console.log('Done updating quad_thumbnail');
+                }
+              });
+            }
             res.json({
               data: result,
               description: description
@@ -283,7 +301,7 @@ module.exports = function(Model, vimeo) {
       });
     })
     /**
-     * Find Thumbnail for that month
+     * Find Scanner Thumbnail for that month
      */
     .get('/scanner/thumbnail/:monthYear', function(req, res) {
       /**
@@ -312,8 +330,36 @@ module.exports = function(Model, vimeo) {
         }
       });
     })
-    // For getting VIMEO info
-    .get('/vimeo/monthly', function(req, res) {
+
+  /**
+   * Find Video Thumbnail for that month 
+   */
+  .get('/timelapse/thumbnail/:monthYear', function(req, res) {
+    var monthAndYearToFind = req.params.monthYear;
+    console.log(monthAndYearToFind)
+    var r2 = /\-\d{2}/;
+    var r_final = new RegExp(monthAndYearToFind + r2.source);
+    Model.Video.find({
+      date: {
+        $regex: r_final
+      }
+    }, function(err, result) {
+      if (err) console.warn(err);
+      if (result && result.length > 0) {
+        // console.log(result[0].images[0]);
+        res.json({
+          data: result[0].quad_thumbnail
+        })
+      } else {
+        res.json({
+          data: false
+        })
+      }
+    });
+  })
+
+  // For getting VIMEO info
+  .get('/vimeo/monthly', function(req, res) {
       // /vimeo/monthly?month=january
       var month = req.query.month;
       vimeo.getMonthlyVideos(month, function(data) {
