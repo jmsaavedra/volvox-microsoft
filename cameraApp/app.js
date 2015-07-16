@@ -107,13 +107,13 @@ watchr.watch({
       imgCt++;
       console.log(chalk.green('New File Added, imgCt:'),imgCt,': ',path.basename(filePath));
       io.sockets.emit('process_msg', 'Received camera image: '+path.basename(filePath));
-      latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
+      latestImages.push({camera: imgCt, rawPath: filePath, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
         console.log(chalk.bold("\n  RECEIVED ALL 4 IMAGES  \n"));
         io.sockets.emit('process_msg', 'All images received from cameras');
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
-        var currImages = _.pluck(latestImages, 'path');
+        var currImages = _.pluck(latestImages, 'rawPath');
         imageProcessQueue.push(currImages, function (err, file) { //console.log('file: '+file);
           if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
         });
@@ -227,13 +227,13 @@ var setupSockets = function(){
 
 var getLatestImages = function(){
   var _latestImages = _.sortBy(latestImages, function(name){return name;});
-  return _latestImages
-}
+  return _latestImages;
+};
 
 var isJson = function(str){
   try {
       JSON.parse(str);
   } catch (e) {
-      return false
+      return false;
   } return true;
-}
+};
