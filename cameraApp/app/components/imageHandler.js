@@ -39,7 +39,7 @@ handler.uploadToAzure = function(img, callb){
 			callb(e, path.basename(img), JSON.parse(data));
 		});
 	});
-}
+};
 
 /***
 *  UPDATE our database with a POST to our server.
@@ -89,7 +89,7 @@ handler.postDataToElBulli = function(data, callback){
 	// execute post
 	post_req.write(post_data);
 	post_req.end();
-}
+};
 
 
 module.exports = ImageHandler;

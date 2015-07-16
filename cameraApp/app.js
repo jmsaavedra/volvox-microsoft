@@ -9,9 +9,9 @@
 */
 
 process.env.UV_THREADPOOL_SIZE = 72; //to make sure we don't run out of threads on snap
-console.log('\n\n\n=============================================================')
+console.log('\n\n\n=============================================================');
 console.log('\t\t      Launching Camera App');
-console.log('=============================================================\n')
+console.log('=============================================================\n');
 
 var fs        = require('fs'),
   path        = require('path'),
@@ -37,7 +37,7 @@ global.KEYS             = require(path.join(__dirname, '..', 'AuthKeys'));
 global.RAW_IMG_FOLDER   = path.join(__dirname,'_images-to-upload');
 global.SAVE_IMG_FOLDER  = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/'; //
 global.chalk            = require('chalk');
-global.UPLOAD_FLAG      = false;
+global.UPLOAD_FLAG      = true;
 
 /* Custom Modules */
 var Scheduler   = require('./app/components/scheduler');
@@ -63,10 +63,11 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
         console.log('>>> EXITING APP IN 10 seconds.');
         setTimeout(function(){process.exit(0);},10000);
       });
-    } 
-    io.sockets.emit('image_count', serverData.image_count);
-    io.sockets.emit('process_msg', 'Uploaded image: '+path.basename(newImgPath)+' (image #'+serverData.image_count+')');
-    callback(e, savedPath);
+    } else {
+      io.sockets.emit('image_count', serverData.image_count);
+      io.sockets.emit('process_msg', 'Uploaded: '+path.basename(newImgPath)+' (#'+serverData.image_count+')');
+      callback(e, savedPath);
+    }
   });
 }, 2);
 
@@ -110,6 +111,7 @@ watchr.watch({
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
         console.log(chalk.bold("\n  RECEIVED ALL 4 IMAGES  \n"));
+        io.sockets.emit('process_msg', 'All images received from cameras');
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
         imageProcessQueue.push(latestImages, function (err, file) { //console.log('file: '+file);
           if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
@@ -136,7 +138,7 @@ function snap(){
     console.log(chalk.red('ERROR takePhotos:'),e);
     //rimraf(path.join(global.RAW_IMG_FOLDER, '*.jpg'), function(_e){
     //  if(_e) console.log('error deleting worthless images: '+_e);
-    if (takeNumber > 3){
+    if (takeNumber > 2){
       Mailer.sendEmail('[elBulli cameraApp] Failing on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
         console.log('>>> QUITTING APP in 10 secs...');
@@ -146,7 +148,7 @@ function snap(){
       });
     } else{
       console.log('trying SNAP() again in 10 secs...');
-      //io.sockets.emit('error', e+'\n\nTrying snap again in 10 seconds...');
+      io.sockets.emit('error', e+'\n\nTrying snap again in 10 seconds...');
       setTimeout(function(){snap();},10000);  
     }
     //}); 
