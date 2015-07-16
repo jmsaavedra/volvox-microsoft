@@ -65,6 +65,7 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
       });
     } 
     io.sockets.emit('image_count', serverData.image_count);
+    io.sockets.emit('process_msg', 'Uploaded image #'+path.basename(filePath));
     callback(e, savedPath);
   });
 }, 2);
@@ -104,6 +105,7 @@ watchr.watch({
     if(changeType === 'create'){ 
       imgCt++;
       console.log(chalk.green('New File Added, imgCt:'),imgCt,': ',path.basename(filePath));
+      io.sockets.emit('process_msg', 'Received camera image: '+path.basename(filePath));
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){

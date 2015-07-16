@@ -39,8 +39,14 @@ socket.on('finished', function(latestImages, date, nextSnapTime){
 
 socket.on('loading', function(){
   console.log('received loading...');
+  $('.loading-msg').text('');
   clearInterval(countdownInterval);
+  $('#errorDialog').modal('hide');
   $('#processingDialog').modal('show');
+});
+
+socket.on('process_msg', function(msg){
+  $('.loading-msg').append("<br>√ "+msg);
 });
 
 
