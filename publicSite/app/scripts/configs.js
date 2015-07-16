@@ -25,11 +25,11 @@ angular
     // English
     $translateProvider.translations('en', {
       MAIN_TITLE: 'Welcome to elBulliLab Timelapse',
-      MAIN_DESC: 'Documenting information is one of the most important events in a creative process, for that reason, it this important to archive everything that happens in elBulliLab. Our time-lapse integrates photography and innovative programming to tell the history and evolution  from four different views of this fascinating project for 365 days.<br><br>Never miss a moment of this epic story. Come join us in the time-lapse!',
+      MAIN_DESC: 'Documenting information is one of the most important elements of the creative process. For that reason, it is important to archive everything that happens in elBulliLab. Our time-lapse integrates photography and innovative programming to tell the history and evolution from four different views of this fascinating project over 365 days.<br><br>Never miss a moment of this epic story. Come join us in the time-lapse!',
       TECH_TITLE: 'The Process of Capturing elBulliab',
-      TECH_DESC: 'These daily digest videos captured from four different cameras reveal the fascinating, interesting and unnoticed perspectives that occur in elBullilab.  Every night the still photographs are automatically post-processed to create a 30 seconds motion clip of that day in  fast-forward time which can be played over and over again.<br><br>Take a look, discover our day-to-day, and meet the people who this mapping possible.',
+      TECH_DESC: 'These daily digest videos captured from four different cameras reveal the fascinating, interesting and unnoticed perspectives that occur in elBullilab.  Every night the still photographs are automatically post-processed to create a 30 seconds motion clip of that day in  fast-forward time which can be played over and over again.<br><br>Take a look, discover our day-to-day, and meet the people who made this mapping possible.',
       TECH_STEP_HEAD: 'Step',
-      TECH_STEP_1_BODY: 'Each camera is strategically placed to capture a still photograph in the lab every 60 seconds between the working hours of 9:00 am to 8:00',
+      TECH_STEP_1_BODY: 'Each camera is strategically placed to capture a still photograph in the lab every 60 seconds between the working hours of 9:00 am to 9:00 pm',
       TECH_STEP_2_BODY: 'Each produce 720 photographs per day.',
       TECH_STEP_3_BODY: 'Images are stored on Microsoft Azure cloud.',
       TECH_STEP_4_BODY: 'Videos shared worldwide on the Internet.',
@@ -57,7 +57,7 @@ angular
       TECH_TITLE: 'El proceso de captura elBullilab',
       TECH_DESC: 'Estos videos timelpase revelan las perspectivas fascinantes, interesantes y tal vez, inadvertidas que se producen en elBullilab. Cada noche, las fotografias fijas son automáticamente procesadas para crear un clip video de 30 segundos de ese día en avance rápido que se puede mirar una y otra vez. Echa un vistazo, descubre nuestro día a día, y conocer a la gente que hace esta creativa cartografía posible.',
       TECH_STEP_HEAD: 'Paso',
-      TECH_STEP_1_BODY: 'Cada cámara se coloca estratégicamente una fotografía del laboratorio cada 60 segundos dentro de los horarios de trabajo del 9h de la mañana a las 20h de las tarde.',
+      TECH_STEP_1_BODY: 'Cada cámara se coloca estratégicamente una fotografía del laboratorio cada 60 segundos dentro de los horarios de trabajo del 9h de la mañana a las 21h de las tarde.',
       TECH_STEP_2_BODY: 'Cada cámara produce 720 fotografías por día.',
       TECH_STEP_3_BODY: 'Las imágenes se almacenan en el Microsoft Azure Cloud.',
       TECH_STEP_4_BODY: 'Los vídeos son compartidos con el mundo en Internet.',
