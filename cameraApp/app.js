@@ -37,7 +37,7 @@ global.KEYS             = require(path.join(__dirname, '..', 'AuthKeys'));
 global.RAW_IMG_FOLDER   = path.join(__dirname,'_images-to-upload');
 global.SAVE_IMG_FOLDER  = '/home/elbulli/Desktop/raw-camera-images';//'/Users/jmsaavedra/Desktop/'; //
 global.chalk            = require('chalk');
-global.UPLOAD_FLAG      = false;
+global.UPLOAD_FLAG      = true;
 
 /* Custom Modules */
 var Scheduler   = require('./app/components/scheduler');
@@ -60,8 +60,8 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
       console.log(chalk.red('ERROR processing new image:'), e);
       Mailer.sendEmail('[elBulli cameraApp] Failed on Image Upload', 'imageProcessQueue error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
-        console.log('>>> RESTARTING APP NOW.');
-        process.exit(0);
+        console.log('>>> EXITING APP IN 10 seconds.');
+        setTimeout(function(){process.exit(0);},10000);
       });
     } 
     io.sockets.emit('image_count', serverData.image_count);
@@ -107,7 +107,7 @@ watchr.watch({
       latestImages.push({camera: imgCt, path: path.join(today,path.basename(filePath))});
       /* add this image to the processing queue */
       if (imgCt >= cameras.cameras_.length){
-        console.log(chalk.bold("\n  RECEIVED 4 IMAGES  \n"));
+        console.log(chalk.bold("\n  RECEIVED ALL 4 IMAGES  \n"));
         // ImageProcessQueue.push([these4images], function(err){ processingTake = false; });
         imageProcessQueue.push(latestImages, function (err, file) { //console.log('file: '+file);
           if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
@@ -132,16 +132,21 @@ function snap(){
   cameras.takePhotos(function(e){
     if(!e) return true;
     console.log(chalk.red('ERROR takePhotos:'),e);
+    //rimraf(path.join(global.RAW_IMG_FOLDER, '*.jpg'), function(_e){
+    //  if(_e) console.log('error deleting worthless images: '+_e);
     if (takeNumber > 1){
       Mailer.sendEmail('[elBulli cameraApp] Failed on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
         console.log('>>> QUITTING APP in 10 secs...');
-        setTimeout(function(){process.exit(0);},10000);
+        setTimeout(function(){
+          process.exit(0);
+        },10000);
       });
     } else{
       console.log('trying SNAP() again in 10 secs...');
-      setTimeout(function(){snap();},10000);
-    } 
+      setTimeout(function(){snap();},10000);  
+    }
+    //}); 
     return false;
   });
 }
@@ -210,7 +215,6 @@ var setupSockets = function(){
         console.log(chalk.red.bold('GOT RESTART FROM BROWSER >>> EXITING NOW.'));
         process.exit(0);
     });
-
   });
 };
 
