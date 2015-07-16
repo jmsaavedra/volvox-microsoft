@@ -89,10 +89,11 @@ imageProcessQueue.drain = function() {
     console.log(chalk.gray.bold('__________________________________________________________\n'));
     console.log(chalk.green.bold('All images have been uploaded and databased for take #')+takeNumber);
     console.log(chalk.gray.bold('__________________________________________________________\n'));
-    var timeTilNext = moment(Scheduler.getTimeTilNextSnap());//.format('DD MMMM YYYY, HH:MM:ss');
-    
-    console.log(chalk.cyan.bold('>>> Time until next snap:'), timeTilNext.from(new Date()),chalk.gray('>>>'), timeTilNext.format('DD MMM YYYY, hh:mm:ss') );
-    io.sockets.emit('finished', getLatestImages(), today, timeTilNext);
+    if(setupComplete){
+      var timeTilNext = moment(Scheduler.getTimeTilNextSnap());//.format('DD MMMM YYYY, HH:MM:ss');
+      console.log(chalk.cyan.bold('>>> Time until next snap:'), timeTilNext.from(new Date()),chalk.gray('>>>'), timeTilNext.format('DD MMM YYYY, hh:mm:ss') );
+      io.sockets.emit('finished', getLatestImages(), today, timeTilNext);
+    }
 };
 
 
@@ -112,7 +113,6 @@ watchr.watch({
           if(err) console.log(chalk.red('ERROR processImage: '), err); //console.log('finished processing image.'.green);
         });
       }
-      
     } //else console.log('changeType: '.gray+changeType+' filePath: '.gray+filePath);
   }
 });
