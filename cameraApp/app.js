@@ -135,12 +135,12 @@ function snap(){
     if (takeNumber > 1){
       Mailer.sendEmail('[elBulli cameraApp] Failed on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
-        console.log('>>> QUITTING APP NOW.');
-        process.exit(0);
+        console.log('>>> QUITTING APP in 10 secs...');
+        setTimeout(function(){process.exit(0);},10000);
       });
     } else{
-      console.log('trying SNAP() again in 3 secs..');
-      setTimeout(function(){snap();},15000);
+      console.log('trying SNAP() again in 10 secs...');
+      setTimeout(function(){snap();},10000);
     } 
     return false;
   });
