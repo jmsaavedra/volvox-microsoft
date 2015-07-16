@@ -43,27 +43,32 @@ module.exports.init = function(){
 	        change: function(changeType,filePath,fileCurrentStat,filePreviousStat){
 	        	console.log('\n-------------- FOLDER CHANGED ----------------'.gray.bold);
 	            // console.log('verbose change event info: '+arguments);
-	            if (arguments[0] === 'create'){
+	            if (changeType === 'create'){
 	            	
 	            	/***
 	            	/* A NEW FILE HAS BEEN ADDED TO THE FOLDER
 	            	*/
 	            	console.log('>> new local file created: '.cyan);
-	            	console.log('\t'+arguments[1]);
-	            	var fname = path.basename(arguments[1]);
+	            	console.log('\t'+filePath);
+	            	var raw_fname = path.basename(filePath);
+	            	var fname = raw_fname.replace(/ /g, "-");
 
-					azureFiler.uploadImage(arguments[1], fname, function(e, data){
-						if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
-						if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
-						
-						console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
+	            	fs.stat(filePath, function(e, stats){
+	            		if(stats.size < 7500000){
+	            			azureFiler.uploadImage(filePath, fname, function(e, data){
+								if(e) return console.log('ERROR uploading Scan: '.red.bold+e);
+								if(!data) return console.log('NO DATA RETURNED when uploading Scan: '.red.bold+e);
+								
+								console.log('About to POST to El Bulli Server: '.yellow+JSON.stringify(data,null,'\t'));
 
-						//*** send this data to the routing server to save to DB: ***//
-						postData(data);
-					});
+								//*** send this data to the routing server to save to DB: ***//
+								postData(data);
+							});
+	            		} else console.log('file too large, not uploading.'.red.bold, stats.size/1000, ' kb');
+	            	});
 	            }
 
-	            else if (arguments[0] === 'delete'){
+	            else if (changeType === 'delete'){
 
 	            	/* FILE HAS BEEN DELETED */	            	
 	            	console.log('>> file deleted: '.red+filePath);
