@@ -22,6 +22,10 @@ function Cameras(_cb){
       console.log(chalk.red.inverse(" >>> NO CAMERAS FOUND <<< "));
       return _cb("no cameras found");
     }
+    if (list.length < 5){
+      console.log(chalk.red.inverse(" >>> NOT ALL CAMERAS FOUND <<< "));
+      return _cb("only "+list.length+" cameras found!");   
+    }
     // var camera = list[0];
     self.cameras_ = list;
 
