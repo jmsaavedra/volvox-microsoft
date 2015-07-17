@@ -18,7 +18,7 @@
 					<div ng-repeat="month in months | limitFromTo:0:7" ng-class="{dim: !month.isActive}" class="col-md-2 col-xs-4 thumbnail-container">
 						<a class="grid-content-container" ui-sref="photo.month({lang: lang, year: month.year, month: month.month})">
 							<img class="fake-thumbnail" src="images/grey_bg.png" alt="" width="100%">
-							<img class="real-thumbnail" ng-src="{{month.imageScan || 'images/grey_bg.png'}}" width="100%" alt="month.month">
+							<div class="real-thumbnail" ng-style="getBackgroundStyle(month.imageScan)"></div>
 							<h3>{{month.month}}</h3>
 						</a>
 					</div>
@@ -31,7 +31,7 @@
 					<div ng-repeat="month in months | limitFromTo:7:12" ng-class="{dim: !month.isActive}" class="col-md-2 col-xs-4 thumbnail-container">
 						<a class="grid-content-container" ui-sref="photo.month({lang: lang, year: month.year, month: month.month})">
 							<img class="fake-thumbnail" src="images/grey_bg.png" alt="" width="100%">
-							<img class="real-thumbnail" ng-src="{{month.imageScan || 'images/grey_bg.png'}}" width="100%" alt="month.month">
+							<div class="real-thumbnail" ng-style="getBackgroundStyle(month.imageScan)"></div>
 							<h3>{{month.month}}</h3>
 						</a>
 					</div>

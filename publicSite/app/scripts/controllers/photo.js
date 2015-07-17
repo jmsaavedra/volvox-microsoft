@@ -11,6 +11,18 @@ var moment = moment || {};
 angular.module('elbulliApp')
   .controller('PhotoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
     $rootScope.title = 'elBulliLab Scan Gallery';
+    $scope.getBackgroundStyle = function(path) {
+      console.log(path);
+      if (path) {
+        return {
+          'background-image': 'url(' + path + ')'
+        };
+      } else {
+        return {
+          'background-image': 'url(images/grey_bg.png)'
+        };
+      }
+    };
   })
   .controller('PhotoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $state) {
     // console.log('Photo month');

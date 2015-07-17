@@ -168,10 +168,12 @@ body {
 	}
 	.real-thumbnail {
 		position: absolute;
-		top: 0px;
+		top: 3px;
 		left: 0px;
-		padding: 3px;
-		height: 100%;
+		width: 97%;
+		height: 97%;
+		background-size: cover;
+		background-position: center center;
 		// display: none;
 	}
 }
@@ -199,7 +201,7 @@ body {
 
 .gallery-grid {
 	div {
-		padding: 3px;
+		padding: 3px 6px 3px 0px;
 	}
 }
 .grid-content-container {

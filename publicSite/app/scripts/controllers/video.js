@@ -12,6 +12,18 @@ angular.module('elbulliApp')
   .controller('VideoYearCtrl', function($scope, $rootScope, $timeout, $stateParams, $state) {
     // console.log('Video year');
     $rootScope.title = 'elBulliLab Video Gallery';
+    $scope.getBackgroundStyle = function(path) {
+      console.log(path);
+      if (path) {
+        return {
+          'background-image': 'url(' + path + ')'
+        };
+      } else {
+        return {
+          'background-image': 'url(images/grey_bg.png)'
+        };
+      }
+    };
   })
   .controller('VideoMonthCtrl', function($scope, $rootScope, $stateParams, Server, $timeout, $state) {
     // console.log('Video month');
@@ -19,6 +31,7 @@ angular.module('elbulliApp')
     $scope.thisMonth = moment($stateParams.year + '-' + $stateParams.month + '-01').format('MMMM, YYYY');
     $rootScope.title = 'elBulliLab Vide Gallery ' + $scope.thisMonth;
     $scope.isInProgress = ($stateParams.month === moment().format('MM')) ? true : false;
+
     // console.log($scope.isInProgress);
     // Get Videos for this month
     Server.getMonthlyAsset(
@@ -55,14 +68,14 @@ angular.module('elbulliApp')
       $('#vimeo_final').attr({
         // height: $('#vimeo_final').width() * 9 / 16
         height: function() {
-          if(showArea > 650) {
+          if (showArea > 650) {
             return 650;
           } else {
             return showArea;
           }
         },
         width: function() {
-          if((showArea * 16 / 9) > $('#video_resize').width()) {
+          if ((showArea * 16 / 9) > $('#video_resize').width()) {
             return '100%';
           } else {
             return showArea * 16 / 9;
