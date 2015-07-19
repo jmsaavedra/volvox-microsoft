@@ -98,4 +98,8 @@ angular
       imageScan: Server.getMonthlyThumb('07012016', false, 13),
       isActive: (moment().unix() - moment('07012016', 'MMDDYYYY').unix() >= 0) ? true : false
     }];
+
+    setTimeout(function() {
+      console.log($rootScope.months)
+    }, 10000)
   });

@@ -9,7 +9,7 @@
  * Services module of the application.
  */
 var moment = moment || {};
-var DEBUG = false;
+var DEBUG = true;
 var host = (DEBUG) ? 'http://localhost' : 'http://elbulliweb.cloudapp.net';
 
 angular
@@ -68,7 +68,7 @@ angular
         var url = (isVideo) ? host + ':8080/timelapse/thumbnail/' : host + ':8080/scanner/thumbnail/';
         $http.get(url + moment(dateString, 'MMDDYYYY').format('YYYY-MM'))
           .success(function(result) {
-            // console.log(result.data);
+            console.log(result.data);
             if (result.data === false) {
               $rootScope.months[scopeIndex][suffix] = 'images/grey_bg.png';
             } else {

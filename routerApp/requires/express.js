@@ -336,7 +336,7 @@ module.exports = function(Model, vimeo) {
    */
   .get('/timelapse/thumbnail/:monthYear', function(req, res) {
     var monthAndYearToFind = req.params.monthYear;
-    console.log(monthAndYearToFind)
+    // console.log(monthAndYearToFind)
     var r2 = /\-\d{2}/;
     var r_final = new RegExp(monthAndYearToFind + r2.source);
     Model.Video.find({
@@ -345,6 +345,8 @@ module.exports = function(Model, vimeo) {
       }
     }, function(err, result) {
       if (err) console.warn(err);
+      // console.log('QT:::::::::');
+      // console.log(result);
       if (result && result.length > 0) {
         // console.log(result[0].images[0]);
         res.json({
