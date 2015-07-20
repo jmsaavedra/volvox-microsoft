@@ -99,6 +99,7 @@ function initScheduler(){
   var processTimeout = later.setTimeout(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
+      console.log('>>> starting processing for date: '+global.DATE_TODAY);
       executeVideoProcess('scheduler');
     }, processSched);
   var nextProcessTime = later.schedule(processSched).nextRange(1, new Date())[0];
@@ -135,6 +136,7 @@ function executeVideoProcess(src){
         console.log(chalk.green.bold.inverse('COMPLETED PROCESSING OF TODAY\'S VIDEOS. '), chalk.green.bold('\nTOOK'), global.PROCESS_ATTEMPTS,chalk.green.bold('ATTEMPTS.\n'), chalk.gray.bold('\n========================================================================\n\n'));
         global.PROCESS_ATTEMPTS = 0;
         global.IN_PROCESS = false;
+        initScheduler();
       } 
     });
   };
