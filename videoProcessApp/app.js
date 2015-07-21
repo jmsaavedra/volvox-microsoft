@@ -55,13 +55,20 @@ app.use(express.static(__dirname+ '/_process-files'));
 * ==============================================
 *
 */
-app.get('/start', function(req, res){
-  console.log(chalk.green('got start GET: '),req.query);
-  if(!req.query.date){
-    console.log(chalk.red('/start GET is missing date query.'));
-    return res.send('ERROR. To execute a date, format your query as such: <br><br><strong> /start?date=2015-MM-DD</strong>');
+
+app.get('/start', function(req,res){
+  console.log(chalk.red('/start GET is missing date query.'));
+  return res.send('ERROR: missing date. To execute a date, format your query as such: <br><br><strong> /start/2015-MM-DD</strong>');  
+});
+
+app.get('/start/:date', function(req, res){
+  
+  if( moment(req.params.date, "YYYY-MM-DD", true).isValid() === false){
+    console.log(chalk.red('got invalid date:'), req.params.date);
+    return res.send('ERROR. To execute a date, format your query as such: <br><br><strong> /start/2015-MM-DD</strong>');  
   }
-  global.DATE_TODAY = req.query.date;
+  console.log(chalk.green('got start/:date GET :: '),req.params);
+  global.DATE_TODAY = req.params.date;
   if(!global.IN_PROCESS){
     global.IN_PROCESS = true;
     executeVideoProcess('GET /start route');
@@ -80,7 +87,7 @@ http.createServer(app).listen(port, function(){
   console.log(chalk.white.bold.inverse('  Video Process Server Booting  '));
   var listeningString = ' Magic happening on port: '+ port +"  ";
   console.log(chalk.cyan.inverse(listeningString));
-  initScheduler();
+  initScheduler(); 
 });
 
 
@@ -94,14 +101,16 @@ function initScheduler(){
   later.date.localTime(); // use local time
   console.log(chalk.gray.bold('local time:'), new Date());
 
-  // var processRecur = later.parse.recur().on('21:01:00').time().onWeekday(); /* SHOWTIME */
-  var processSched = later.parse.recur().on('21:05:00').time().onWeekday(); /* DEVTIME */
-  var processTimeout = later.setTimeout(
+  //var processSched = later.parse.recur().on('21:05:00').time().onWeekday(); /* DEVTIME */
+  var processSched = later.parse.recur().on('21:02:30').time().onWeekday(); /* SHOWTIME */
+
+  var processInterval = later.setInterval(
     function() { 
       global.DATE_TODAY= moment().format('YYYY-MM-DD');
       console.log('>>> starting processing for date: '+global.DATE_TODAY);
       executeVideoProcess('scheduler');
     }, processSched);
+
   var nextProcessTime = later.schedule(processSched).nextRange(1, new Date())[0];
   console.log(chalk.cyan.bold('\n>>> next video process will happen'), moment(nextProcessTime).from(new Date()), chalk.gray('>>>'),nextProcessTime);
 }
@@ -136,7 +145,6 @@ function executeVideoProcess(src){
         console.log(chalk.green.bold.inverse('COMPLETED PROCESSING OF TODAY\'S VIDEOS. '), chalk.green.bold('\nTOOK'), global.PROCESS_ATTEMPTS,chalk.green.bold('ATTEMPTS.\n'), chalk.gray.bold('\n========================================================================\n\n'));
         global.PROCESS_ATTEMPTS = 0;
         global.IN_PROCESS = false;
-        initScheduler();
       } 
     });
   };
