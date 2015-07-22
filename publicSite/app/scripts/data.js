@@ -17,8 +17,8 @@ angular
       year: 2015,
       month: '07',
       imageVideo: Server.getMonthlyThumb('07012015', true, 0),
-      imageScan: Server.getMonthlyThumb('07002015', false, 0),
-      isActive: (moment().unix() - moment('00012015', 'MMDDYYYY').unix() >= 0) ? true : false
+      imageScan: Server.getMonthlyThumb('07012015', false, 0),
+      isActive: (moment().unix() - moment('07012015', 'MMDDYYYY').unix() >= 0) ? true : false
     },{
       year: 2015,
       month: '08',
