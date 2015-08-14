@@ -145,10 +145,12 @@ function executeVideoProcess(src){
         console.log(chalk.green.bold.inverse('COMPLETED PROCESSING OF TODAY\'S VIDEOS. '), chalk.green.bold('\nTOOK'), global.PROCESS_ATTEMPTS,chalk.green.bold('ATTEMPTS.\n'), chalk.gray.bold('\n========================================================================\n\n'));
         global.PROCESS_ATTEMPTS = 0;
         global.IN_PROCESS = false;
+        console.log(chalk.gray('resetting app now.'));
+        process.exit(0);
       } 
     });
   };
-  /* run this now! */
+  /* setup watchdog */
   global.DL_WATCHDOG = setTimeout(global.DL_PROCESS, 6000); //shouldn't take more than 6 secs to DL any 1 image.
 }
 
