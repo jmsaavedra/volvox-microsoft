@@ -53,11 +53,11 @@ angular
     // Spanish
     $translateProvider.translations('es', {
       MAIN_TITLE: 'Bienvenido al timelapse elBulliLab',
-      MAIN_DESC: 'Documentar la información es uno de los hechos más importantes de un proceso creativo, por ese motivo, esta tan importante archivar todo lo que sucede en elBulliLab. Timelapse integra la fotografía y la programación de última generación para contar la historia y la evolución durante 365 días desde 4 puntos de vista diferentes de este proyecto tan fascinante.<br><br>No te pierdas ni un momento de esta historia épica. ¡Ven y únete a nosotros en el Timelapse!',
+      MAIN_DESC: 'Documentar la información es uno de los hechos más importantes de un proceso creativo, es tan importante todo lo que sucede en elBulliLab. Timelapse integra la fotografía y la programación de última generación para contar la historia y la evolución durante 365 días desde 4 puntos de vista diferentes de este proyecto tan fascinante.<br><br>No te pierdas ni un momento de esta historia épica. ¡Ven y únete a nosotros en el Timelapse!',
       TECH_TITLE: 'El proceso de captura elBullilab',
-      TECH_DESC: 'Estos videos timelpase revelan las perspectivas fascinantes, interesantes y tal vez, inadvertidas que se producen en elBullilab. Cada noche, las fotografias fijas son automáticamente procesadas para crear un clip video de 30 segundos de ese día en avance rápido que se puede mirar una y otra vez. Echa un vistazo, descubre nuestro día a día, y conocer a la gente que hace esta creativa cartografía posible.',
+      TECH_DESC: 'timelapse las perspectivas fascinantes, interesantes y tal vez, inadvertidas que se producen en elBullilab. fotografías automáticamente procesadas para crear un clip video de 30 segundos de ese día en avance rápido que se puede mirar una y otra vez. Echa un vistazo, conoce que hace esta creativa cartografía posible.',
       TECH_STEP_HEAD: 'Paso',
-      TECH_STEP_1_BODY: 'Cada cámara se coloca estratégicamente una fotografía del laboratorio cada 60 segundos dentro de los horarios de trabajo del 9h de la mañana a las 21h de las tarde.',
+      TECH_STEP_1_BODY: 'Cada cámara se coloca estratégicamente y toma una fotografía del laboratorio cada 60 segundos dentro de los horarios de trabajo del 9h de la mañana a las 21h de las tarde.',
       TECH_STEP_2_BODY: 'Cada cámara produce 720 fotografías por día.',
       TECH_STEP_3_BODY: 'Las imágenes se almacenan en el Microsoft Azure Cloud.',
       TECH_STEP_4_BODY: 'Los vídeos son compartidos con el mundo en Internet.',
