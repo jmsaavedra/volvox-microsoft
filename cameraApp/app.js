@@ -60,8 +60,8 @@ var imageProcessQueue = async.queue(function (newImgPath, callback) {
       console.log(chalk.red('ERROR processing new image:'), e);
       Mailer.sendEmail('[elBulli cameraApp] Failed on Image Upload', 'imageProcessQueue error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
-        console.log('>>> EXITING APP IN 10 seconds.');
-        setTimeout(function(){process.exit(0);},10000);
+        console.log('>>> EXITING APP IN 120 seconds.');
+        setTimeout(function(){process.exit(0);},120000);
       });
     } else {
       io.sockets.emit('image_count', serverData.image_count);
@@ -142,10 +142,10 @@ function snap(){
     if (takeNumber > 3){
       Mailer.sendEmail('[elBulli cameraApp] Failing on Snap', 'cameras.takePhotos error: \n\n[ '+e+' ]\n\n... restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
-        console.log('>>> QUITTING APP in 30 secs...');
+        console.log('>>> QUITTING APP in 3 min...');
         setTimeout(function(){
           process.exit(0);
-        },120000);
+        },180000);
       });
     } else{
       console.log('trying SNAP() again in 30 secs...');
@@ -165,8 +165,8 @@ var killAll = exec('killall PTPCamera gphoto2',function (error, stdout, stderr) 
       console.log(chalk.red('camera setup failed:'), e);   
       Mailer.sendEmail('Failed on Startup', 'cameras initialize error: \n\n[ '+e+' ]\n\n...restarting app now', function(er){
         if(er) console.log(chalk.red('error sending nodemail: '),er);
-        console.log('QUITTING APP in 5 seconds...');
-        setTimeout( function(){ process.exit(0);}, 5000);
+        console.log('QUITTING / RESTARTING APP in 3 minutes...');
+        setTimeout( function(){ process.exit(0);}, 180000);
       });
     } else {
       console.log(chalk.gray("camera setup complete"));
